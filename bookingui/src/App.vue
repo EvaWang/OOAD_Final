@@ -63,20 +63,18 @@
     </v-app-bar>
 
     <div class="mt-12 mb-6"></div>
-    <HotelTable></HotelTable>
+    <router-view/>
   </v-app>
 </template>
 
 <script>
 // import HelloWorld from './components/HelloWorld';
-import HotelTable from "./components/HotelTable";
 
 export default {
   name: "App",
 
   components: {
     // HelloWorld,
-    HotelTable
   },
 
   data: () => ({
