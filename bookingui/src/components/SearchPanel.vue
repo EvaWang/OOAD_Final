@@ -22,7 +22,7 @@
         </v-col>
             <!-- :tick-labels="[0,1,2,3,4,5]" -->
 
-        <v-col cols="4" md="4">
+        <v-col cols="4" md="3">
           <v-slider
             v-model="NumberOfCustomer"
             :max="roomType.Limit"
@@ -36,39 +36,39 @@
         </v-col>
       </v-row>
       <v-row justify="center">
-        <v-col cols="2" md="8">
+        <v-col cols="auto">
           <v-checkbox
             v-model="rating[0]"
             class="mx-2"
             label="1 star"
           ></v-checkbox>
         </v-col>
-        <v-col cols="2" md="8">
+        <v-col cols="auto">
           <v-checkbox
             v-model="rating[1]"
             class="mx-2"
             label="2 stars"
           ></v-checkbox>
         </v-col>
-        <v-col cols="2" md="8">
+        <v-col cols="auto">
           <v-checkbox
             v-model="rating[2]"
             class="mx-2"
-            label="3 star"
+            label="3 stars"
           ></v-checkbox>
         </v-col>
-        <v-col cols="2" md="8">
+        <v-col cols="auto">
           <v-checkbox
             v-model="rating[3]"
             class="mx-2"
-            label="4 star"
+            label="4 stars"
           ></v-checkbox>
         </v-col>
-        <v-col cols="2" md="8">
+        <v-col cols="auto">
           <v-checkbox
             v-model="rating[4]"
             class="mx-2"
-            label="5 star"
+            label="5 stars"
           ></v-checkbox>
         </v-col>
         <!-- <v-col cols="11" md="8">
