@@ -8,6 +8,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController    // This means that this class is a Controller
@@ -25,8 +29,32 @@ public class BookingController {
 //        return userRepository.findAll();
 //    }
 
-    @PostMapping("/add")
-    Booking newBooking(@RequestBody Booking newBooking) {
+//Post Sample
+//    {
+//        "HotelId": 0,
+//            "HotelRoomId": 0,
+//            "OrderId": 0,
+//            "StartDate": "2019-12-20T00:00:00",
+//            "EndDate": "2019-12-21T00:00:00",
+//            "IsDisabled": false
+//    }
+    @PostMapping(path="/add", consumes = "application/json")
+    Booking newBooking(@RequestBody Map<String, String> bookingObj) throws ParseException {
+
+        SimpleDateFormat formatter1 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        Date startDate = formatter1.parse(bookingObj.get("StartDate"));
+        Date endDate = formatter1.parse(bookingObj.get("EndDate"));
+
+        Booking newBooking = new Booking();
+        newBooking.setHotelId(Integer.parseInt(bookingObj.get("HotelId")));
+        newBooking.setOrderId(Integer.parseInt(bookingObj.get("OrderId")));
+        newBooking.setHotelRoomId(Integer.parseInt(bookingObj.get("HotelRoomId")));
+        newBooking.setIsDisabled(Boolean.getBoolean(bookingObj.get("IsDisabled")));
+        newBooking.setStartDate(startDate);
+        newBooking.setEndDate(endDate);
+//        booking = newBooking.get
+//        return newBooking;
+//        Booking data = (Booking)newBooking;
         return bookingRepository.save(newBooking);
     }
 

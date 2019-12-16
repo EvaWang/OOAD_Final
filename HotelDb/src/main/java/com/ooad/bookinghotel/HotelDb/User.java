@@ -1,7 +1,5 @@
 package com.ooad.bookinghotel.HotelDb;
 
-import org.springframework.lang.NonNull;
-
 import javax.persistence.*;
 
 @Entity // This tells Hibernate to make a table out of this class

@@ -55,7 +55,7 @@ public class Booking extends BaseDbo {
         return OrderId;
     }
 
-    public void setOrderId(Integer HotelId) {
+    public void setOrderId(Integer OrderId) {
         this.OrderId = OrderId;
     }
 
