@@ -1,8 +1,8 @@
 package com.ooad.bookinghotel.Controller;
 
+import com.ooad.bookinghotel.HotelDb.Booking;
+import com.ooad.bookinghotel.HotelDb.BookingRepository;
 import com.ooad.bookinghotel.HotelDb.HotelDbApplication;
-import com.ooad.bookinghotel.HotelDb.User;
-import com.ooad.bookinghotel.HotelDb.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,12 +11,12 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Optional;
 
 @RestController    // This means that this class is a Controller
-@RequestMapping(path="/User") // This means URL's start with /demo (after Application path)
-public class UserController {
+@RequestMapping(path="/Booking") // This means URL's start with /demo (after Application path)
+public class BookingController {
     private static final Logger log = LoggerFactory.getLogger(HotelDbApplication.class);
 
     @Autowired
-    private UserRepository userRepository;
+    private BookingRepository bookingRepository;
 
 
 //    debug use
@@ -26,29 +26,29 @@ public class UserController {
 //    }
 
     @PostMapping("/add")
-    User newUser(@RequestBody User newUser) {
-        return userRepository.save(newUser);
+    Booking newBooking(@RequestBody Booking newBooking) {
+        return bookingRepository.save(newBooking);
     }
 
     // Single item
 
     @GetMapping("/findOne/{id}")
-    User one(@PathVariable int id) {
+    Booking one(@PathVariable int id) {
 
-        return userRepository.findById(id)
+        return bookingRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(id));
     }
 
     @PutMapping("/updateOne/{id}")
-    User updateUser(@RequestBody User newUser, @PathVariable int id) {
-        Optional<User> user = userRepository.findById(id);
+    Booking updateUser(@RequestBody Booking newBooking, @PathVariable int id) {
+        Optional<Booking> booking = bookingRepository.findById(id);
 
 
-        return userRepository.findById(id)
+        return bookingRepository.findById(id)
                 .map(employee -> {
-                    employee.setName(newUser.getName());
-                    employee.setEmail(newUser.getEmail());
-                    return userRepository.save(employee);
+                    employee.setStartDate(newBooking.getStartDate());
+                    employee.setEndDate(newBooking.getEndDate());
+                    return bookingRepository.save(employee);
                 }).orElseThrow(() -> new NotFoundException(id));
     }
 
