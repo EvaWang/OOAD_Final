@@ -2,7 +2,10 @@ package com.ooad.bookinghotel.Controller;
 
 import com.ooad.bookinghotel.HotelDb.Booking;
 import com.ooad.bookinghotel.HotelDb.BookingRepository;
+import com.ooad.bookinghotel.HotelDb.Ordering;
+import com.ooad.bookinghotel.HotelDb.OrderingRepository;
 import com.ooad.bookinghotel.HotelDb.HotelDbApplication;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +24,8 @@ public class BookingController {
 
     @Autowired
     private BookingRepository bookingRepository;
+    @Autowired
+    private OrderingRepository orderingRepository;
 
 
 //    debug use
@@ -71,6 +76,18 @@ public class BookingController {
                     updateBooking.setEndDate(newBooking.getEndDate());
                     return bookingRepository.save(updateBooking);
                 }).orElseThrow(() -> new NotFoundException(id));
+
     }
 
+    @PostMapping(path="/testAdd", consumes = "application/json")
+    Ordering newOrdering(@RequestBody Map<String, String> orderingObj) throws ParseException {
+
+        Ordering newOrdering = new Ordering();
+        newOrdering.setBookingId(Integer.parseInt(orderingObj.get("BookingId")));
+        newOrdering.setUserId(Integer.parseInt(orderingObj.get("UserId")));
+        newOrdering.setTotal(Integer.parseInt(orderingObj.get("Total")));
+        newOrdering.setDiscount(Double.parseDouble(orderingObj.get("Discount")));
+        newOrdering.setMemo(orderingObj.get("Memo"));
+        return orderingRepository.save(newOrdering);
+    }
 }
