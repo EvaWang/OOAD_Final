@@ -1,14 +1,24 @@
 package com.ooad.bookinghotel.HotelDb;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.repository.query.Param;
+import org.springframework.data.repository.PagingAndSortingRepository;
 
 import java.util.List;
 
 
-public interface HotelRepository extends CrudRepository<Hotel, Integer> {
+public interface HotelRepository extends PagingAndSortingRepository<Hotel, Integer> {
+
+    @Query(
+            value ="select hotel_info.id, hotel_info.star, hotel_info.locality, hotel_info.address " +
+                    "from hotel_info ",
+            nativeQuery = true)
+    Page<Hotel> findAll(Pageable pageable);
+
+
+
+
 
 //    Query from View
 //    @Query(nativeQuery = true, value = "SELECT * FROM vReport1_1 ORDER BY DATE_CREATED, AMOUNT")
@@ -19,7 +29,6 @@ public interface HotelRepository extends CrudRepository<Hotel, Integer> {
 //
 //    "You can however use native queries for pagination by specifying the count query yourself: Example 59.
 //    Declare native count queries for pagination at the query method using @Query"
-//
 //    public interface UserRepository extends JpaRepository<User, Long> {
 //
 //        @Query(value = "SELECT * FROM USERS WHERE LASTNAME = ?1",
@@ -38,7 +47,5 @@ public interface HotelRepository extends CrudRepository<Hotel, Integer> {
 //                                    @Param("goo") Optional<Goo> goo);
 
     List<Hotel> findByJsonFileId(Integer jsonFileId);
-
-
 
 }

@@ -18,7 +18,6 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
 
-
 //    debug use
 //    @GetMapping("/all")
 //    Iterable<User> all() {
@@ -41,14 +40,12 @@ public class UserController {
 
     @PutMapping("/updateOne/{id}")
     User updateUser(@RequestBody User newUser, @PathVariable int id) {
-        Optional<User> user = userRepository.findById(id);
-
 
         return userRepository.findById(id)
-                .map(employee -> {
-                    employee.setName(newUser.getName());
-                    employee.setEmail(newUser.getEmail());
-                    return userRepository.save(employee);
+                .map(updateUser -> {
+                    updateUser.setName(newUser.getName());
+                    updateUser.setEmail(newUser.getEmail());
+                    return userRepository.save(updateUser);
                 }).orElseThrow(() -> new NotFoundException(id));
     }
 

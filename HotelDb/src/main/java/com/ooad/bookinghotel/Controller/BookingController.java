@@ -52,31 +52,24 @@ public class BookingController {
         newBooking.setIsDisabled(Boolean.getBoolean(bookingObj.get("IsDisabled")));
         newBooking.setStartDate(startDate);
         newBooking.setEndDate(endDate);
-//        booking = newBooking.get
-//        return newBooking;
-//        Booking data = (Booking)newBooking;
         return bookingRepository.save(newBooking);
     }
 
     // Single item
-
     @GetMapping("/findOne/{id}")
     Booking one(@PathVariable int id) {
-
         return bookingRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(id));
     }
 
     @PutMapping("/updateOne/{id}")
-    Booking updateUser(@RequestBody Booking newBooking, @PathVariable int id) {
-        Optional<Booking> booking = bookingRepository.findById(id);
-
+    Booking updateBooking(@RequestBody Booking newBooking, @PathVariable int id) {
 
         return bookingRepository.findById(id)
-                .map(employee -> {
-                    employee.setStartDate(newBooking.getStartDate());
-                    employee.setEndDate(newBooking.getEndDate());
-                    return bookingRepository.save(employee);
+                .map(updateBooking -> {
+                    updateBooking.setStartDate(newBooking.getStartDate());
+                    updateBooking.setEndDate(newBooking.getEndDate());
+                    return bookingRepository.save(updateBooking);
                 }).orElseThrow(() -> new NotFoundException(id));
     }
 
