@@ -7,9 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -31,14 +35,21 @@ public class HotelDbApplication implements CommandLineRunner {
 		log.info("hi, i am main.");
 	}
 
-//	public WebMvcConfigurer corsConfigurer() {
-//		return new WebMvcConfigurer() {
-//			@Override
-//			public void addCorsMappings(CorsRegistry registry) {
-//				registry.addMapping("/Hotel").allowedOrigins("http://localhost:8081");
-//			}
-//		};
-//	}
+	@Autowired
+	private Environment environment;
+
+	@Bean
+	public WebMvcConfigurer corsConfigurer() {
+		return new WebMvcConfigurer() {
+			@Override
+			public void addCorsMappings(CorsRegistry registry) {
+				String origins = environment.getProperty("cors.urls");
+				log.info("cors whitelist:"+origins);
+
+				registry.addMapping("/**").allowedOrigins(origins);
+			}
+		};
+	}
 
 	@Autowired // This means to get the bean called systemConfigRepository
 	private SystemConfigRepository systemConfigRepository;
