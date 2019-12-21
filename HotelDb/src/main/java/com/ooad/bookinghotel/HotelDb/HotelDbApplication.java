@@ -188,6 +188,7 @@ public class HotelDbApplication implements CommandLineRunner {
 		jdbcTemplate.execute("ALTER TABLE hotel_room MODIFY id INT NOT NULL AUTO_INCREMENT;");
 		jdbcTemplate.execute("ALTER TABLE system_config MODIFY id INT NOT NULL AUTO_INCREMENT;");
 		jdbcTemplate.execute("ALTER TABLE booking MODIFY id INT NOT NULL AUTO_INCREMENT;");
+		jdbcTemplate.execute("ALTER TABLE ordering MODIFY id INT NOT NULL AUTO_INCREMENT;");
 
 	}
 
