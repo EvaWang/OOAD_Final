@@ -165,7 +165,7 @@ public class HotelDbApplication implements CommandLineRunner {
 
 		jdbcTemplate.execute("CREATE OR REPLACE VIEW hotel_info  AS " +
 				" select " +
-				" hotel.id, hotel.star, hotel.locality, hotel.address, hotel.json_file_id, hotel.name, " +
+				" hotel.id, hotel.star, hotel.locality, hotel.address, hotel.json_file_id, hotel.name, hotel.create_time, hotel.update_time," +
 				" sum(CASE WHEN hotel_room.room_type =1 THEN hotel_room.quantity ELSE 0 END) AS SingleRoom, " +
 				" sum(CASE WHEN hotel_room.room_type =1 THEN hotel_room.price ELSE 0 END) AS SingleRoomPrice, " +
 				" sum(CASE WHEN hotel_room.room_type =2 THEN hotel_room.quantity ELSE 0 END) AS DoubleRoom,  " +

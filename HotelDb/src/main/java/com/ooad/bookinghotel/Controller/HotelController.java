@@ -1,10 +1,9 @@
 package com.ooad.bookinghotel.Controller;
 
-import com.ooad.bookinghotel.HotelDb.Hotel;
-import com.ooad.bookinghotel.HotelDb.HotelRepository;
-import com.ooad.bookinghotel.HotelDb.HotelRoom;
-import com.ooad.bookinghotel.HotelDb.HotelRoomRepository;
+import com.ooad.bookinghotel.HotelDb.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,11 +22,14 @@ public class HotelController {
     @Autowired
     private HotelRoomRepository hotelRoomRepository;
 
-//    @CrossOrigin(origins = "http://localhost:8081")
     @GetMapping(path="/all")
-    public @ResponseBody Iterable<Hotel> getAllUsers() {
+    public @ResponseBody
+    Iterable<Hotel> getAllHotels(@RequestParam("page") int page,
+                                    @RequestParam("size") int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
         // This returns a JSON or XML with the users
-        return hotelRepository.findAll();
+        return hotelRepository.findAllDetail(pageable);
     }
 
 //    http://localhost:8080/Hotel/test?jsonFileId=5&roomIds=2854, 2852
