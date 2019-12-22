@@ -1,23 +1,24 @@
 <template>
-  <!-- :expanded.sync="expanded" -->
   <v-data-table
     :headers="headers"
     :items="items"
     :single-expand="false"
+    :options.sync="options"
     item-key="name"
     show-expand
     class="elevation-1"
     :search="search"
-    :loading="isLoading" 
+    :loading="isLoading"
     loading-text="Loading... Please wait"
+    :server-items-length="pageLength"
   >
     <template v-slot:top>
       <v-toolbar flat>
         <v-toolbar-title>Hotels</v-toolbar-title>
         <v-spacer></v-spacer>
       </v-toolbar>
-        <v-text-field v-model="search" label="Search" class="mx-4"></v-text-field>
-      </template>
+      <v-text-field v-model="search" label="Search" class="mx-4"></v-text-field>
+    </template>
     <template v-slot:expanded-item="{ headers }">
       <td :colspan="headers.length">Peek-a-boo!</td>
     </template>
@@ -28,15 +29,8 @@
 export default {
   data() {
     return {
-      itemsPerPageArray: [4, 8, 12],
       search: "",
-      isLoading:true,
-      filter: {},
-      sortDesc: false,
-      page: 1,
-      itemsPerPage: 4,
-      sortBy: "name",
-      keys: ["name", "star", "locality", "address"],
+      isLoading: true,
       headers: [
         {
           text: "name",
@@ -46,48 +40,53 @@ export default {
         { text: "Star", value: "star" },
         { text: "Locality", value: "locality" },
         { text: "Address", value: "address" },
-        { text: '', value: 'data-table-expand' },
+        { text: "", value: "data-table-expand" }
       ],
-      items: []
+      items: [],
+      pageLength: 1,
+      options: {}
     };
   },
-  computed: {
-    numberOfPages() {
-      return Math.ceil(this.items.length / this.itemsPerPage);
-    },
-    filteredKeys() {
-      return this.keys.filter(key => key !== `Name`);
+  computed: {},
+  watch: {
+    options: {
+      handler() {
+        this.getHotelList();
+        // this.getDataFromApi()
+        //   .then(data => {
+        //     this.desserts = data.items
+        //     this.totalDesserts = data.total
+        //   })
+      },
+      deep: true
     }
   },
   methods: {
     getHotelList() {
       var vm = this;
-      vm.isLoading=true;
-
+      vm.isLoading = true;
+      // const { sortBy, sortDesc, page, itemsPerPage } = vm.options
       vm.axios
-        .get("Hotel/all")
+        .get("Hotel/all", {
+          params: {
+            page: vm.options.page,
+            size: vm.options.itemsPerPage,
+          }
+        })
         .then(response => {
           // if(response.)
-          vm.items = response.data;
+          vm.items = response.data.content;
+          vm.pageLength = response.data.totalPages;
           console.log("i success");
         })
         .catch(error => {
           console.log(error);
           console.warn("Not good man :(");
         })
-        .finally(function () {
+        .finally(function() {
           // always executed
-          vm.isLoading=false;
+          vm.isLoading = false;
         });
-    },
-    nextPage() {
-      if (this.page + 1 <= this.numberOfPages) this.page += 1;
-    },
-    formerPage() {
-      if (this.page - 1 >= 1) this.page -= 1;
-    },
-    updateItemsPerPage(number) {
-      this.itemsPerPage = number;
     }
   },
   mounted: function() {
