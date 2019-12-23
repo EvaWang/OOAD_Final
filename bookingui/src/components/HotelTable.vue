@@ -52,25 +52,27 @@ export default {
     options: {
       handler() {
         this.getHotelList();
-        // this.getDataFromApi()
-        //   .then(data => {
-        //     this.desserts = data.items
-        //     this.totalDesserts = data.total
-        //   })
       },
       deep: true
-    }
+    },
+    search:{
+      handler() {
+        this.getHotelList();
+      }
+    },
   },
   methods: {
     getHotelList() {
       var vm = this;
       vm.isLoading = true;
-      // const { sortBy, sortDesc, page, itemsPerPage } = vm.options
       vm.axios
         .get("Hotel/all", {
           params: {
             page: vm.options.page,
             size: vm.options.itemsPerPage,
+            sortKey:vm.options.sortBy[0],
+            sortDesc:vm.options.sortDesc[0],
+            search: vm.search
           }
         })
         .then(response => {
@@ -90,7 +92,7 @@ export default {
     }
   },
   mounted: function() {
-    this.getHotelList();
+    // this.getHotelList();
   }
 };
 </script>
