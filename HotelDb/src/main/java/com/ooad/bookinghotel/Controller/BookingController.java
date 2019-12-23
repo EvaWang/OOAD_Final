@@ -10,6 +10,10 @@ import org.springframework.web.bind.annotation.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @RestController    // This means that this class is a Controller
 @RequestMapping(path="/Booking") // This means URL's start with /demo (after Application path)
@@ -63,6 +67,7 @@ public class BookingController {
                 .orElseThrow(() -> new NotFoundException(id));
     }
 
+
     @PutMapping("/updateOne/{id}")
     Booking updateBooking(@RequestBody Booking newBooking, @PathVariable int id) {
 
@@ -84,7 +89,6 @@ public class BookingController {
 
         Ordering newOrdering = new Ordering();
         newOrdering.setUserId(Integer.parseInt(orderingObj.get("UserId")));
-//        newOrdering.setTotal(Integer.parseInt(orderingObj.get("Total")));
         newOrdering.setDiscount(Double.parseDouble(orderingObj.get("Discount")));
         newOrdering.setMemo(orderingObj.get("Memo"));
         //return OrderingRepository.findByHotelIdAndRoomType(HotelId, RoomType)

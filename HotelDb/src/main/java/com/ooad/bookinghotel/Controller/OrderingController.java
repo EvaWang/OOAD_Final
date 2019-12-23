@@ -1,5 +1,6 @@
 package com.ooad.bookinghotel.Controller;
 
+import com.ooad.bookinghotel.HotelDb.Hotel;
 import com.ooad.bookinghotel.HotelDb.HotelDbApplication;
 import com.ooad.bookinghotel.HotelDb.Ordering;
 import com.ooad.bookinghotel.HotelDb.OrderingRepository;
@@ -41,4 +42,30 @@ public class OrderingController {
         return orderingRepository.findById(id)
                 .orElseThrow(()->new NotFoundException(id));
     }
+
+    @Autowired
+    @GetMapping("/all")
+    public @ResponseBody
+    List<Ordering> test(Integer userId) {
+        return orderingRepository.findByUserId(userId);
+    }
+
+    @GetMapping("/test")
+    List<Ordering> test () {
+        return orderingRepository.findByUserId(1);
+    }
+    
+    @PutMapping("/updateOne/{id}")
+    Ordering updateOrdering(@RequestBody Ordering newordering,@PathVariable int id) {
+        return orderingRepository.findById(id)
+                .map(updateOrdering -> {
+                    updateOrdering.setDiscount(newordering.getDiscount());
+                    updateOrdering.setUserId(newordering.getUserId());
+                    updateOrdering.setTotal(newordering.getTotal());
+                    updateOrdering.setMemo(newordering.getMemo());
+                    return orderingRepository.save(updateOrdering);
+                }).orElseThrow(() -> new NotFoundException(id));
+    }
+
+
 }
