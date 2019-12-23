@@ -10,7 +10,7 @@ public class HotelRoom extends BaseDbo{
     @Column(updatable = false, nullable = false)
     private Integer id;
 
-    @Column(columnDefinition = "varchar(255) default 0", nullable = false)
+    @Column(updatable = false, nullable = false)
     private Integer hotelId;
 
     @Column(columnDefinition = "varchar(255) default 0", nullable = false)

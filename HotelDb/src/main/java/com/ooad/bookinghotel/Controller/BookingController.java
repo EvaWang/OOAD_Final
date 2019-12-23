@@ -83,7 +83,7 @@ public class BookingController {
     Ordering newOrdering(@RequestBody Map<String, String> orderingObj) throws ParseException {
 
         Ordering newOrdering = new Ordering();
-        newOrdering.setBookingId(Integer.parseInt(orderingObj.get("BookingId")));
+//        newOrdering.setBookingId(Integer.parseInt(orderingObj.get("BookingId")));
         newOrdering.setUserId(Integer.parseInt(orderingObj.get("UserId")));
         newOrdering.setTotal(Integer.parseInt(orderingObj.get("Total")));
         newOrdering.setDiscount(Double.parseDouble(orderingObj.get("Discount")));
