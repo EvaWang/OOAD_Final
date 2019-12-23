@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -82,12 +83,36 @@ public class BookingController {
     @PostMapping(path="/testAdd", consumes = "application/json")
     Ordering newOrdering(@RequestBody Map<String, String> orderingObj) throws ParseException {
 
+        SimpleDateFormat formatter1 = new SimpleDateFormat("yyyy-MM-dd");
+        Date startDate = formatter1.parse(orderingObj.get("StartDate"));
+        Date endDate = formatter1.parse(orderingObj.get("EndDate"));
+
         Ordering newOrdering = new Ordering();
-        newOrdering.setBookingId(Integer.parseInt(orderingObj.get("BookingId")));
         newOrdering.setUserId(Integer.parseInt(orderingObj.get("UserId")));
         newOrdering.setTotal(Integer.parseInt(orderingObj.get("Total")));
         newOrdering.setDiscount(Double.parseDouble(orderingObj.get("Discount")));
         newOrdering.setMemo(orderingObj.get("Memo"));
-        return orderingRepository.save(newOrdering);
+        newOrdering = orderingRepository.save(newOrdering);
+        //return OrderingRepository.findByHotelIdAndRoomType(HotelId, RoomType)
+        //       .orElseThrow(() -> new NotFoundException(HotelId, RoomType));
+        String HotelRoomIds = orderingObj.get("HotelRoomIds");
+        String[] roomIdList = HotelRoomIds.split(",");
+
+        for(String roomId: roomIdList){
+            Booking newBooking = new Booking();
+            newBooking.setHotelId(Integer.parseInt(orderingObj.get("HotelId")));
+            newBooking.setHotelRoomId(Integer.parseInt(roomId));
+            newBooking.setOrderId(newOrdering.getId());
+            newBooking.setStartDate(startDate);
+            newBooking.setEndDate(endDate);
+            newBooking.setIsDisabled(Boolean.getBoolean(orderingObj.get("IsDisabled")));
+            bookingRepository.save(newBooking);
+
+            //bookingRepository.saveAll(newBooking)
+
+        }
+
+        return newOrdering;
     }
+
 }

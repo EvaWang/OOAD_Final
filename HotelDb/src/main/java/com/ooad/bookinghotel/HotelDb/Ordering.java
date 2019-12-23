@@ -10,9 +10,6 @@ public class Ordering extends BaseDbo{
     private Integer id;
 
     @Column(updatable = false, nullable = false)
-    private Integer BookingId;
-
-    @Column(updatable = false, nullable = false)
     private Integer UserId;
 
     @Column(columnDefinition = "varchar(255) default 99999", nullable = false)
@@ -25,10 +22,6 @@ public class Ordering extends BaseDbo{
     private String Memo;
 
     public Integer getId() {return id;}
-
-    public Integer getBookingId() { return BookingId;}
-
-    public void setBookingId(Integer BookingId){this.BookingId = BookingId;}
 
     public Integer getUserId() { return UserId;}
 
