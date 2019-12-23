@@ -13,7 +13,7 @@ public class Ordering extends BaseDbo{
     //private Integer BookingId;
 
     @Column(updatable = false, nullable = false)
-    private Integer UserId;
+    private Integer userId;
 
     @Column(columnDefinition = "varchar(255) default 0", nullable = false)
     private Integer Total;
@@ -30,9 +30,9 @@ public class Ordering extends BaseDbo{
 
     //public void setBookingId(Integer BookingId){this.BookingId = BookingId;}
 
-    public Integer getUserId() { return UserId; }
+    public Integer getUserId() { return userId; }
 
-    public void setUserId(Integer UserId) {this.UserId = UserId;}
+    public void setUserId(Integer UserId) {this.userId = UserId;}
 
     public Integer getTotal() { return Total;}
 

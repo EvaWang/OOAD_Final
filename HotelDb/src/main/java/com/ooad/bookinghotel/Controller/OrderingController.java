@@ -1,5 +1,6 @@
 package com.ooad.bookinghotel.Controller;
 
+import com.ooad.bookinghotel.HotelDb.Hotel;
 import com.ooad.bookinghotel.HotelDb.HotelDbApplication;
 import com.ooad.bookinghotel.HotelDb.Ordering;
 import com.ooad.bookinghotel.HotelDb.OrderingRepository;
@@ -49,6 +50,11 @@ public class OrderingController {
         return orderingRepository.findByUserId(userId);
     }
 
+    @GetMapping("/test")
+    List<Ordering> test () {
+        return orderingRepository.findByUserId(1);
+    }
+    
     @PutMapping("/updateOne/{id}")
     Ordering updateOrdering(@RequestBody Ordering newordering,@PathVariable int id) {
         return orderingRepository.findById(id)
