@@ -9,8 +9,8 @@ public class Ordering extends BaseDbo{
     @Column(updatable = false, nullable = false)
     private Integer id;
 
-    @Column(updatable = false, nullable = false)
-    private Integer BookingId;
+    //@Column(updatable = false, nullable = false)
+    //private Integer BookingId;
 
     @Column(updatable = false, nullable = false)
     private Integer UserId;
@@ -26,9 +26,9 @@ public class Ordering extends BaseDbo{
 
     public Integer getId() { return id; }
 
-    public Integer getBookingId() { return BookingId; }
+    //public Integer getBookingId() { return BookingId; }
 
-    public void setBookingId(Integer BookingId){this.BookingId = BookingId;}
+    //public void setBookingId(Integer BookingId){this.BookingId = BookingId;}
 
     public Integer getUserId() { return UserId; }
 

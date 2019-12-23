@@ -6,10 +6,7 @@ import com.ooad.bookinghotel.HotelDb.OrderingRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
 import java.util.*;
@@ -29,7 +26,7 @@ public class OrderingController {
 
         Ordering newordering = new Ordering();
 
-        newordering.setBookingId(Integer.parseInt(OrderingObj.get("BookingId")));
+        //newordering.setBookingId(Integer.parseInt(OrderingObj.get("BookingId")));
         newordering.setUserId(Integer.parseInt(OrderingObj.get("UserId")));
         newordering.setTotal(Integer.parseInt(OrderingObj.get("Total"))); //May be modified
         newordering.setDiscount(Double.parseDouble(OrderingObj.get("Discount")));
@@ -38,4 +35,10 @@ public class OrderingController {
         return orderingRepository.save(newordering);
     }
 
+    //Single item
+    @GetMapping("/findOne/{id}")
+    Ordering one (@PathVariable int id) {
+        return orderingRepository.findById(id)
+                .orElseThrow(()->new NotFoundException(id));
+    }
 }
