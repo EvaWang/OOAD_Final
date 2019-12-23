@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -67,6 +68,7 @@ public class BookingController {
                 .orElseThrow(() -> new NotFoundException(id));
     }
 
+
     @PutMapping("/updateOne/{id}")
     Booking updateBooking(@RequestBody Booking newBooking, @PathVariable int id) {
 
@@ -83,7 +85,7 @@ public class BookingController {
     Ordering newOrdering(@RequestBody Map<String, String> orderingObj) throws ParseException {
 
         Ordering newOrdering = new Ordering();
-        newOrdering.setBookingId(Integer.parseInt(orderingObj.get("BookingId")));
+        //newOrdering.setBookingId(Integer.parseInt(orderingObj.get("BookingId")));
         newOrdering.setUserId(Integer.parseInt(orderingObj.get("UserId")));
         newOrdering.setTotal(Integer.parseInt(orderingObj.get("Total")));
         newOrdering.setDiscount(Double.parseDouble(orderingObj.get("Discount")));

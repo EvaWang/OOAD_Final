@@ -1,7 +1,6 @@
 package com.ooad.bookinghotel.Controller;
 
 import com.ooad.bookinghotel.HotelDb.HotelDbApplication;
-import javax.sql.*;
 import com.ooad.bookinghotel.HotelDb.Ordering;
 import com.ooad.bookinghotel.HotelDb.OrderingRepository;
 import org.slf4j.Logger;
@@ -43,6 +42,12 @@ public class OrderingController {
                 .orElseThrow(()->new NotFoundException(id));
     }
 
+    @Autowired
+    @GetMapping("/all")
+    public @ResponseBody
+    List<Ordering> test(Integer userId) {
+        return orderingRepository.findByUserId(userId);
+    }
 
     @PutMapping("/updateOne/{id}")
     Ordering updateOrdering(@RequestBody Ordering newordering,@PathVariable int id) {
