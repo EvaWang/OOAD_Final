@@ -11,10 +11,14 @@ import java.util.List;
 public interface HotelRepository extends PagingAndSortingRepository<Hotel, Integer> {
 
     @Query(
-            value ="select * " +
+            value ="select hotel_info.id, hotel_info.star, hotel_info.locality, hotel_info.address " +
                     "from hotel_info ",
             nativeQuery = true)
-    Page<Hotel> findAllDetail(Pageable pageable);
+    Page<Hotel> findAll(Pageable pageable);
+
+
+
+
 
 //    Query from View
 //    @Query(nativeQuery = true, value = "SELECT * FROM vReport1_1 ORDER BY DATE_CREATED, AMOUNT")
