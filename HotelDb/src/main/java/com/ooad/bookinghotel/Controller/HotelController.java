@@ -1,20 +1,21 @@
 package com.ooad.bookinghotel.Controller;
 
-import com.ooad.bookinghotel.HotelDb.*;
+import com.ooad.bookinghotel.HotelDb.Hotel;
+import com.ooad.bookinghotel.HotelDb.HotelRepository;
+import com.ooad.bookinghotel.HotelDb.HotelRoom;
+import com.ooad.bookinghotel.HotelDb.HotelRoomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Controller    // This means that this class is a Controller
 @RequestMapping(path="/Hotel") // This means URL's start with /demo (after Application path)
@@ -26,6 +27,7 @@ public class HotelController {
     @Autowired
     private HotelRoomRepository hotelRoomRepository;
 
+    @CrossOrigin(origins = "http://localhost:8081")
     @GetMapping(path="/all")
     public @ResponseBody
     Iterable<Hotel> getAllHotels(@RequestParam("page") int page,
