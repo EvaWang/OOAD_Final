@@ -52,7 +52,7 @@ public class HotelController {
         if(search != null && search.isEmpty()==false){
             return hotelRepository.findAllDetail(search, pageable);
         }else{
-            return hotelRepository.findAllDetail(pageable);
+            return hotelRepository.findAll(pageable);
         }
     }
 
