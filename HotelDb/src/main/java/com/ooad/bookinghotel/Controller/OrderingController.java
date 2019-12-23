@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import java.lang.Integer;
 
 import java.text.ParseException;
 import java.util.*;
@@ -22,7 +23,6 @@ public class OrderingController {
     private OrderingRepository orderingRepository;
 
     @PostMapping(path="/add", consumes = "application/json")
-
     Ordering newordering (@RequestBody Map<String, String> OrderingObj) throws ParseException {
 
         Ordering newordering = new Ordering();
@@ -43,16 +43,10 @@ public class OrderingController {
                 .orElseThrow(()->new NotFoundException(id));
     }
 
-    @Autowired
     @GetMapping("/all")
     public @ResponseBody
-    List<Ordering> test(Integer userId) {
+    List<Ordering> testing(Integer userId) {
         return orderingRepository.findByUserId(userId);
-    }
-
-    @GetMapping("/test")
-    List<Ordering> test () {
-        return orderingRepository.findByUserId(1);
     }
     
     @PutMapping("/updateOne/{id}")

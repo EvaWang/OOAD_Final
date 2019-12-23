@@ -2,7 +2,6 @@ package com.ooad.bookinghotel.HotelDb;
 
 import org.springframework.data.repository.CrudRepository;
 
-import java.util.List;
 
 //import com.ooad.bookinghotel.User;
 
