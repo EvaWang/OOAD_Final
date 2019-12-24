@@ -24,8 +24,6 @@ public class BookingController {
 
     @Autowired
     private BookingRepository bookingRepository;
-    @Autowired
-    private OrderingRepository orderingRepository;
 
 
 //    debug use
@@ -79,15 +77,4 @@ public class BookingController {
 
     }
 
-    @PostMapping(path="/testAdd", consumes = "application/json")
-    Ordering newOrdering(@RequestBody Map<String, String> orderingObj) throws ParseException {
-
-        Ordering newOrdering = new Ordering();
-//        newOrdering.setBookingId(Integer.parseInt(orderingObj.get("BookingId")));
-        newOrdering.setUserId(Integer.parseInt(orderingObj.get("UserId")));
-        newOrdering.setTotal(Integer.parseInt(orderingObj.get("Total")));
-        newOrdering.setDiscount(Double.parseDouble(orderingObj.get("Discount")));
-        newOrdering.setMemo(orderingObj.get("Memo"));
-        return orderingRepository.save(newOrdering);
-    }
 }

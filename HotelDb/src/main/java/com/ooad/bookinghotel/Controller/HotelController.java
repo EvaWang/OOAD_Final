@@ -2,6 +2,9 @@ package com.ooad.bookinghotel.Controller;
 
 import com.ooad.bookinghotel.HotelDb.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -44,7 +47,7 @@ public class HotelController {
         if(search != null && search.isEmpty()==false){
             return hotelRepository.findAllDetail(search, pageable);
         }else{
-            return hotelRepository.findAllDetail(pageable);
+            return hotelRepository.findAll(pageable);
         }
     }
 
