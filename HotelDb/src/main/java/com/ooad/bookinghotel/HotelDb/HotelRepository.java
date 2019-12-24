@@ -21,7 +21,7 @@ public interface HotelRepository extends PagingAndSortingRepository<Hotel, Integ
     Page<Hotel> findAllDetail(String searchKey, Pageable pageable);
 
     @Query(
-            value ="select hotel_info.id, hotel_info.star, hotel_info.locality, hotel_info.address " +
+            value ="select * " +
                     "from hotel_info ",
             nativeQuery = true)
     Page<Hotel> findAll(Pageable pageable);

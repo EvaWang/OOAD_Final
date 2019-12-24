@@ -21,6 +21,13 @@ public class User extends BaseDbo {
     @Column(columnDefinition = "varchar(255) default ''", nullable = false)
     private String password;
 
+    @Column(columnDefinition = "varchar(255) default ''", nullable = false)
+    private String salt;
+
+    @Transient
+    private String token;
+
+
     public Integer getId() {
         return id;
     }
@@ -54,9 +61,9 @@ public class User extends BaseDbo {
         this.email = email;
     }
 
-    public String getPassword() {
-        return password;
-    }
+//    public String getPassword() {
+//        return password;
+//    }
 
     public void setPassword(String password) {
         this.password = password;
