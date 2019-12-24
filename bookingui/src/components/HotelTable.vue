@@ -140,34 +140,19 @@ export default {
       items: []
     };
   },
-  computed: {},
-  watch: {
-    options: {
-      handler() {
-        this.getHotelList();
-      },
-      deep: true
+  computed: {
+    numberOfPages() {
+      return Math.ceil(this.items.length / this.itemsPerPage);
     },
-    search:{
-      handler() {
-        this.getHotelList();
-      }
-    },
+    filteredKeys() {
+      return this.keys.filter(key => key !== `Name`);
+    }
   },
   methods: {
     getHotelList() {
       var vm = this;
-      vm.isLoading = true;
       vm.axios
-        .get("Hotel/all", {
-          params: {
-            page: vm.options.page,
-            size: vm.options.itemsPerPage,
-            sortKey:vm.options.sortBy[0],
-            sortDesc:vm.options.sortDesc[0],
-            search: vm.search
-          }
-        })
+        .get("Hotel/all")
         .then(response => {
           // if(response.)
           vm.items = response.data;
@@ -190,7 +175,7 @@ export default {
     }
   },
   mounted: function() {
-    // this.getHotelList();
+    this.getHotelList();
   }
 };
 </script>
