@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
 import java.util.Optional;
 
 @RestController    // This means that this class is a Controller
@@ -25,7 +26,14 @@ public class UserController {
 //    }
 
     @PostMapping("/add")
-    User newUser(@RequestBody User newUser) {
+    User newUser(@RequestBody Map<String, String> userObj) {
+        User newUser = new User();
+        newUser.setLastName(userObj.get("lastname"));
+        newUser.setFirstName(userObj.get("firstname"));
+        newUser.setAccount(userObj.get("account"));
+        newUser.setPassword(userObj.get("password"));
+        newUser.setEmail(userObj.get("email"));
+
         return userRepository.save(newUser);
     }
 
@@ -43,7 +51,6 @@ public class UserController {
 
         return userRepository.findById(id)
                 .map(updateUser -> {
-                    updateUser.setName(newUser.getName());
                     updateUser.setEmail(newUser.getEmail());
                     return userRepository.save(updateUser);
                 }).orElseThrow(() -> new NotFoundException(id));

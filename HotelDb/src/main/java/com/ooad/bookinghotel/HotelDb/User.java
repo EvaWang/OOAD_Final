@@ -10,7 +10,10 @@ public class User extends BaseDbo {
     private Integer id;
 
     @Column(columnDefinition = "varchar(255) default ''", nullable = false)
-    private String name;
+    private String firstname;
+
+    @Column(columnDefinition = "varchar(255) default ''", nullable = false)
+    private String lastname;
 
     @Column(columnDefinition = "varchar(255) default ''", nullable = false, updatable = false)
     private String account;
@@ -29,12 +32,20 @@ public class User extends BaseDbo {
 //        this.id = id;
 //    }
 
-    public String getName() {
-        return name;
+    public String getFirstName() {
+        return firstname;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setFirstName(String firstname) {
+        this.firstname = firstname;
+    }
+
+    public String getLastName() {
+        return lastname;
+    }
+
+    public void setLastName(String lastname) {
+        this.lastname = lastname;
     }
 
     public void setAccount(String account) {

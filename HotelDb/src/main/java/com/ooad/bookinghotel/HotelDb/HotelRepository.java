@@ -2,13 +2,23 @@ package com.ooad.bookinghotel.HotelDb;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 
-public interface HotelRepository extends PagingAndSortingRepository<Hotel, Integer> {
+public interface HotelRepository extends PagingAndSortingRepository<Hotel, Integer>, JpaSpecificationExecutor {
+
+    @Query(
+            value ="select * " +
+                    "from hotel_info " +
+                    "where address LIKE %:searchKey% or name like %:searchKey% or locality like %:searchKey%",
+            nativeQuery = true)
+    Page<Hotel> findAllDetail(String searchKey, Pageable pageable);
 
     @Query(
             value ="select hotel_info.id, hotel_info.star, hotel_info.locality, hotel_info.address " +
@@ -20,31 +30,15 @@ public interface HotelRepository extends PagingAndSortingRepository<Hotel, Integ
 
 
 
-//    Query from View
-//    @Query(nativeQuery = true, value = "SELECT * FROM vReport1_1 ORDER BY DATE_CREATED, AMOUNT")
-//    List<R11Dto> getR11();
-//
-//    You can use pagination with a native query. It is documented here:
-//    https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#_native_queries
-//
-//    "You can however use native queries for pagination by specifying the count query yourself: Example 59.
-//    Declare native count queries for pagination at the query method using @Query"
-//    public interface UserRepository extends JpaRepository<User, Long> {
-//
-//        @Query(value = "SELECT * FROM USERS WHERE LASTNAME = ?1",
-//                countQuery = "SELECT count(*) FROM USERS WHERE LASTNAME = ?1",
-//                nativeQuery = true)
-//        Page<User> findByLastname(String lastname, Pageable pageable);
-//    }
+    @Query(
+            value ="select hotel.*, hotel_room.price, hotel_room.room_type, hotel_room.quantity " +
+                    "from hotel inner join hotel_room on hotel_room.hotel_id = hotel.json_file_id " +
+                    "WHERE (:stars is null or star IN (:stars)) " +
+                    "AND  (:locality is null or locality = :locality) " +
+                    "AND (:roomType is null or room_type = :roomType) AND (:startDate is null) AND (:endDate is null)",
+            nativeQuery = true)
+    Page<Hotel> searchHotel(List<Integer> stars, String locality, Integer roomType, Date startDate, Date endDate, Pageable pageable);
 
-//            @Query(value = "select hotel.id, hotel.star, hotel.locality, hotel.address, hotel.json_file_id, hotel.name, " +
-//                    "hotel.create_time, hotel_room.room_type, hotel_room.quantity, hotel_room.price " +
-//                    "from hotel inner join hotel_room on hotel_id = hotel.json_File_id " +
-//                    "WHERE hotel.locality = ?1",
-//                countQuery = "SELECT count(*) FROM USERS WHERE LASTNAME = ?1",
-//                nativeQuery = true)
-//            Page<Hotel> searchHotel(@Param("bar") Bar bar,
-//                                    @Param("goo") Optional<Goo> goo);
 
     List<Hotel> findByJsonFileId(Integer jsonFileId);
 
