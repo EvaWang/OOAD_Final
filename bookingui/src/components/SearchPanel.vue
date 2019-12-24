@@ -2,7 +2,7 @@
   <div class="search">
     <v-form ref="form" v-model="valid" lazy-validation>
       <v-row justify="center">
-        <v-col cols="10" md="8">
+        <v-col cols="10" md="3">
           <v-autocomplete
             v-model="location"
             label="Location"
@@ -10,9 +10,7 @@
             required
           ></v-autocomplete>
         </v-col>
-      </v-row>
-      <v-row justify="center">
-        <v-col cols="5" md="4">
+        <v-col cols="5" md="3">
           <v-combobox
             v-model="roomType"
             item-text="Name"
@@ -20,8 +18,6 @@
             label="Room Type"
           ></v-combobox>
         </v-col>
-            <!-- :tick-labels="[0,1,2,3,4,5]" -->
-
         <v-col cols="4" md="3">
           <v-slider
             v-model="NumberOfCustomer"
@@ -31,11 +27,94 @@
             tick-size="4"
           ></v-slider>
         </v-col>
-        <v-col cols="1">
-          {{NumberOfCustomer}}人
-        </v-col>
+        <v-col cols="1"> {{ NumberOfCustomer }}人 </v-col>
       </v-row>
       <v-row justify="center">
+        <v-col cols="11" md="5">
+          <v-menu
+            ref="menu_start"
+            v-model="menu_start"
+            :close-on-content-click="false"
+            :return-value.sync="picker_start"
+            transition="scale-transition"
+            offset-y
+            max-width="290px"
+            min-width="290px"
+          >
+            <template v-slot:activator="{ on }">
+              <v-text-field
+                v-model="picker_start"
+                label="Check In"
+                prepend-icon="mdi-calendar"
+                readonly
+                v-on="on"
+              ></v-text-field>
+            </template>
+            <v-date-picker
+              v-model="picker_start"
+              :min="today"
+              :max="max_date"
+              no-title
+              scrollable
+            >
+              <v-spacer></v-spacer>
+              <v-btn text color="primary" @click="menu_start = false"
+                >Cancel</v-btn
+              >
+              <v-btn
+                text
+                color="primary"
+                @click="$refs.menu_start.save(picker_start)"
+                >OK</v-btn
+              >
+            </v-date-picker>
+          </v-menu>
+        </v-col>
+        <!-- <v-spacer></v-spacer> -->
+        <v-col cols="11" md="5">
+          <v-menu
+            ref="menu_end"
+            v-model="menu_end"
+            :close-on-content-click="false"
+            :return-value.sync="picker_end"
+            transition="scale-transition"
+            offset-y
+            max-width="290px"
+            min-width="290px"
+          >
+            <template v-slot:activator="{ on }">
+              <v-text-field
+                v-model="picker_end"
+                label="Check In"
+                prepend-icon="mdi-calendar"
+                readonly
+                v-on="on"
+              ></v-text-field>
+            </template>
+            <v-date-picker
+              v-model="picker_end"
+              :min="picker_start"
+              :max="max_date"
+              no-title
+              scrollable
+            >
+              <v-spacer></v-spacer>
+              <v-btn text color="primary" @click="menu_end = false"
+                >Cancel</v-btn
+              >
+              <v-btn
+                text
+                color="primary"
+                @click="$refs.menu_end.save(picker_end)"
+                >OK</v-btn
+              >
+            </v-date-picker>
+          </v-menu>
+        </v-col>
+      </v-row>
+      <v-row justify="star">
+        <v-col cols="1" sm="0"></v-col>
+
         <v-col cols="auto">
           <v-checkbox
             v-model="rating[0]"
@@ -71,28 +150,8 @@
             label="5 stars"
           ></v-checkbox>
         </v-col>
-        <!-- <v-col cols="11" md="8">
-            <v-rating v-model="rating"></v-rating>
-        </v-col> -->
       </v-row>
-      <v-row justify="center">
-        <v-col cols="auto">
-          <v-date-picker
-            v-model="picker_start"
-            :min="today"
-            :max="max_date"
-          ></v-date-picker>
-        </v-col>
-        <v-col cols="auto">
-          <v-date-picker
-            v-model="picker_end"
-            :min="picker_start"
-            :max="max_date"
-          ></v-date-picker>
-        </v-col>
-      </v-row>
-
-      <v-row justify="end">
+         <v-row justify="end">
         <v-col cols="auto">
           <v-btn
             :disabled="!valid"
@@ -119,16 +178,19 @@ export default {
   name: "search",
   components: {},
   data: () => ({
+    menu_start: false,
+    menu_end: false,
     picker_start: new Date().toISOString().substr(0, 10),
     picker_end: new Date().toISOString().substr(0, 10),
     today: new Date().toISOString().substr(0, 10),
     valid: true,
     NumberOfCustomer: 0,
-    roomType: {"Name":"Single", "Limit":1},
+    roomType: { Name: "Single", Limit: 1 },
     roomTypeList: [
-      {"Name":"Single", "Limit":1},
-      {"Name":"Double", "Limit":2},
-      {"Name":"Quad", "Limit":4}],
+      { Name: "Single", Limit: 1 },
+      { Name: "Double", Limit: 2 },
+      { Name: "Quad", Limit: 4 }
+    ],
     location: "",
     locationList: ["台北", "台中", "台南", "高雄", "花蓮", "台東", "宜蘭"],
     rating: []
@@ -143,9 +205,9 @@ export default {
         vm.picker_end = vm.picker_start;
       }
     },
-    rating(){
+    rating() {
       var vm = this;
-      console.log(vm.rating)
+      console.log(vm.rating);
     }
   },
   computed: {

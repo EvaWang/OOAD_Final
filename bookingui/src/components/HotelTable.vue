@@ -1,4 +1,6 @@
 <template>
+    <!-- :search="search" -->
+
   <v-data-table
     :headers="headers"
     :items="items"
@@ -7,7 +9,6 @@
     item-key="name"
     show-expand
     class="elevation-1"
-    :search="search"
     :loading="isLoading"
     loading-text="Loading... Please wait"
     :server-items-length="pageLength"
@@ -17,7 +18,7 @@
         <v-toolbar-title>Hotels</v-toolbar-title>
         <v-spacer></v-spacer>
       </v-toolbar>
-      <v-text-field v-model="search" label="Search" class="mx-4"></v-text-field>
+      <!-- <v-text-field v-model="search" label="Search" class="mx-4"></v-text-field> -->
     </template>
     <template v-slot:expanded-item="{ headers }">
       <td :colspan="headers.length">Peek-a-boo!</td>
@@ -51,7 +52,7 @@ export default {
   watch: {
     options: {
       handler() {
-        this.getHotelList();
+        // this.getHotelList();
       },
       deep: true
     },
@@ -92,7 +93,7 @@ export default {
     }
   },
   mounted: function() {
-    // this.getHotelList();
+    this.getHotelList();
   }
 };
 </script>
