@@ -5,7 +5,10 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    userInfo: { signedIn: false }
+    userInfo: { signedIn: false },
+    searchCondition:{
+      
+    }
   },
   mutations: {
     userInfoChange(state, user){

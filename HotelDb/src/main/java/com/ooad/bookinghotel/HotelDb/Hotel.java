@@ -24,6 +24,24 @@ public class Hotel extends BaseDbo {
     @Column(updatable = false, nullable = false)
     private Integer jsonFileId;
 
+    @Transient
+    private Integer SingleRoom;
+
+    @Transient
+    private Double SingleRoomPrice;
+
+    @Transient
+    private Integer DoubleRoom;
+
+    @Transient
+    private Double DoubleRoomPrice;
+
+    @Transient
+    private Integer QuadRoom;
+
+    @Transient
+    private Double QuadRoomPrice;
+
     public Integer getId() {
         return id;
     }
@@ -71,4 +89,5 @@ public class Hotel extends BaseDbo {
     public void setJsonFileId(Integer jsonFileId) {
         this.jsonFileId = jsonFileId;
     }
+
 }

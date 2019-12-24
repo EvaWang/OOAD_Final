@@ -23,9 +23,31 @@ public class HotelController {
 
     @CrossOrigin(origins = "http://localhost:8081")
     @GetMapping(path="/all")
-    public @ResponseBody Iterable<Hotel> getAllUsers() {
-        // This returns a JSON or XML with the users
-        return hotelRepository.findAll();
+    public @ResponseBody
+    Iterable<Hotel> getAllHotels(@RequestParam("page") int page,
+                                    @RequestParam("size") int size,
+                                 @RequestParam(value = "sortKey", required = false) String sortKey,
+                                 @RequestParam(value = "sortDesc", required = false) Boolean sortDesc,
+                                 @RequestParam(value = "search", required = false) String search) {
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        if(sortKey != null && sortKey.isEmpty()==false ){
+            Sort sort = Sort.by(sortKey);
+            if(sortDesc){
+                sort = sort.descending();
+            }else {
+                sort = sort.ascending();
+            }
+
+            pageable = PageRequest.of(page, size, sort);
+        }
+
+        if(search != null && search.isEmpty()==false){
+            return hotelRepository.findAllDetail(search, pageable);
+        }else{
+            return hotelRepository.findAllDetail(pageable);
+        }
     }
 
 //    http://localhost:8080/Hotel/test?jsonFileId=5&roomIds=2854, 2852
