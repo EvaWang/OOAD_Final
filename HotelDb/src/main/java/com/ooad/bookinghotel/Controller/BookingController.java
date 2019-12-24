@@ -1,6 +1,10 @@
 package com.ooad.bookinghotel.Controller;
 
-import com.ooad.bookinghotel.HotelDb.*;
+import com.ooad.bookinghotel.HotelDb.Booking;
+import com.ooad.bookinghotel.HotelDb.BookingRepository;
+import com.ooad.bookinghotel.HotelDb.Ordering;
+import com.ooad.bookinghotel.HotelDb.OrderingRepository;
+import com.ooad.bookinghotel.HotelDb.HotelDbApplication;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,9 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -22,6 +24,9 @@ public class BookingController {
 
     @Autowired
     private BookingRepository bookingRepository;
+    @Autowired
+    private OrderingRepository orderingRepository;
+
 
 //    debug use
 //    @GetMapping("/all")
@@ -62,7 +67,6 @@ public class BookingController {
                 .orElseThrow(() -> new NotFoundException(id));
     }
 
-
     @PutMapping("/updateOne/{id}")
     Booking updateBooking(@RequestBody Booking newBooking, @PathVariable int id) {
 
@@ -73,5 +77,17 @@ public class BookingController {
                     return bookingRepository.save(updateBooking);
                 }).orElseThrow(() -> new NotFoundException(id));
 
+    }
+
+    @PostMapping(path="/testAdd", consumes = "application/json")
+    Ordering newOrdering(@RequestBody Map<String, String> orderingObj) throws ParseException {
+
+        Ordering newOrdering = new Ordering();
+//        newOrdering.setBookingId(Integer.parseInt(orderingObj.get("BookingId")));
+        newOrdering.setUserId(Integer.parseInt(orderingObj.get("UserId")));
+        newOrdering.setTotal(Integer.parseInt(orderingObj.get("Total")));
+        newOrdering.setDiscount(Double.parseDouble(orderingObj.get("Discount")));
+        newOrdering.setMemo(orderingObj.get("Memo"));
+        return orderingRepository.save(newOrdering);
     }
 }

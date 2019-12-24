@@ -12,22 +12,22 @@ public class Booking extends BaseDbo {
     private Integer id;
 
     @Column(updatable = false, nullable = false)
-    private Integer hotelId;
+    private Integer HotelId;
 
     @Column(updatable = false, nullable = false)
-    private Integer hotelRoomId;
+    private Integer HotelRoomId;
 
     @Column(updatable = false, nullable = false)
-    private Integer orderId;
+    private Integer OrderId;
 
     @Column(updatable = false, nullable = false)
-    private Date startDate;
+    private Date StartDate;
 
     @Column(updatable = false, nullable = false)
-    private Date endDate;
+    private Date EndDate;
 
     @Column(updatable = false, nullable = false)
-    private Boolean isDisabled;
+    private Boolean IsDisabled;
 
 
 
@@ -36,50 +36,50 @@ public class Booking extends BaseDbo {
     }
 
     public Integer getHotelId() {
-        return hotelId;
+        return HotelId;
     }
 
-    public void setHotelId(Integer hotelId) {
-        this.hotelId = hotelId;
+    public void setHotelId(Integer HotelId) {
+        this.HotelId = HotelId;
     }
 
     public Integer getHotelRoomId() {
-        return hotelRoomId;
+        return HotelRoomId;
     }
 
-    public void setHotelRoomId(Integer hotelRoomId) {
-        this.hotelRoomId = hotelRoomId;
+    public void setHotelRoomId(Integer HotelRoomId) {
+        this.HotelRoomId = HotelRoomId;
     }
 
     public Integer getOrderId() {
-        return orderId;
+        return OrderId;
     }
 
-    public void setOrderId(Integer orderId) {
-        this.orderId = orderId;
+    public void setOrderId(Integer OrderId) {
+        this.OrderId = OrderId;
     }
 
     public Date getStartDate() {
-        return startDate;
+        return StartDate;
     }
 
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
+    public void setStartDate(Date StartDate) {
+        this.StartDate = StartDate;
     }
 
     public Date getEndDate() {
-        return endDate;
+        return EndDate;
     }
 
-    public void setEndDate(Date endDate) {
-        this.endDate = endDate;
+    public void setEndDate(Date EndDate) {
+        this.EndDate = EndDate;
     }
 
     public Boolean getIsDisabled() {
-        return isDisabled;
+        return IsDisabled;
     }
 
-    public void setIsDisabled(Boolean isDisabled) {
-        this.isDisabled = isDisabled;
+    public void setIsDisabled(Boolean IsDisabled) {
+        this.IsDisabled = IsDisabled;
     }
 }
