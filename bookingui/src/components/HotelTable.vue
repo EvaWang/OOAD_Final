@@ -20,18 +20,24 @@
         :imgPath="require('../assets/single.jpg')"
         :Price="item.singleRoomPrice"
         :Quantity="item.singleRoom"
+        :HotelId = "item.id"
+        :RoomType="1"
         ></HotelDetail>
         <HotelDetail 
         :title="'Double Room'"
         :imgPath="require('../assets/double.jpg')"
         :Price="item.doubleRoomPrice"
         :Quantity="item.doubleRoom"
+        :HotelId = "item.id"
+        :RoomType="2"
         ></HotelDetail>
         <HotelDetail 
         :title="'Double Room'"
         :imgPath="require('../assets/quad.jpg')"
         :Price="item.quadRoomPrice"
         :Quantity="item.quadRoom"
+        :HotelId = "item.id"
+        :RoomType="4"
         ></HotelDetail>
       </td>
     </template>
@@ -88,7 +94,6 @@ export default {
     },
     searchCondition: {
       handler() {
-        console.log("watch searchCondition.");
         this.getHotelList();
       },
       deep: true

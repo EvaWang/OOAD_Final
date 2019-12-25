@@ -11,7 +11,13 @@
           width="40"
         />
 
-        <v-btn href="/" text contain min-width="100" class="shrink mt-1 hidden-sm-and-down headline">
+        <v-btn
+          href="/"
+          text
+          contain
+          min-width="100"
+          class="shrink mt-1 hidden-sm-and-down headline"
+        >
           <span class="mr-2">Barking.com</span>
         </v-btn>
       </div>
@@ -36,11 +42,11 @@
           </v-btn>
         </template>
         <v-list>
-          <v-list-item v-for="(item, index) in items" :key="index">
+          <!-- <v-list-item v-for="(item, index) in items" :key="index">
             <v-list-item-title>
               {{ item.title }}
             </v-list-item-title>
-          </v-list-item>
+          </v-list-item> -->
 
           <v-list-item>
             <v-btn text @click="signOut">
@@ -51,7 +57,15 @@
         </v-list>
       </v-menu>
 
-      <!-- href="login" -->
+      <v-btn text>
+        <span class="mr-2">Checkout</span>
+        <v-badge color="red" right>
+          <v-icon>mdi-shopping-outline</v-icon>
+          <template v-slot:badge>
+            {{ checkoutLen }}
+          </template>
+        </v-badge>
+      </v-btn>
       <v-btn
         text
         v-if="this.$store.state.userInfo.signedIn === false"
@@ -61,29 +75,18 @@
         <v-icon>mdi-login-variant</v-icon>
       </v-btn>
     </v-app-bar>
-
-    <!-- <div class="mt-12 mb-6"></div> -->
-    <router-view/>
+    <router-view />
   </v-app>
 </template>
 
 <script>
-// import HelloWorld from './components/HelloWorld';
+import { mapState } from "vuex";
 
 export default {
   name: "App",
-
-  components: {
-    // HelloWorld,
-  },
-
+  computed: mapState(["checkoutLen"]),
   data: () => ({
-    //
-    items: [
-      {
-        title: "測試測試"
-      }
-    ]
+    // CheckoutLength: 0
   }),
   methods: {
     signIn: function() {

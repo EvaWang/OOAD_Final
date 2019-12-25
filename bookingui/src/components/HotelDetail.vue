@@ -24,7 +24,7 @@
               </v-btn>
             </v-col>
             <v-col cols="12">
-              <v-btn text icon color="indigo">
+              <v-btn text icon color="indigo" @click="add2Cart">
                 <v-icon>mdi-cart-arrow-down</v-icon>
               </v-btn>
             </v-col>
@@ -42,9 +42,22 @@ export default {
       imgPath: String,
       Quantity: Number,
       Price: Number,
+      HotelId: Number,
+      RoomType: Number
   },
   data: () => ({
     //
-  })
+  }),
+  methods:{
+    add2Cart(){
+      var vm = this;
+      var newRoom = {
+        HotelId: vm.HotelId,
+        RoomType: vm.RoomType,
+        Price: vm.Price
+      }
+      vm.$store.commit("addCheckoutList", newRoom);
+    }
+  }
 };
 </script>
