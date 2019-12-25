@@ -71,18 +71,32 @@ export default {
     }
   },
   methods: {
+    starArray2list() {
+      var vm = this;
+      var starList = [];
+      if (vm.searchCondition.stars && vm.searchCondition.stars.length>0) {
+        for (var i = 0; i < 5; i++) {
+          if (vm.searchCondition.stars[i]) {
+            starList.push(i + 1);
+          }
+        }
+        return starList.join(",");
+      } else {
+        return null;
+      }
+    },
     getHotelList() {
       var vm = this;
       vm.search.page = vm.options.page;
       vm.search.size = vm.options.itemsPerPage;
       vm.search.sortKey = vm.options.sortBy[0];
       vm.search.sortDesc = vm.options.sortDesc[0];
-      vm.search.stars = "1,3";
+      vm.search.stars = vm.starArray2list();
       vm.search.locality = vm.searchCondition.locality;
       vm.search.roomType = vm.searchCondition.roomType;
       vm.search.startDate = vm.searchCondition.startDate;
       vm.search.endDate = vm.searchCondition.endDate;
-      
+
       vm.isLoading = true;
       vm.axios
         .get("Hotel/all", {
@@ -290,7 +304,7 @@ export default {
   },
   mounted: function() {
     // this.getHotelList();
-    this.fakeData();
+    // this.fakeData();
   }
 };
 </script>

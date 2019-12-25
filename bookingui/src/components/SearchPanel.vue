@@ -171,13 +171,6 @@
 export default {
   name: "search",
   components: {},
-  // props: {
-  //   locality: String,
-  //   stars: Array,
-  //   roomType: Number,
-  //   startDate: String,
-  //   endDate: String,
-  // },
   data: () => ({
     menu_start: false,
     menu_end: false,
@@ -191,7 +184,7 @@ export default {
       { Name: "Double", Limit: 2 },
       { Name: "Quad", Limit: 4 }
     ],
-    location: "",
+    location: null,
     locationList: ["台北", "台中", "台南", "高雄", "花蓮", "台東", "宜蘭"],
     rating: []
   }),
@@ -231,7 +224,6 @@ export default {
         startDate: vm.picker_start,
         endDate: vm.picker_end
       };
-      // console.log('commit searchConditionUpdate');
       vm.$store.commit("searchConditionUpdate", condition);
     }
   }
