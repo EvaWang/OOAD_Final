@@ -1,6 +1,6 @@
 <template>
   <div class="search">
-    <v-form ref="form" v-model="valid" lazy-validation>
+    <v-form ref="form" lazy-validation>
       <v-row justify="center">
         <v-col cols="10" md="3">
           <v-autocomplete
@@ -12,16 +12,16 @@
         </v-col>
         <v-col cols="5" md="3">
           <v-combobox
-            v-model="roomType"
+            v-model="selectRoomType"
             item-text="Name"
-            :items="roomTypeList"
+            :items="selectRoomTypeList"
             label="Room Type"
           ></v-combobox>
         </v-col>
         <v-col cols="4" md="3">
           <v-slider
             v-model="NumberOfCustomer"
-            :max="roomType.Limit"
+            :max="selectRoomType.Limit"
             step="1"
             ticks="always"
             tick-size="4"
@@ -112,11 +112,11 @@
           </v-menu>
         </v-col>
       </v-row>
-      <v-row justify="star">
+      <v-row justify="start">
         <v-col cols="1" sm="0"></v-col>
-
         <v-col cols="auto">
           <v-checkbox
+            true-value="1"
             v-model="rating[0]"
             class="mx-2"
             label="1 star"
@@ -151,14 +151,9 @@
           ></v-checkbox>
         </v-col>
       </v-row>
-         <v-row justify="end">
+      <v-row justify="end">
         <v-col cols="auto">
-          <v-btn
-            :disabled="!valid"
-            color="success"
-            class="mr-4"
-            @click="validate"
-          >
+          <v-btn color="success" class="mr-4" @click="seach">
             Search
           </v-btn>
           <v-btn color="error" class="mr-4" @click="reset">
@@ -177,16 +172,22 @@
 export default {
   name: "search",
   components: {},
+  // props: {
+  //   locality: String,
+  //   stars: Array,
+  //   roomType: Number,
+  //   startDate: String,
+  //   endDate: String,
+  // },
   data: () => ({
     menu_start: false,
     menu_end: false,
     picker_start: new Date().toISOString().substr(0, 10),
     picker_end: new Date().toISOString().substr(0, 10),
     today: new Date().toISOString().substr(0, 10),
-    valid: true,
-    NumberOfCustomer: 0,
-    roomType: { Name: "Single", Limit: 1 },
-    roomTypeList: [
+    NumberOfCustomer: 1,
+    selectRoomType: { Name: "Single", Limit: 1 },
+    selectRoomTypeList: [
       { Name: "Single", Limit: 1 },
       { Name: "Double", Limit: 2 },
       { Name: "Quad", Limit: 4 }
@@ -204,10 +205,6 @@ export default {
       if (endDate < starDate) {
         vm.picker_end = vm.picker_start;
       }
-    },
-    rating() {
-      var vm = this;
-      console.log(vm.rating);
     }
   },
   computed: {
@@ -223,16 +220,20 @@ export default {
     }
   },
   methods: {
-    validate() {
-      if (this.$refs.form.validate()) {
-        this.snackbar = true;
-      }
-    },
     reset() {
       this.$refs.form.reset();
     },
-    resetValidation() {
-      this.$refs.form.resetValidation();
+    seach() {
+      var vm = this;
+      var condition = {
+        locality: vm.location,
+        stars: vm.rating,
+        roomType: vm.selectRoomType.Limit,
+        startDate: vm.picker_start,
+        endDate: vm.picker_end
+      };
+      // console.log('commit searchConditionUpdate');
+      vm.$store.commit("searchConditionUpdate", condition);
     }
   }
 };

@@ -13,6 +13,9 @@ export default new Vuex.Store({
   mutations: {
     userInfoChange(state, user){
       state.userInfo.signedIn = user;
+    },
+    searchConditionUpdate(state, newCondition){
+      state.searchCondition = newCondition
     }
   },
   actions: {
