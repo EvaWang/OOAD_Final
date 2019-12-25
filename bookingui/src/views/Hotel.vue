@@ -1,24 +1,20 @@
 <template>
   <v-container class="fluid">
-    <v-row justify="center">
-      <v-expansion-panels>
-        <v-expansion-panel>
-          <v-expansion-panel-header>Search</v-expansion-panel-header>
-          <v-expansion-panel-content>
-            <SearchPanel></SearchPanel>
-          </v-expansion-panel-content>
-        </v-expansion-panel>
-      </v-expansion-panels>
+    <v-row class="hotel-container">
+      <v-col cols="12" md="4">
+        <SearchPanel></SearchPanel>
+      </v-col>
+      <v-col cols="12" md="8">
+        <HotelTable></HotelTable>
+      </v-col>
     </v-row>
-       <!-- :stars="[1, 2]" 
-    :locality="locality"
-    :roomType="roomType"
-    :startDate="startDate"
-    :endDate="endDate" -->
-    <HotelTable></HotelTable>
   </v-container>
 </template>
-
+<style scoped>
+  .hotel-container{
+    margin-top: 48px;
+  }
+</style>
 <script>
 import HotelTable from "@/components/HotelTable";
 import SearchPanel from "@/components/SearchPanel.vue";
@@ -30,21 +26,8 @@ export default {
     SearchPanel
   },
   data: () => ({
-    locality:"",
-    stars:[],
-    startDate:"",
-    roomType:1,
-    endDate:"",
-    items: [
-      {
-        title: "測試測試"
-      }
-    ]
   }),
   methods: {
-    // searchClick(val){
-    //   console.log(val)
-    // }
   }
 };
 </script>

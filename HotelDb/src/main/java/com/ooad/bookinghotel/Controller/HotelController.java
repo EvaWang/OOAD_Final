@@ -53,21 +53,29 @@ public class HotelController {
 
 
         try {
-            startDate = formatter1.parse(startDateObj);
+            if(startDateObj!=null){
+                startDate = formatter1.parse(startDateObj);
+            }
         } catch (ParseException e) {
             // do nothing
-            e.printStackTrace();
+//            e.printStackTrace();
         }
 
         try {
-            endDate = formatter1.parse(endDateObj);
+            if(endDateObj!=null){
+                endDate = formatter1.parse(endDateObj);
+            }
         } catch (ParseException e) {
             // do nothing
-            e.printStackTrace();
+//            e.printStackTrace();
         }
 
-        //TODO String to Date
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = null;
+        if(size<0){
+            pageable = PageRequest.of(0, Integer.MAX_VALUE);
+        }else {
+            pageable = PageRequest.of(page, size);
+        }
 
         if(sortKey != null && sortKey.isEmpty()==false ){
             Sort sort = Sort.by(sortKey);

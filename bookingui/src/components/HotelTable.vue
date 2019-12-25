@@ -1,5 +1,4 @@
 <template>
-  <!-- :search="search" -->
   <v-data-table
     :headers="headers"
     :items="items"
@@ -11,15 +10,9 @@
     class="elevation-1"
     :loading="isLoading"
     loading-text="Loading... Please wait"
+    :server-items-length="pageLength"
   >
-    <!-- :server-items-length="pageLength" -->
-    <template v-slot:top>
-      <!-- <v-toolbar flat>
-        <v-toolbar-title>Hotels</v-toolbar-title>
-        <v-spacer></v-spacer>
-      </v-toolbar> -->
-      <!-- <v-text-field v-model="search" label="Search" class="mx-4"></v-text-field> -->
-    </template>
+    <template v-slot:top> </template>
     <template v-slot:expanded-item="{ headers }">
       <td :colspan="headers.length">Peek-a-boo!</td>
     </template>
@@ -32,7 +25,17 @@ import { mapState } from "vuex";
 export default {
   data() {
     return {
-      search: "",
+      search: {
+        page: 0,
+        size: 10,
+        sortKey: "",
+        sortDesc: "",
+        stars: null,
+        locality: null,
+        roomType: null,
+        startDate: null,
+        endDate: null
+      },
       isLoading: true,
       headers: [
         {
@@ -54,23 +57,12 @@ export default {
   watch: {
     options: {
       handler() {
-        // this.getHotelList();
+        var vm = this;
+        vm.getHotelList();
       },
       deep: true
     },
-    search: {
-      handler() {
-        this.getHotelList();
-      }
-    },
     searchCondition: {
-  //     {
-  //   locality: String,
-  //   stars: Array,
-  //   roomType: Number,
-  //   startDate: String,
-  //   endDate: String,
-  // },
       handler() {
         console.log("watch searchCondition.");
         this.getHotelList();
@@ -81,20 +73,20 @@ export default {
   methods: {
     getHotelList() {
       var vm = this;
+      vm.search.page = vm.options.page;
+      vm.search.size = vm.options.itemsPerPage;
+      vm.search.sortKey = vm.options.sortBy[0];
+      vm.search.sortDesc = vm.options.sortDesc[0];
+      vm.search.stars = "1,3";
+      vm.search.locality = vm.searchCondition.locality;
+      vm.search.roomType = vm.searchCondition.roomType;
+      vm.search.startDate = vm.searchCondition.startDate;
+      vm.search.endDate = vm.searchCondition.endDate;
+      
       vm.isLoading = true;
       vm.axios
         .get("Hotel/all", {
-          params: {
-            page: vm.options.page,
-            size: vm.options.itemsPerPage,
-            sortKey: vm.options.sortBy[0],
-            sortDesc: vm.options.sortDesc[0],
-            stars: "1,3",
-            locality: vm.searchCondition.locality,
-            roomType: vm.searchCondition.roomType,
-            startDate: vm.searchCondition.startDate,
-            endDate: vm.searchCondition.endDate,
-          }
+          params: vm.search
         })
         .then(response => {
           vm.items = response.data.content;

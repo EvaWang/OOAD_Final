@@ -2,7 +2,7 @@
   <div class="search">
     <v-form ref="form" lazy-validation>
       <v-row justify="center">
-        <v-col cols="10" md="3">
+        <v-col cols="12">
           <v-autocomplete
             v-model="location"
             label="Location"
@@ -10,7 +10,7 @@
             required
           ></v-autocomplete>
         </v-col>
-        <v-col cols="5" md="3">
+        <v-col cols="6">
           <v-combobox
             v-model="selectRoomType"
             item-text="Name"
@@ -18,7 +18,7 @@
             label="Room Type"
           ></v-combobox>
         </v-col>
-        <v-col cols="4" md="3">
+        <v-col cols="">
           <v-slider
             v-model="NumberOfCustomer"
             :max="selectRoomType.Limit"
@@ -30,7 +30,7 @@
         <v-col cols="1"> {{ NumberOfCustomer }}人 </v-col>
       </v-row>
       <v-row justify="center">
-        <v-col cols="11" md="5">
+        <v-col cols="12" md="6">
           <v-menu
             ref="menu_start"
             v-model="menu_start"
@@ -71,7 +71,7 @@
           </v-menu>
         </v-col>
         <!-- <v-spacer></v-spacer> -->
-        <v-col cols="11" md="5">
+        <v-col cols="12" md="6">
           <v-menu
             ref="menu_end"
             v-model="menu_end"
@@ -113,7 +113,6 @@
         </v-col>
       </v-row>
       <v-row justify="start">
-        <v-col cols="1" sm="0"></v-col>
         <v-col cols="auto">
           <v-checkbox
             true-value="1"

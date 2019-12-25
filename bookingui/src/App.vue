@@ -62,7 +62,7 @@
       </v-btn>
     </v-app-bar>
 
-    <div class="mt-12 mb-6"></div>
+    <!-- <div class="mt-12 mb-6"></div> -->
     <router-view/>
   </v-app>
 </template>
