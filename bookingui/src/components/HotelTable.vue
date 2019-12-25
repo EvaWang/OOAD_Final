@@ -13,16 +13,40 @@
     :server-items-length="pageLength"
   >
     <template v-slot:top> </template>
-    <template v-slot:expanded-item="{ headers }">
-      <td :colspan="headers.length">Peek-a-boo!</td>
+    <template v-slot:expanded-item="{ headers, item }">
+      <td :colspan="headers.length">
+        <HotelDetail 
+        :title="'Single Room'"
+        :imgPath="require('../assets/single.jpg')"
+        :Price="item.singleRoomPrice"
+        :Quantity="item.singleRoom"
+        ></HotelDetail>
+        <HotelDetail 
+        :title="'Double Room'"
+        :imgPath="require('../assets/double.jpg')"
+        :Price="item.doubleRoomPrice"
+        :Quantity="item.doubleRoom"
+        ></HotelDetail>
+        <HotelDetail 
+        :title="'Double Room'"
+        :imgPath="require('../assets/quad.jpg')"
+        :Price="item.quadRoomPrice"
+        :Quantity="item.quadRoom"
+        ></HotelDetail>
+      </td>
     </template>
   </v-data-table>
 </template>
 
 <script>
 import { mapState } from "vuex";
+import HotelDetail from "@/components/HotelDetail";
 
 export default {
+  name:"HotelTable",
+  components: {
+    HotelDetail,
+  },
   data() {
     return {
       search: {
@@ -74,7 +98,7 @@ export default {
     starArray2list() {
       var vm = this;
       var starList = [];
-      if (vm.searchCondition.stars && vm.searchCondition.stars.length>0) {
+      if (vm.searchCondition.stars && vm.searchCondition.stars.length > 0) {
         for (var i = 0; i < 5; i++) {
           if (vm.searchCondition.stars[i]) {
             starList.push(i + 1);
