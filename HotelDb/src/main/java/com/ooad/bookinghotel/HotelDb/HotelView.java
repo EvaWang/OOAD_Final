@@ -1,11 +1,16 @@
 package com.ooad.bookinghotel.HotelDb;
 
+
+import org.springframework.data.annotation.Immutable;
+
 import javax.persistence.*;
 
+@Immutable
 @Entity // This tells Hibernate to make a table out of this class
-public class Hotel extends BaseDbo {
+@Table(name="hotel_info")
+public class HotelView extends BaseDbo {
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy= GenerationType.AUTO)
     @Column(updatable = false, nullable = false)
     private Integer id;
 
@@ -24,7 +29,25 @@ public class Hotel extends BaseDbo {
     @Column(updatable = false, nullable = false)
     private Integer jsonFileId;
 
+    @Column
+    private Integer singleRoom;
 
+    @Column
+    private Double singleRoomPrice;
+
+    @Column
+    private Integer doubleRoom;
+
+    @Column
+    private Double doubleRoomPrice;
+
+    @Column
+    private Integer quadRoom;
+
+    @Column
+    private Double quadRoomPrice;
+
+    @Column
     public Integer getId() {
         return id;
     }
@@ -73,4 +96,51 @@ public class Hotel extends BaseDbo {
         this.jsonFileId = jsonFileId;
     }
 
+    public Integer getSingleRoom() {
+        return singleRoom;
+    }
+
+    public void setSingleRoom(Integer singleRoom) {
+        this.singleRoom = singleRoom;
+    }
+
+    public Double getSingleRoomPrice() {
+        return singleRoomPrice;
+    }
+
+    public void setSingleRoomPrice(Double singleRoomPrice) {
+        this.singleRoomPrice = singleRoomPrice;
+    }
+
+    public Integer getDoubleRoom() {
+        return doubleRoom;
+    }
+
+    public void setDoubleRoom(Integer doubleRoom) {
+        this.doubleRoom = doubleRoom;
+    }
+
+    public Double getDoubleRoomPrice() {
+        return doubleRoomPrice;
+    }
+
+    public void setDoubleRoomPrice(Double doubleRoomPrice){
+        this.doubleRoomPrice = doubleRoomPrice;
+    }
+
+    public Integer getQuadRoom() {
+        return quadRoom;
+    }
+
+    public void setQuadRoom(Integer quadRoom) {
+        this.quadRoom = quadRoom;
+    }
+
+    public Double getQuadRoomPrice() {
+        return quadRoomPrice;
+    }
+
+    public void setQuadRoomPrice(Double quadRoomPrice) {
+        this.quadRoomPrice = quadRoomPrice;
+    }
 }

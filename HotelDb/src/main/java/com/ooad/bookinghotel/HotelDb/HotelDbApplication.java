@@ -166,12 +166,12 @@ public class HotelDbApplication implements CommandLineRunner {
 		jdbcTemplate.execute("CREATE OR REPLACE VIEW hotel_info  AS " +
 				" select " +
 				" hotel.id, hotel.star, hotel.locality, hotel.address, hotel.json_file_id, hotel.name, hotel.create_time, hotel.update_time," +
-				" sum(CASE WHEN hotel_room.room_type =1 THEN hotel_room.quantity ELSE 0 END) AS SingleRoom, " +
-				" sum(CASE WHEN hotel_room.room_type =1 THEN hotel_room.price ELSE 0 END) AS SingleRoomPrice, " +
-				" sum(CASE WHEN hotel_room.room_type =2 THEN hotel_room.quantity ELSE 0 END) AS DoubleRoom,  " +
-				" sum(CASE WHEN hotel_room.room_type =2 THEN hotel_room.price ELSE 0 END) AS DoubleRoomPrice, " +
-				" sum(CASE WHEN hotel_room.room_type =4 THEN hotel_room.quantity ELSE 0 END) AS QuadRoom, " +
-				" sum(CASE WHEN hotel_room.room_type =4 THEN hotel_room.price ELSE 0 END) AS QuadRoomPrice " +
+				" sum(CASE WHEN hotel_room.room_type =1 THEN hotel_room.quantity ELSE 0 END) AS single_room, " +
+				" sum(CASE WHEN hotel_room.room_type =1 THEN hotel_room.price ELSE 0 END) AS single_room_price, " +
+				" sum(CASE WHEN hotel_room.room_type =2 THEN hotel_room.quantity ELSE 0 END) AS double_room,  " +
+				" sum(CASE WHEN hotel_room.room_type =2 THEN hotel_room.price ELSE 0 END) AS double_room_price, " +
+				" sum(CASE WHEN hotel_room.room_type =4 THEN hotel_room.quantity ELSE 0 END) AS quad_room, " +
+				" sum(CASE WHEN hotel_room.room_type =4 THEN hotel_room.price ELSE 0 END) AS quad_room_price " +
 				" from hotel  " +
 				" inner join hotel_room on hotel_id = hotel.json_File_id " +
 				" where hotel_room.quantity > 0 " +

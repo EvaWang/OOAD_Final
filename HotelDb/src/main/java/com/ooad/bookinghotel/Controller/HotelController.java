@@ -2,6 +2,7 @@ package com.ooad.bookinghotel.Controller;
 
 import com.ooad.bookinghotel.HotelDb.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -11,6 +12,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 @Controller    // This means that this class is a Controller
@@ -18,19 +23,50 @@ import java.util.List;
 public class HotelController {
 
     @Autowired
-    private HotelRepository hotelRepository;
+    private HotelViewRepository hotelRepository;
 
     @Autowired
     private HotelRoomRepository hotelRoomRepository;
 
     @GetMapping(path="/all")
     public @ResponseBody
-    Iterable<Hotel> getAllHotels(@RequestParam("page") int page,
-                                    @RequestParam("size") int size,
+    Iterable<HotelView> getAllHotels(@RequestParam(value = "stars", required = false) List<Integer> stars,
+                                 @RequestParam(value = "locality", required = false) String locality,
+                                 @RequestParam(value = "roomType", required = false) Integer roomType,
+                                 @RequestParam(value = "startDate", required = false) String startDateObj,
+                                 @RequestParam(value = "endDate", required = false) String endDateObj,
+                                 @RequestParam("page") int page,
+                                 @RequestParam(value = "size", defaultValue = "10") int size,
                                  @RequestParam(value = "sortKey", required = false) String sortKey,
-                                 @RequestParam(value = "sortDesc", required = false) Boolean sortDesc,
-                                 @RequestParam(value = "search", required = false) String search) {
+                                 @RequestParam(value = "sortDesc", required = false) Boolean sortDesc) {
 
+        SimpleDateFormat formatter1 = new SimpleDateFormat("yyyy-MM-dd");
+
+        Calendar calendar = Calendar.getInstance();
+        // today
+        Date startDate = calendar.getTime();
+        System.out.println(startDate);
+
+        calendar.add(Calendar.MONTH, 3);
+        Date endDate = calendar.getTime();
+        System.out.println(endDate);
+
+
+        try {
+            startDate = formatter1.parse(startDateObj);
+        } catch (ParseException e) {
+            // do nothing
+            e.printStackTrace();
+        }
+
+        try {
+            endDate = formatter1.parse(endDateObj);
+        } catch (ParseException e) {
+            // do nothing
+            e.printStackTrace();
+        }
+
+        //TODO String to Date
         Pageable pageable = PageRequest.of(page, size);
 
         if(sortKey != null && sortKey.isEmpty()==false ){
@@ -44,12 +80,25 @@ public class HotelController {
             pageable = PageRequest.of(page, size, sort);
         }
 
-        if(search != null && search.isEmpty()==false){
-            return hotelRepository.findAllDetail(search, pageable);
-        }else{
-            return hotelRepository.findAll(pageable);
-        }
+        Boolean filterStar = stars!=null && stars.size()>0;
+
+        return hotelRepository.searchHotel(filterStar, stars, locality, roomType, startDate, endDate, pageable);
     }
+
+//    @GetMapping(path="/search")
+//    public @ResponseBody
+//    Page<Hotel> test(@RequestParam(value = "stars", required = false) List<Integer> stars,
+//                     @RequestParam(value = "locality", required = false) String locality,
+//                     @RequestParam(value = "roomType", required = false) Integer roomType,
+//                     @RequestParam(value = "startDate", required = false) Date startDate,
+//                     @RequestParam(value = "endDate", required = false) Date endDate,
+//                     @RequestParam("page") int page,
+//                     @RequestParam(value = "size", defaultValue = "10") int size) {
+//
+//        Pageable pageable = PageRequest.of(page, size);
+//
+//        return hotelRepository.searchHotel(stars, locality, roomType, startDate, endDate, pageable);
+//    }
 
 //    http://localhost:8080/Hotel/test?jsonFileId=5&roomIds=2854, 2852
     @GetMapping(path="/test")
@@ -58,6 +107,4 @@ public class HotelController {
         // This returns a JSON or XML with the users
         return hotelRoomRepository.findByRoomIds(roomIds, jsonFileId);
     }
-
-
 }
