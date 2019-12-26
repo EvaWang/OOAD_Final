@@ -20,15 +20,14 @@ public class Booking extends BaseDbo {
     @Column(updatable = false, nullable = false)
     private Integer orderId;
 
-    @Column(updatable = false, nullable = false)
+    @Column(updatable = false,nullable = false)
     private Date startDate;
 
-    @Column(updatable = false, nullable = false)
+    @Column(updatable = false,nullable = false)
     private Date endDate;
 
-    @Column(updatable = false, nullable = false)
+    @Column(nullable = false)
     private Boolean isDisabled;
-
 
 
     public Integer getId() {

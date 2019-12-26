@@ -9,6 +9,8 @@ public class Ordering extends BaseDbo{
     @Column(updatable = false, nullable = false)
     private Integer id;
 
+    @Column(nullable = false)
+    private Boolean isDisabled;
     //@Column(updatable = false, nullable = false)
     //private Integer BookingId;
 
@@ -45,4 +47,8 @@ public class Ordering extends BaseDbo{
     public String getMemo() { return Memo;}
 
     public void setMemo(String Memo) { this.Memo = Memo; }
+
+    public Boolean getIsDisabled() { return isDisabled; }
+
+    public void setIsDisabled(Boolean isDisabled) { this.isDisabled = isDisabled; }
 }

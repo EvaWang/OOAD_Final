@@ -50,7 +50,8 @@ public class OrderingController {
     }
     
     @PutMapping("/updateOne/{id}")
-    Ordering updateOrdering(@RequestBody Ordering newordering,@PathVariable int id) {
+    Ordering updateOrderingByInformation(@RequestBody Ordering newordering,@PathVariable int id) {
+
         return orderingRepository.findById(id)
                 .map(updateOrdering -> {
                     updateOrdering.setDiscount(newordering.getDiscount());
@@ -121,5 +122,54 @@ public class OrderingController {
         return newOrdering;
     }
 
+    @PostMapping("/updateOne/{id}")
+    Ordering updateOrderingByBooking(@RequestBody Map<String, String> orderingObj,@PathVariable int id) throws ParseException {
+        SimpleDateFormat formatter1 = new SimpleDateFormat("yyyy-MM-dd");
+
+        //Get information "startDate"
+        Date startDate = formatter1.parse(orderingObj.get("StartDate"));
+
+        //Get information "endDate"
+        Date endDate = formatter1.parse(orderingObj.get("EndDate"));
+
+        //Get System Date
+        Date now = formatter1.parse(orderingObj.get(new Date()));
+
+        Ordering originalOrdering = new Ordering();
+
+        //The order has been disabled
+        if (originalOrdering.getIsDisabled() == true) {
+            return originalOrdering;
+        }
+
+        //If startDate is over than endDate,then stop modifying
+        if (startDate.compareTo(endDate) > 0) {
+            return originalOrdering;
+        }
+        if (startDate.compareTo(now) < 0) {
+            return  originalOrdering;
+        }
+
+        List<Booking> BookingList = bookingRepository.findByOrderId(id);
+
+        ArrayList bookingArray = new ArrayList();
+
+        for (Booking Book : BookingList) {
+            if (Book.getIsDisabled() == false) {
+                Booking newBooking = new Booking();
+                newBooking.setStartDate(startDate);
+                newBooking.setEndDate(endDate);
+                newBooking.setOrderId(Book.getOrderId());
+                newBooking.setHotelId(Book.getHotelId());
+                newBooking.setHotelRoomId(Book.getHotelRoomId());
+                newBooking.setIsDisabled(Book.getIsDisabled());
+                Book.setIsDisabled(true);
+                bookingArray.add(newBooking);
+            }
+        }
+
+        bookingRepository.saveAll(bookingArray);
+        return originalOrdering;
+    }
 
 }
