@@ -42,19 +42,14 @@ public class BookingController {
 //            "IsDisabled": false
 //    }
     @PostMapping(path="/add", consumes = "application/json")
-    Booking newBooking(@RequestBody Map<String, String> bookingObj) throws ParseException {
-
-        SimpleDateFormat formatter1 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-        Date startDate = formatter1.parse(bookingObj.get("StartDate"));
-        Date endDate = formatter1.parse(bookingObj.get("EndDate"));
-
+    Booking newBooking(@RequestBody Map<String, String> bookingObj)  {
         Booking newBooking = new Booking();
         newBooking.setHotelId(Integer.parseInt(bookingObj.get("HotelId")));
         newBooking.setOrderId(Integer.parseInt(bookingObj.get("OrderId")));
         newBooking.setHotelRoomId(Integer.parseInt(bookingObj.get("HotelRoomId")));
         newBooking.setIsDisabled(Boolean.getBoolean(bookingObj.get("IsDisabled")));
-        newBooking.setStartDate(startDate);
-        newBooking.setEndDate(endDate);
+        //newBooking.setStartDate(startDate);
+        //newBooking.setEndDate(endDate);
         return bookingRepository.save(newBooking);
     }
 
@@ -65,7 +60,7 @@ public class BookingController {
                 .orElseThrow(() -> new NotFoundException(id));
     }
 
-    @PutMapping("/updateOne/{id}")
+    /*@PutMapping("/updateOne/{id}")
     Booking updateBooking(@RequestBody Booking newBooking, @PathVariable int id) {
 
         return bookingRepository.findById(id)
@@ -75,6 +70,6 @@ public class BookingController {
                     return bookingRepository.save(updateBooking);
                 }).orElseThrow(() -> new NotFoundException(id));
 
-    }
+    }*/
 
 }

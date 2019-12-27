@@ -22,6 +22,19 @@ public class OrderingController {
     @Autowired
     private HotelRoomRepository hotelRoomRepository;
 
+    public Boolean CheckLegalDateRegion (Date StartDate,Date EndDate) {
+        Date now = new Date();
+        if (StartDate.compareTo(EndDate) > 0) {
+            System.out.println("Illegal time region");
+            return false;
+        } else if (StartDate.compareTo(now) < 0) {
+            System.out.println(StartDate + " have passed");
+            return false;
+        } else {
+            return true;
+        }
+    }
+
 //    @PostMapping(path="/add", consumes = "application/json")
 //    Ordering newordering (@RequestBody Map<String, String> OrderingObj) throws ParseException {
 //
@@ -72,6 +85,8 @@ public class OrderingController {
         Ordering newOrdering = new Ordering();
         newOrdering.setUserId(Integer.parseInt(orderingObj.get("UserId")));
         newOrdering.setDiscount(Double.parseDouble(orderingObj.get("Discount")));
+        newOrdering.setStartDate(startDate);
+        newOrdering.setEndDate(endDate);
         newOrdering.setMemo(orderingObj.get("Memo"));
         //return OrderingRepository.findByHotelIdAndRoomType(HotelId, RoomType)
         //       .orElseThrow(() -> new NotFoundException(HotelId, RoomType));
@@ -102,7 +117,11 @@ public class OrderingController {
             Total = Total + roomPrice;
         }
 
-        newOrdering.setTotal(Total);
+        Long days = (endDate.getTime() - startDate.getTime())/(24*60*60*1000);
+
+        int Days = Math.toIntExact(days);
+
+        newOrdering.setTotal(Total*Days);
         newOrdering = orderingRepository.save(newOrdering);
 
         for(String roomId: roomIdList){
@@ -110,8 +129,8 @@ public class OrderingController {
             newBooking.setHotelId(hotelId);
             newBooking.setHotelRoomId(Integer.parseInt(roomId));
             newBooking.setOrderId(newOrdering.getId());
-            newBooking.setStartDate(startDate);
-            newBooking.setEndDate(endDate);
+            //newBooking.setStartDate(startDate);
+            //newBooking.setEndDate(endDate);
             newBooking.setIsDisabled(Boolean.getBoolean(orderingObj.get("IsDisabled")));
             //bookingRepository.save(newBooking);
             bookingArray.add(newBooking);
@@ -123,7 +142,7 @@ public class OrderingController {
     }
 
     @PostMapping("/updateOne/{id}")
-    Ordering updateOrderingByBooking(@RequestBody Map<String, String> orderingObj,@PathVariable int id) throws ParseException {
+    Ordering updateOrderingByDate(@RequestBody Map<String, String> orderingObj,@PathVariable int id) throws ParseException {
         SimpleDateFormat formatter1 = new SimpleDateFormat("yyyy-MM-dd");
 
         //Get information "startDate"
@@ -133,42 +152,57 @@ public class OrderingController {
         Date endDate = formatter1.parse(orderingObj.get("EndDate"));
 
         //Get System Date
-        Date now = formatter1.parse(orderingObj.get(new Date()));
+        //Date now = formatter1.parse(orderingObj.get(new Date()));
 
-        Ordering originalOrdering = new Ordering();
+        Ordering originalOrdering = orderingRepository.findById(id).get();
 
         //The order has been disabled
         if (originalOrdering.getIsDisabled() == true) {
             return originalOrdering;
         }
 
-        //If startDate is over than endDate,then stop modifying
-        if (startDate.compareTo(endDate) > 0) {
+        if (CheckLegalDateRegion(startDate,endDate) == false) {
             return originalOrdering;
         }
-        if (startDate.compareTo(now) < 0) {
-            return  originalOrdering;
-        }
 
-        List<Booking> BookingList = bookingRepository.findByOrderId(id);
+        Date originalStartDate = originalOrdering.getStartDate();
+        Date originalEndDate = originalOrdering.getEndDate();
 
-        ArrayList bookingArray = new ArrayList();
+        Long originaldays = (originalEndDate.getTime() - originalStartDate.getTime())/(24*60*60*1000);
 
-        for (Booking Book : BookingList) {
+        int originalDays = Math.toIntExact(originaldays);
+
+        originalOrdering.setStartDate(startDate);
+        originalOrdering.setEndDate(endDate);
+
+        Long days = (endDate.getTime() - startDate.getTime())/(24*60*60*1000);
+
+        int newDays = Math.toIntExact(days);
+
+        Integer originalTotal = originalOrdering.getTotal();
+
+        Integer newTotal = originalTotal*newDays/originalDays;
+
+        originalOrdering.setTotal(newTotal);
+
+        /*for (Booking Book : BookingList) {
             if (Book.getIsDisabled() == false) {
                 Booking newBooking = new Booking();
-                newBooking.setStartDate(startDate);
-                newBooking.setEndDate(endDate);
                 newBooking.setOrderId(Book.getOrderId());
                 newBooking.setHotelId(Book.getHotelId());
                 newBooking.setHotelRoomId(Book.getHotelRoomId());
                 newBooking.setIsDisabled(Book.getIsDisabled());
                 Book.setIsDisabled(true);
                 bookingArray.add(newBooking);
+            } else {
+                BookingList.remove(Book);
             }
-        }
+        }*/
 
-        bookingRepository.saveAll(bookingArray);
+        orderingRepository.save(originalOrdering);
+
+
+
         return originalOrdering;
     }
 

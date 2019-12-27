@@ -1,6 +1,9 @@
 package com.ooad.bookinghotel.HotelDb;
 
 import javax.persistence.*;
+import java.text.ParseException;
+import java.util.Date;
+import java.text.SimpleDateFormat;
 
 @Entity // This tells Hibernate to make a table out of this class
 public class Ordering extends BaseDbo{
@@ -13,6 +16,12 @@ public class Ordering extends BaseDbo{
     private Boolean isDisabled;
     //@Column(updatable = false, nullable = false)
     //private Integer BookingId;
+
+    @Column(nullable = false)
+    private Date startDate;
+
+    @Column(nullable = false)
+    private Date endDate;
 
     @Column(updatable = false, nullable = false)
     private Integer userId;
@@ -47,6 +56,22 @@ public class Ordering extends BaseDbo{
     public String getMemo() { return Memo;}
 
     public void setMemo(String Memo) { this.Memo = Memo; }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
+    }
 
     public Boolean getIsDisabled() { return isDisabled; }
 

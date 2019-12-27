@@ -20,11 +20,7 @@ public class Booking extends BaseDbo {
     @Column(updatable = false, nullable = false)
     private Integer orderId;
 
-    @Column(updatable = false,nullable = false)
-    private Date startDate;
 
-    @Column(updatable = false,nullable = false)
-    private Date endDate;
 
     @Column(nullable = false)
     private Boolean isDisabled;
@@ -56,22 +52,6 @@ public class Booking extends BaseDbo {
 
     public void setOrderId(Integer orderId) {
         this.orderId = orderId;
-    }
-
-    public Date getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
-    }
-
-    public Date getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(Date endDate) {
-        this.endDate = endDate;
     }
 
     public Boolean getIsDisabled() {
