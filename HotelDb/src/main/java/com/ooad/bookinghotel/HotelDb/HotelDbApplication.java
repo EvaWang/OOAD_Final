@@ -18,10 +18,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import java.io.File;
 import java.nio.file.Files;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @SpringBootApplication
@@ -163,44 +160,99 @@ public class HotelDbApplication implements CommandLineRunner {
 	private void UpdateSchema(){
 		log.info("Update Schema.");
 
-		jdbcTemplate.execute("CREATE OR REPLACE VIEW hotel_info  AS " +
-				" select " +
-				" hotel.id, hotel.star, hotel.locality, hotel.address, hotel.json_file_id, hotel.name, hotel.create_time, hotel.update_time," +
-				" sum(CASE WHEN hotel_room.room_type =1 THEN hotel_room.quantity ELSE 0 END) AS single_room, " +
-				" sum(CASE WHEN hotel_room.room_type =1 THEN hotel_room.price ELSE 0 END) AS single_room_price, " +
-				" sum(CASE WHEN hotel_room.room_type =2 THEN hotel_room.quantity ELSE 0 END) AS double_room,  " +
-				" sum(CASE WHEN hotel_room.room_type =2 THEN hotel_room.price ELSE 0 END) AS double_room_price, " +
-				" sum(CASE WHEN hotel_room.room_type =4 THEN hotel_room.quantity ELSE 0 END) AS quad_room, " +
-				" sum(CASE WHEN hotel_room.room_type =4 THEN hotel_room.price ELSE 0 END) AS quad_room_price " +
-				" from hotel  " +
-				" inner join hotel_room on hotel_id = hotel.json_File_id " +
-				" where hotel_room.quantity > 0 " +
-				" group by hotel.id, hotel.star, hotel.locality, hotel.address, hotel.json_file_id, hotel.name ");
-
-		try{
-			jdbcTemplate.execute("ALTER TABLE hotel DROP INDEX hotel_unique_index;");
-		}catch (Exception e){
-			e.printStackTrace();
-			log.info("hotel_unique_index DOES NOT EXIST.");
+		String table_name_ints = "ints";
+		List<Map<String, Object>> check_ints = jdbcTemplate.queryForList("show tables like '"+ table_name_ints +"';");
+		System.out.println("ints exist: " + check_ints);
+		if(check_ints==null || check_ints.size()==0){
+			jdbcTemplate.execute("CREATE TABLE ints ( i tinyint );");
+			jdbcTemplate.execute("INSERT INTO ints VALUES (0),(1),(2),(3),(4),(5),(6),(7),(8),(9); ");
 		}
 
-		try{
-			jdbcTemplate.execute("ALTER TABLE hotel_room DROP INDEX hotel_room_unique_index;");
-		}catch (Exception e){
-			e.printStackTrace();
-			log.info("hotel_room_unique_index DOES NOT EXIST.");
+		String table_name_calendar_table = "calendar_table";
+		List<Map<String, Object>> check_calendar_table = jdbcTemplate.queryForList("show tables like '"+ table_name_calendar_table +"';");
+		System.out.println("calendar_table exist: " + check_calendar_table);
+		if(check_calendar_table==null || check_calendar_table.size()==0){
+			jdbcTemplate.execute("CREATE TABLE calendar_table ( " +
+					"    dt DATE NOT NULL PRIMARY KEY, " +
+					"    y SMALLINT NULL, " +
+					"    q tinyint NULL, " +
+					"    m tinyint NULL, " +
+					"    d tinyint NULL, " +
+					"    dw tinyint NULL, " +
+					"    monthName VARCHAR(9) NULL, " +
+					"    dayName VARCHAR(9) NULL, " +
+					"    w tinyint NULL, " +
+					"    isWeekday BINARY(1) NULL, " +
+					"    isHoliday BINARY(1) NULL, " +
+					"    holidayDescr VARCHAR(32) NULL, " +
+					"    isPayday BINARY(1) NULL " +
+					");");
+			jdbcTemplate.execute("INSERT INTO calendar_table (dt) " +
+					"SELECT DATE('2019-12-01') + INTERVAL a.i*10000 + b.i*1000 + c.i*100 + d.i*10 + e.i DAY " +
+					"FROM ints a JOIN ints b JOIN ints c JOIN ints d JOIN ints e " +
+					"WHERE (a.i*10000 + b.i*1000 + c.i*100 + d.i*10 + e.i) <= 11322 " +
+					"ORDER BY 1;");
 		}
 
-//		add hotel unique key
-		jdbcTemplate.execute("ALTER TABLE hotel ADD CONSTRAINT hotel_unique_index UNIQUE (json_File_id);");
-		jdbcTemplate.execute("ALTER TABLE hotel_room ADD CONSTRAINT hotel_room_unique_index UNIQUE (hotel_id, room_type);");
+		String view_name_hotel_info = "hotel_info";
+		List<Map<String, Object>> check_view_name_hotel_info = jdbcTemplate.queryForList("show tables like '"+ view_name_hotel_info +"';");
+		System.out.println("hotel_info exist: " + check_view_name_hotel_info);
+		if(check_view_name_hotel_info==null || check_view_name_hotel_info.size()==0){
+			jdbcTemplate.execute(" CREATE OR REPLACE VIEW hotel_info  AS " +
+					" select " +
+					" hotel.id, hotel.star, hotel.locality, hotel.address, hotel.json_file_id, hotel.name, hotel_room.room_type, hotel_room.price,  hotel_room.quantity, calendar_table.dt " +
+					" from hotel " +
+					" inner join hotel_room on hotel_id = hotel.json_File_id " +
+					" inner join calendar_table on 1=1 " +
+					" where hotel_room.quantity > 0;");
+		}
+
+		String view_name_booked_room = "booked_room";
+		List<Map<String, Object>> check_view_name_booked_room = jdbcTemplate.queryForList("show tables like '"+ view_name_booked_room +"';");;
+		System.out.println("booked_room exist: " + check_view_name_booked_room);
+		if(check_view_name_booked_room==null || check_view_name_booked_room.size()==0){
+			jdbcTemplate.execute("CREATE OR REPLACE VIEW booked_room  AS " +
+					"select calendar_table.dt, booked.hotel_id, booked.room_type, count(booked.bookingId)  as quantity " +
+					"from calendar_table " +
+					"left join ( " +
+					" select  " +
+					" booking.id as bookingId, booking.hotel_id, booking.hotel_room_id, booking.start_date, booking.end_date, booking.is_disabled, " +
+					" hotel_room.room_type " +
+					" from ordering  " +
+					"inner join booking on ordering.id = booking.order_id and booking.is_disabled <> true " +
+					"inner join hotel_room on hotel_room.id = booking.hotel_room_id) AS booked " +
+					"on DATE(booked.start_date) <= calendar_table.dt and DATE(booked.end_date) >= calendar_table.dt " +
+					"group by calendar_table.dt, booked.hotel_id, booked.room_type; ");
+		}
+
+		String view_name_booked_hotel_info = "booked_hotel_info";
+		List<Map<String, Object>> check_view_name_booked_hotel_info = jdbcTemplate.queryForList("show tables like '"+ view_name_booked_hotel_info +"';");
+		System.out.println("booked_room exist: " + check_view_name_booked_hotel_info);
+		if(check_view_name_booked_hotel_info==null || check_view_name_booked_hotel_info.size()==0){
+			jdbcTemplate.execute("CREATE OR REPLACE VIEW booked_hotel_info  AS " +
+					" select hotel_info.dt, hotel_info.id, hotel_info.star, hotel_info.locality, hotel_info.address, hotel_info.json_file_id, " +
+					" hotel_info.name, hotel_info.room_type, hotel_info.quantity, hotel_info.price, booked_room.quantity as booked_quantity " +
+					" from hotel_info " +
+					" left join booked_room " +
+					" on booked_room.dt = hotel_info.dt and booked_room.room_type = hotel_info.room_type " +
+					" and booked_room.hotel_id = hotel_info.json_file_id");
+		}
+
+		List<Map<String, Object>> check_hotel_unique_index = jdbcTemplate.queryForList("show keys from hotel where key_name='hotel_unique_index'");
+		if(check_hotel_unique_index==null || check_hotel_unique_index.size()==0){
+			jdbcTemplate.execute("ALTER TABLE hotel ADD CONSTRAINT hotel_unique_index UNIQUE (json_File_id);");
+		}
+
+		List<Map<String, Object>> check_hotel_room_unique_index = jdbcTemplate.queryForList("show keys from hotel_room where key_name='hotel_room_unique_index'");
+		if(check_hotel_room_unique_index==null || check_hotel_room_unique_index.size()==0){
+			jdbcTemplate.execute("ALTER TABLE hotel_room ADD CONSTRAINT hotel_room_unique_index UNIQUE (hotel_id, room_type);");
+		}
 
 		jdbcTemplate.execute("ALTER TABLE hotel MODIFY id INT NOT NULL AUTO_INCREMENT;");
 		jdbcTemplate.execute("ALTER TABLE hotel_room MODIFY id INT NOT NULL AUTO_INCREMENT;");
 		jdbcTemplate.execute("ALTER TABLE system_config MODIFY id INT NOT NULL AUTO_INCREMENT;");
 		jdbcTemplate.execute("ALTER TABLE booking MODIFY id INT NOT NULL AUTO_INCREMENT;");
 		jdbcTemplate.execute("ALTER TABLE ordering MODIFY id INT NOT NULL AUTO_INCREMENT;");
-
 	}
 
 	// 太慢了

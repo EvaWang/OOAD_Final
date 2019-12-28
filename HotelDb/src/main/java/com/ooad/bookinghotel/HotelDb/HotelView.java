@@ -7,8 +7,8 @@ import javax.persistence.*;
 
 @Immutable
 @Entity // This tells Hibernate to make a table out of this class
-@Table(name="hotel_info")
-public class HotelView extends BaseDbo {
+@Table(name="booked_hotel_info")
+public class HotelView {
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
     @Column(updatable = false, nullable = false)
@@ -46,6 +46,16 @@ public class HotelView extends BaseDbo {
 
     @Column
     private Double quadRoomPrice;
+
+    @Column
+    private Integer bookedSingleRoom;
+
+    @Column
+    private Integer bookedDoubleRoom;
+
+    @Column
+    private Integer bookedQuadRoom;
+
 
     @Column
     public Integer getId() {
@@ -143,4 +153,22 @@ public class HotelView extends BaseDbo {
     public void setQuadRoomPrice(Double quadRoomPrice) {
         this.quadRoomPrice = quadRoomPrice;
     }
+
+    public Integer getBookedSingleRoom() {
+        return bookedSingleRoom;
+    }
+
+    public void setBookedSingleRoom(Integer bookedSingleRoom) {
+        this.bookedSingleRoom = bookedSingleRoom;
+    }
+
+    public Integer getBookedDoubleRoom(){return bookedDoubleRoom;}
+
+    public void setBookedDoubleRoom(Integer bookedDoubleRoom){this.bookedDoubleRoom = bookedDoubleRoom;}
+
+    public Integer getBookedQuadRoom(){return bookedQuadRoom;}
+
+    public void setBookedQuadRoom(){ this.bookedQuadRoom = bookedQuadRoom;}
+
+
 }

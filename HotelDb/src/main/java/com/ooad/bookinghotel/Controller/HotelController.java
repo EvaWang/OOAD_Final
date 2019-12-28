@@ -1,8 +1,10 @@
 package com.ooad.bookinghotel.Controller;
 
-import com.ooad.bookinghotel.HotelDb.*;
+import com.ooad.bookinghotel.HotelDb.HotelRoom;
+import com.ooad.bookinghotel.HotelDb.HotelRoomRepository;
+import com.ooad.bookinghotel.HotelDb.HotelView;
+import com.ooad.bookinghotel.HotelDb.HotelViewRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -17,6 +19,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 @Controller    // This means that this class is a Controller
 @RequestMapping(path="/Hotel") // This means URL's start with /demo (after Application path)
@@ -45,11 +48,13 @@ public class HotelController {
         Calendar calendar = Calendar.getInstance();
         // today
         Date startDate = calendar.getTime();
-        System.out.println(startDate);
+        String startDateString =  startDate.toInstant().atZone(TimeZone.getTimeZone("Asia/Taipei").toZoneId()).toLocalDate().toString();
+        System.out.println("startDateString:"+startDateString);
 
         calendar.add(Calendar.MONTH, 3);
         Date endDate = calendar.getTime();
-        System.out.println(endDate);
+        String endDateString =  endDate.toInstant().atZone(TimeZone.getTimeZone("Asia/Taipei").toZoneId()).toLocalDate().toString();
+        System.out.println("endDateString:"+endDateString);
 
 
         try {
@@ -90,7 +95,8 @@ public class HotelController {
 
         Boolean filterStar = stars!=null && stars.size()>0;
 
-        return hotelRepository.searchHotel(filterStar, stars, locality, roomType, startDate, endDate, pageable);
+//        return hotelRepository.searchHotel(filterStar, stars, locality, roomType, startDate, endDate, pageable);
+        return hotelRepository.searchHotel(filterStar, stars, locality, roomType,startDateString, endDateString, pageable);
     }
 
 //    @GetMapping(path="/search")
