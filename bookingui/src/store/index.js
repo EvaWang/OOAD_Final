@@ -7,6 +7,7 @@ export default new Vuex.Store({
   state: {
     userInfo: { signedIn: false },
     searchCondition: {},
+    order:{},
     checkoutList: {},
     checkoutLen:0
   },
@@ -24,12 +25,18 @@ export default new Vuex.Store({
       var roomTypeKey = "Type" + newHotelRoom.RoomType;
       item[roomTypeKey] = item[roomTypeKey] || {};
       item[roomTypeKey].Quantiy = (item[roomTypeKey].Quantiy || 0) +1;
+      item[roomTypeKey].HotelId = newHotelRoom.HotelId;
       item[roomTypeKey].Price = newHotelRoom.Price;
+      item[roomTypeKey].StartDate = newHotelRoom.StartDate;
+      item[roomTypeKey].EndDate = newHotelRoom.EndDate;
       state.checkoutLen = Object.keys(state.checkoutList).length;
     },
     deleteCheckoutList(state, newHotel) {
       delete state.checkoutList["Room" + newHotel.id]
     },
+    updateOrder(state, orderItem){
+      state.order = orderItem
+    }
   },
   actions: {
   },

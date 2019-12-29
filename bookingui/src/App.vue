@@ -23,41 +23,7 @@
       </div>
 
       <v-spacer></v-spacer>
-
-      <v-btn
-        href="order"
-        target="_self"
-        text
-        v-if="this.$store.state.userInfo.signedIn"
-      >
-        <span class="mr-2">My Order</span>
-        <v-icon>mdi-hotel</v-icon>
-      </v-btn>
-
-      <v-menu offset-y v-if="this.$store.state.userInfo.signedIn">
-        <template v-slot:activator="{ on }">
-          <v-btn v-on="on" text>
-            <span class="mr-2">USERNAME</span>
-            <v-icon>mdi-face</v-icon>
-          </v-btn>
-        </template>
-        <v-list>
-          <!-- <v-list-item v-for="(item, index) in items" :key="index">
-            <v-list-item-title>
-              {{ item.title }}
-            </v-list-item-title>
-          </v-list-item> -->
-
-          <v-list-item>
-            <v-btn text @click="signOut">
-              <span class="mr-2">Sign Out</span>
-              <v-icon>mdi-logout-variant</v-icon>
-            </v-btn>
-          </v-list-item>
-        </v-list>
-      </v-menu>
-
-      <v-btn text>
+      <v-btn text @click="$router.push({ path: '/checkout', params: { step: 1 } }).catch(err => {})">
         <span class="mr-2">Checkout</span>
         <v-badge color="red" right>
           <v-icon>mdi-shopping-outline</v-icon>
@@ -66,6 +32,33 @@
           </template>
         </v-badge>
       </v-btn>
+      <v-menu offset-y v-if="this.$store.state.userInfo.signedIn">
+        <template v-slot:activator="{ on }">
+          <v-btn v-on="on" text>
+            <span class="mr-2">USERNAME</span>
+            <v-icon>mdi-face</v-icon>
+          </v-btn>
+        </template>
+        <v-list>
+          <v-list-item>
+            <v-btn
+              @click="$router.push('order')"
+              target="_self"
+              text
+              v-if="this.$store.state.userInfo.signedIn"
+            >
+              <span class="mr-2">My Order</span>
+              <v-icon>mdi-hotel</v-icon>
+            </v-btn>
+          </v-list-item>
+          <v-list-item>
+            <v-btn text @click="signOut">
+              <span class="mr-2">Sign Out</span>
+              <v-icon>mdi-logout-variant</v-icon>
+            </v-btn>
+          </v-list-item>
+        </v-list>
+      </v-menu>
       <v-btn
         text
         v-if="this.$store.state.userInfo.signedIn === false"
@@ -75,10 +68,15 @@
         <v-icon>mdi-login-variant</v-icon>
       </v-btn>
     </v-app-bar>
-    <router-view />
+
+    <transition name="fade" mode="out-in">
+      <router-view/>
+    </transition>
   </v-app>
 </template>
+<style scoped>
 
+</style>
 <script>
 import { mapState } from "vuex";
 
