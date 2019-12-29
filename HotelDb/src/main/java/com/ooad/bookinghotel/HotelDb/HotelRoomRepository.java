@@ -20,6 +20,6 @@ public interface HotelRoomRepository  extends CrudRepository<HotelRoom, Integer>
      * @param hotelId id from related hotel jsonFileId
      * @return
      */
-    @Query(value = "SELECT * FROM hotel_room WHERE hotel_id=:hotelId AND id IN (:roomIds) ", nativeQuery = true)
-    List<HotelRoom> findByRoomIds(@Param("roomIds")List<Integer> roomIds, @Param("hotelId")Integer hotelId);
+    @Query(value = "SELECT * FROM hotel_room WHERE hotel_id=:hotelId AND room_type IN (:roomTypes) ", nativeQuery = true)
+    List<HotelRoom> findByRoomTypes(@Param("roomTypes")List<Integer> roomTypes, @Param("hotelId")Integer hotelId);
 }

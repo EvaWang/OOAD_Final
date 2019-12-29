@@ -102,10 +102,10 @@ public class HotelController {
     }
 
 //    http://localhost:8080/Hotel/test?jsonFileId=5&roomIds=2854, 2852
-    @GetMapping(path="/test")
-    public @ResponseBody
-    List<HotelRoom> test(@RequestParam List<Integer> roomIds, @RequestParam Integer jsonFileId) {
-        // This returns a JSON or XML with the users
-        return hotelRoomRepository.findByRoomIds(roomIds, jsonFileId);
-    }
+//    @GetMapping(path="/test")
+//    public @ResponseBody
+//    List<HotelRoom> test(@RequestParam List<Integer> roomIds, @RequestParam Integer jsonFileId) {
+//        // This returns a JSON or XML with the users
+//        return hotelRoomRepository.findByRoomIds(roomIds, jsonFileId);
+//    }
 }

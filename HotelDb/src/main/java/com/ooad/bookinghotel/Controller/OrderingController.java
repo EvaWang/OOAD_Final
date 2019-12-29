@@ -84,31 +84,33 @@ public class OrderingController {
 
         Ordering newOrdering = new Ordering();
         newOrdering.setUserId(Integer.parseInt(orderingObj.get("UserId")));
-        newOrdering.setDiscount(Double.parseDouble(orderingObj.get("Discount")));
+//        newOrdering.setDiscount(Double.parseDouble(orderingObj.get("Discount")));
+        newOrdering.setDiscount(1.0);
         newOrdering.setStartDate(startDate);
         newOrdering.setEndDate(endDate);
         newOrdering.setMemo(orderingObj.get("Memo"));
-        //return OrderingRepository.findByHotelIdAndRoomType(HotelId, RoomType)
-        //       .orElseThrow(() -> new NotFoundException(HotelId, RoomType));
-        String HotelRoomIds = orderingObj.get("HotelRoomIds");
-        String[] roomIdList = HotelRoomIds.split(",");
+        newOrdering.setIsDisabled(false);
+        newOrdering.setIsPaid(false);
+        String HotelRoomTypes = orderingObj.get("HotelRoomTypes");
+        String[] roomTypeList = HotelRoomTypes.split(",");
 
         ArrayList bookingArray = new ArrayList();
         Integer hotelId = Integer.parseInt(orderingObj.get("HotelId"));
 
-        List<String> roomIdList_toList = Arrays.asList(roomIdList);
+        List<String> roomIdList_toList = Arrays.asList(roomTypeList);
 
         List<Integer> int_roomIdList_toList = new ArrayList<>();
         for(String s : roomIdList_toList) int_roomIdList_toList.add(Integer.valueOf(s));
 
         List<HotelRoom> roomIdList_checked = new ArrayList<>();
-        roomIdList_checked =  hotelRoomRepository.findByRoomIds(int_roomIdList_toList, hotelId);
+        roomIdList_checked =  hotelRoomRepository.findByRoomTypes(int_roomIdList_toList, hotelId);
         Integer Total = 0;
 
-
         Dictionary<Integer, Integer> roomDict = new Hashtable();
+        Dictionary<Integer, Integer> roomIdDict = new Hashtable();
         for(HotelRoom item : roomIdList_checked){
-            roomDict.put(item.getId(), item.getPrice());
+            roomDict.put(item.getRoomType(), item.getPrice());
+            roomIdDict.put(item.getRoomType(), item.getId());
         }
         Integer roomPrice = 0;
         for(Integer i : int_roomIdList_toList){
@@ -118,21 +120,17 @@ public class OrderingController {
         }
 
         Long days = (endDate.getTime() - startDate.getTime())/(24*60*60*1000);
-
         int Days = Math.toIntExact(days);
 
         newOrdering.setTotal(Total*Days);
         newOrdering = orderingRepository.save(newOrdering);
 
-        for(String roomId: roomIdList){
+        for(String roomType: roomTypeList){
             Booking newBooking = new Booking();
             newBooking.setHotelId(hotelId);
-            newBooking.setHotelRoomId(Integer.parseInt(roomId));
+            newBooking.setHotelRoomId(roomIdDict.get(Integer.parseInt(roomType)));
             newBooking.setOrderId(newOrdering.getId());
-            //newBooking.setStartDate(startDate);
-            //newBooking.setEndDate(endDate);
-            newBooking.setIsDisabled(Boolean.getBoolean(orderingObj.get("IsDisabled")));
-            //bookingRepository.save(newBooking);
+            newBooking.setIsDisabled(false);
             bookingArray.add(newBooking);
         }
 

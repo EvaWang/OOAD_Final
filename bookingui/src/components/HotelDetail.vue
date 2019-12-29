@@ -35,7 +35,7 @@
                 <v-icon>mdi-plus</v-icon>
               </v-btn>
             </v-col>
-            <v-col cols="auto">
+            <v-col cols="auto" v-if="showCheckout">
               <v-btn
                 text
                 icon
@@ -64,7 +64,12 @@ export default {
     RoomType: Number,
     bookedRoom: Number,
     StartDate: String,
-    EndDate: String
+    EndDate: String,
+    showCheckout: Boolean,
+    BookingQuantityDefault: {
+      default: 0,
+      type: Number
+    }
   },
   data: () => ({
     BookingQuantity: 0
@@ -89,6 +94,7 @@ export default {
       if (val > 0) {
         vm.BookingQuantity = parseInt(vm.BookingQuantity) + 1;
       }
+      vm.$emit("updateBooking", { RoomType: vm.RoomType, Quantity: vm.BookingQuantity });
     },
     go2checkout() {
       var vm = this;
@@ -98,10 +104,16 @@ export default {
         Price: vm.Price,
         StartDate: vm.StartDate,
         EndDate: vm.EndDate,
-        Quantity: vm.BookingQuantity
+        Quantity: vm.BookingQuantity,
       };
       vm.$store.commit("updateOrder", newRoom);
       vm.$router.push({ path: "/checkout", params: { step: 1 } }).catch();
+    }
+  },
+  mounted: function() {
+    var vm = this;
+    if (vm.BookingQuantityDefault > 0) {
+      vm.BookingQuantity = vm.BookingQuantityDefault;
     }
   }
 };

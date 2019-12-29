@@ -14,8 +14,9 @@ public class Ordering extends BaseDbo{
 
     @Column(nullable = false)
     private Boolean isDisabled;
-    //@Column(updatable = false, nullable = false)
-    //private Integer BookingId;
+
+    @Column(nullable = false, columnDefinition = "default false")
+    private Boolean isPaid;
 
     @Column(nullable = false)
     private Date startDate;
@@ -76,4 +77,9 @@ public class Ordering extends BaseDbo{
     public Boolean getIsDisabled() { return isDisabled; }
 
     public void setIsDisabled(Boolean isDisabled) { this.isDisabled = isDisabled; }
+
+
+    public Boolean getIsPaid() { return isPaid; }
+
+    public void setIsPaid(Boolean isPaid) { this.isPaid = isPaid; }
 }
