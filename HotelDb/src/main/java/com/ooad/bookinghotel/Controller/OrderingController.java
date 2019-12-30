@@ -56,10 +56,9 @@ public class OrderingController {
                 .orElseThrow(()->new NotFoundException(id));
     }
 
-
-    @GetMapping("/test")
-    List<Ordering> test () {
-        return orderingRepository.findByUserId(1);
+    @GetMapping("/findMyOrders/{id}")
+    List<Ordering> findMyOrders (@PathVariable int id) {
+        return orderingRepository.findByUserId(id);
     }
 
     @PostMapping(path="/add", consumes = "application/json")

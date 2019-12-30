@@ -15,13 +15,13 @@ public class Ordering extends BaseDbo{
     @Column(nullable = false)
     private Boolean isDisabled;
 
-    @Column(nullable = false, columnDefinition = "default false")
+    @Column(nullable = false)
     private Boolean isPaid;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "date")
     private Date startDate;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "date")
     private Date endDate;
 
     @Column(updatable = false, nullable = false)

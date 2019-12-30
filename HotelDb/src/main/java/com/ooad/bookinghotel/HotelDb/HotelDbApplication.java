@@ -133,6 +133,10 @@ public class HotelDbApplication implements CommandLineRunner {
 				log.info(fileDate);
 
 				//如果檔案重複，就放棄新增
+				jdbcTemplate.batchUpdate("INSERT INTO hotel (create_time, update_time, address, json_file_id, locality, name, star) " +
+						"VALUES (current_timestamp, current_timestamp, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE id=id ;", Hotels);
+
+				//如果檔案重複，就放棄新增
 				jdbcTemplate.batchUpdate("INSERT INTO hotel_room (hotel_id, price, quantity, room_type, create_time, update_time) " +
 						"VALUES (?, ?, ?, ?, current_timestamp, current_timestamp) ON DUPLICATE KEY UPDATE id=id ;", HotelRooms);
 
@@ -216,7 +220,7 @@ public class HotelDbApplication implements CommandLineRunner {
 					" booking.id as bookingId, booking.hotel_id, booking.hotel_room_id, ordering.start_date, ordering.end_date, booking.is_disabled, " +
 					" hotel_room.room_type " +
 					" from ordering  " +
-					"inner join booking on ordering.id = booking.order_id and booking.is_disabled <> true and ordering.is_disabled <> true" +
+					"inner join booking on ordering.id = booking.order_id and booking.is_disabled <> true and ordering.is_disabled <> true " +
 					"inner join hotel_room on hotel_room.id = booking.hotel_room_id) AS booked " +
 					"on DATE(booked.start_date) <= calendar_table.dt and DATE(booked.end_date) >= calendar_table.dt " +
 					"group by calendar_table.dt, booked.hotel_id, booked.room_type; ");
@@ -224,15 +228,34 @@ public class HotelDbApplication implements CommandLineRunner {
 
 		String view_name_booked_hotel_info = "booked_hotel_info";
 		List<Map<String, Object>> check_view_name_booked_hotel_info = jdbcTemplate.queryForList("show tables like '"+ view_name_booked_hotel_info +"';");
-		System.out.println("booked_room exist: " + check_view_name_booked_hotel_info);
+		System.out.println("booked_hotel_info exist: " + check_view_name_booked_hotel_info);
 		if(check_view_name_booked_hotel_info==null || check_view_name_booked_hotel_info.size()==0){
-			jdbcTemplate.execute("CREATE OR REPLACE VIEW booked_hotel_info  AS " +
+			jdbcTemplate.execute("CREATE OR REPLACE VIEW  booked_hotel_info  AS " +
 					" select hotel_info.dt, hotel_info.id, hotel_info.star, hotel_info.locality, hotel_info.address, hotel_info.json_file_id, " +
 					" hotel_info.name, hotel_info.room_type, hotel_info.quantity, hotel_info.price, booked_room.quantity as booked_quantity " +
 					" from hotel_info " +
 					" left join booked_room " +
 					" on booked_room.dt = hotel_info.dt and booked_room.room_type = hotel_info.room_type " +
 					" and booked_room.hotel_id = hotel_info.json_file_id");
+		}
+
+		String view_name_order_info = "order_info";
+		List<Map<String, Object>> check_view_name_order_info = jdbcTemplate.queryForList("show tables like '"+ view_name_order_info +"';");
+		System.out.println("order_info exist: " + check_view_name_order_info);
+		if(check_view_name_order_info==null || check_view_name_order_info.size()==0){
+			jdbcTemplate.execute("CREATE OR REPLACE VIEW  order_info  AS " +
+					" select ordering.id, ordering.start_date, ordering.end_date, ordering.is_disabled, " +
+					" booking_info.room_type, hotel.json_file_id, hotel.address, hotel.name, " +
+					" booking_info.is_disabled as booked_is_disabled, count(booking_info.room_type) as bookedQuantity " +
+					" from ordering " +
+					" inner join ( " +
+					" select booking.*,hotel_room.room_type " +
+					" from booking  " +
+					" inner join hotel_room on booking.hotel_room_id = hotel_room.id " +
+					" ) AS booking_info on booking_info.order_id = ordering.id " +
+					" inner join hotel on booking_info.hotel_id = hotel.json_file_id " +
+					" group by ordering.id, ordering.start_date, ordering.end_date, ordering.is_disabled, " +
+					" booking_info.room_type, hotel.json_file_id, hotel.address, hotel.name ,booking_info.is_disabled");
 		}
 
 		List<Map<String, Object>> check_hotel_unique_index = jdbcTemplate.queryForList("show keys from hotel where key_name='hotel_unique_index'");

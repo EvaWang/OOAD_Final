@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface HotelViewRepository extends PagingAndSortingRepository<HotelView, Integer> {
     @Query(
