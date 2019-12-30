@@ -3,11 +3,16 @@
     <v-stepper-header>
       <v-stepper-step :complete="e1 > 1" step="1">Confirm</v-stepper-step>
       <v-divider></v-divider>
-      <v-stepper-step step="2">Complete</v-stepper-step>
+      <v-stepper-step :complete="e1 > 2" step="2">Pay</v-stepper-step>
+      <v-divider></v-divider>
+      <v-stepper-step step="3">Complete</v-stepper-step>
     </v-stepper-header>
 
     <v-stepper-items>
       <v-stepper-content step="1">
+        <v-progress-linear v-show="isLoading"
+            indeterminate
+          ></v-progress-linear>
         <v-container>
           <v-row>
             <v-col cols="12" md="4">
@@ -18,6 +23,11 @@
               <h1>Check-In: {{ order.StartDate }}</h1>
               <h1>Check-Out: {{ order.EndDate }}</h1>
               <h1>Total: {{ Total }}</h1>
+              <v-textarea v-model="memo" color="teal">
+                <template v-slot:label>
+                  <div>Memo <small>(optional)</small></div>
+                </template>
+              </v-textarea>
             </v-col>
             <v-col cols="12" md="8">
               <HotelDetail
@@ -54,8 +64,8 @@
             </v-col>
           </v-row>
 
-          <v-btn color="primary" @click="pay">
-            Pay
+          <v-btn color="primary" @click="sendOrder" :disabled="isLoading">
+            Send Order
           </v-btn>
           <v-btn class="ml-2" @click="$router.push('hotel')"
             >Back To Search</v-btn
@@ -67,7 +77,13 @@
         <v-btn color="primary" @click="pay">
           Submit Order
         </v-btn>
-        <v-btn class="ml-2" @click="e1 = 1">Back</v-btn>
+        <v-btn class="ml-2" @click="$router.push('order')">Pay Later</v-btn>
+      </v-stepper-content>
+        <v-stepper-content step="3">
+        <v-card class="mb-12 checkout-content" color="grey lighten-1">
+          <h1>Complete.</h1>
+        </v-card>
+        <v-btn class="ml-2" @click="$router.push('hotel')">Book Another Room</v-btn>
       </v-stepper-content>
     </v-stepper-items>
   </v-stepper>
@@ -102,39 +118,48 @@ export default {
     return {
       e1: 0,
       Total: 0,
-      item: {}
+      item: {},
+      memo: "",
+      isLoading: false
     };
   },
   methods: {
     fillArray(value, len) {
-  var arr = [];
-  for (var i = 0; i < len; i++) {
-    arr.push(value);
-  }
-  return arr;
+      var arr = [];
+      for (var i = 0; i < len; i++) {
+        arr.push(value);
+      }
+      return arr;
     },
-    pay() {
+    pay(){},
+    sendOrder() {
       var vm = this;
-      var roomTypeList = []
-      for(var roomType in vm.order.rooms){
+      vm.isLoading = true;
+
+      var roomTypeList = [];
+      for (var roomType in vm.order.rooms) {
         var q = vm.order.rooms[roomType].Quantity;
-        var list = vm.fillArray(roomType.replace("type",""),q)
-        roomTypeList.push(list.join(','))
+        var list = vm.fillArray(roomType.replace("type", ""), q);
+        roomTypeList.push(list.join(","));
       }
       vm.axios
         .post("/Ordering/add", {
           StartDate: vm.order.StartDate,
           EndDate: vm.order.EndDate,
           UserId: 8849,
-          Memo:"MEMO",
-          HotelRoomTypes: roomTypeList.join(','),
-          HotelId: vm.item.jsonFileId,
+          Memo: vm.memo,
+          HotelRoomTypes: roomTypeList.join(","),
+          HotelId: vm.item.jsonFileId
         })
         .then(function(response) {
+          vm.e1 = 2;
           console.log(response);
         })
         .catch(function(error) {
           console.log(error);
+        })
+        .finally(function() {
+          vm.isLoading = false;
         });
     },
     updateBooking(val) {
