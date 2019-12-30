@@ -13,31 +13,55 @@
     :server-items-length="pageLength"
   >
     <template v-slot:top> </template>
+    <template v-slot:item.action="{ item }">
+      <v-icon
+        small
+        class="mr-2"
+        @click="editItem(item)"
+      >
+        edit
+      </v-icon>
+      <v-icon
+        small
+        @click="deleteItem(item)"
+      >
+        delete
+      </v-icon>
+    </template>
     <template v-slot:expanded-item="{ headers, item }">
       <td :colspan="headers.length">
-        <HotelDetail 
-        :title="'Single Room'"
-        :imgPath="require('../assets/single.jpg')"
-        :Price="item.singleRoomPrice"
-        :Quantity="item.singleRoom"
-        :HotelId = "item.id"
-        :RoomType="1"
+        <HotelDetail
+          :title="'Single Room'"
+          :imgPath="require('../assets/single.jpg')"
+          :Price="item.singleRoomPrice"
+          :Quantity="item.singleRoom - item.bookedSingleRoom"
+          :HotelId="item.jsonFileId"
+          :RoomType="1"
+          :StartDate="search.startDate"
+          :EndDate="search.endDate"
+          :showCheckout="true"
         ></HotelDetail>
-        <HotelDetail 
-        :title="'Double Room'"
-        :imgPath="require('../assets/double.jpg')"
-        :Price="item.doubleRoomPrice"
-        :Quantity="item.doubleRoom"
-        :HotelId = "item.id"
-        :RoomType="2"
+        <HotelDetail
+          :title="'Double Room'"
+          :imgPath="require('../assets/double.jpg')"
+          :Price="item.doubleRoomPrice"
+          :Quantity="item.doubleRoom - item.bookedDoubleRoom"
+          :HotelId="item.jsonFileId"
+          :RoomType="2"
+          :StartDate="search.startDate"
+          :EndDate="search.endDate"
+          :showCheckout="true"
         ></HotelDetail>
-        <HotelDetail 
-        :title="'Double Room'"
-        :imgPath="require('../assets/quad.jpg')"
-        :Price="item.quadRoomPrice"
-        :Quantity="item.quadRoom"
-        :HotelId = "item.id"
-        :RoomType="4"
+        <HotelDetail
+          :title="'Double Room'"
+          :imgPath="require('../assets/quad.jpg')"
+          :Price="item.quadRoomPrice"
+          :Quantity="item.quadRoom - item.bookedQuadRoom"
+          :HotelId="item.jsonFileId"
+          :RoomType="4"
+          :StartDate="search.startDate"
+          :EndDate="search.endDate"
+          :showCheckout="true"
         ></HotelDetail>
       </td>
     </template>
@@ -49,9 +73,9 @@ import { mapState } from "vuex";
 import HotelDetail from "@/components/HotelDetail";
 
 export default {
-  name:"HotelTable",
+  name: "HotelTable",
   components: {
-    HotelDetail,
+    HotelDetail
   },
   data() {
     return {
@@ -87,13 +111,14 @@ export default {
   watch: {
     options: {
       handler() {
-        var vm = this;
-        vm.getHotelList();
+        // console.log("options fires");
+        this.getHotelList();
       },
       deep: true
     },
     searchCondition: {
       handler() {
+        // console.log("searchCondition fires");
         this.getHotelList();
       },
       deep: true
@@ -123,8 +148,10 @@ export default {
       vm.search.stars = vm.starArray2list();
       vm.search.locality = vm.searchCondition.locality;
       vm.search.roomType = vm.searchCondition.roomType;
-      vm.search.startDate = vm.searchCondition.startDate;
-      vm.search.endDate = vm.searchCondition.endDate;
+      vm.search.startDate =
+        vm.searchCondition.startDate || new Date().toISOString().substr(0, 10);
+      vm.search.endDate =
+        vm.searchCondition.endDate || new Date().toISOString().substr(0, 10);
 
       vm.isLoading = true;
       vm.axios
@@ -334,6 +361,7 @@ export default {
   mounted: function() {
     // this.getHotelList();
     // this.fakeData();
+    console.log("mounted");
   }
 };
 </script>

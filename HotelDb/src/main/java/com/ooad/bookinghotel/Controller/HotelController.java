@@ -9,17 +9,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.TimeZone;
+import java.util.*;
 
 @Controller    // This means that this class is a Controller
 @RequestMapping(path="/Hotel") // This means URL's start with /demo (after Application path)
@@ -51,7 +45,7 @@ public class HotelController {
         String startDateString =  startDate.toInstant().atZone(TimeZone.getTimeZone("Asia/Taipei").toZoneId()).toLocalDate().toString();
         System.out.println("startDateString:"+startDateString);
 
-        calendar.add(Calendar.MONTH, 3);
+        calendar.add(Calendar.MONTH, 1);
         Date endDate = calendar.getTime();
         String endDateString =  endDate.toInstant().atZone(TimeZone.getTimeZone("Asia/Taipei").toZoneId()).toLocalDate().toString();
         System.out.println("endDateString:"+endDateString);
@@ -95,30 +89,23 @@ public class HotelController {
 
         Boolean filterStar = stars!=null && stars.size()>0;
 
-//        return hotelRepository.searchHotel(filterStar, stars, locality, roomType, startDate, endDate, pageable);
         return hotelRepository.searchHotel(filterStar, stars, locality, roomType,startDateString, endDateString, pageable);
     }
 
-//    @GetMapping(path="/search")
-//    public @ResponseBody
-//    Page<Hotel> test(@RequestParam(value = "stars", required = false) List<Integer> stars,
-//                     @RequestParam(value = "locality", required = false) String locality,
-//                     @RequestParam(value = "roomType", required = false) Integer roomType,
-//                     @RequestParam(value = "startDate", required = false) Date startDate,
-//                     @RequestParam(value = "endDate", required = false) Date endDate,
-//                     @RequestParam("page") int page,
-//                     @RequestParam(value = "size", defaultValue = "10") int size) {
-//
-//        Pageable pageable = PageRequest.of(page, size);
-//
-//        return hotelRepository.searchHotel(stars, locality, roomType, startDate, endDate, pageable);
-//    }
+    @GetMapping(path="/findById")
+    public @ResponseBody
+    List<HotelView> test(@RequestParam(value = "ids") List<Integer> ids,
+                             @RequestParam(value = "startDate") String startDate,
+                             @RequestParam(value = "endDate") String endDate) {
+
+        return hotelRepository.findOne(ids, startDate, endDate);
+    }
 
 //    http://localhost:8080/Hotel/test?jsonFileId=5&roomIds=2854, 2852
-    @GetMapping(path="/test")
-    public @ResponseBody
-    List<HotelRoom> test(@RequestParam List<Integer> roomIds, @RequestParam Integer jsonFileId) {
-        // This returns a JSON or XML with the users
-        return hotelRoomRepository.findByRoomIds(roomIds, jsonFileId);
-    }
+//    @GetMapping(path="/test")
+//    public @ResponseBody
+//    List<HotelRoom> test(@RequestParam List<Integer> roomIds, @RequestParam Integer jsonFileId) {
+//        // This returns a JSON or XML with the users
+//        return hotelRoomRepository.findByRoomIds(roomIds, jsonFileId);
+//    }
 }

@@ -216,10 +216,10 @@ public class HotelDbApplication implements CommandLineRunner {
 					"from calendar_table " +
 					"left join ( " +
 					" select  " +
-					" booking.id as bookingId, booking.hotel_id, booking.hotel_room_id, booking.start_date, booking.end_date, booking.is_disabled, " +
+					" booking.id as bookingId, booking.hotel_id, booking.hotel_room_id, ordering.start_date, ordering.end_date, booking.is_disabled, " +
 					" hotel_room.room_type " +
 					" from ordering  " +
-					"inner join booking on ordering.id = booking.order_id and booking.is_disabled <> true " +
+					"inner join booking on ordering.id = booking.order_id and booking.is_disabled <> true and ordering.is_disabled <> true" +
 					"inner join hotel_room on hotel_room.id = booking.hotel_room_id) AS booked " +
 					"on DATE(booked.start_date) <= calendar_table.dt and DATE(booked.end_date) >= calendar_table.dt " +
 					"group by calendar_table.dt, booked.hotel_id, booked.room_type; ");

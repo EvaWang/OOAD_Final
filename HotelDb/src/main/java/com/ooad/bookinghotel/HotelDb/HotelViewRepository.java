@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface HotelViewRepository extends PagingAndSortingRepository<HotelView, Integer> {
     @Query(
@@ -51,4 +52,23 @@ public interface HotelViewRepository extends PagingAndSortingRepository<HotelVie
                     "and ( 4 <> 4 or (max(CASE WHEN booked_hotel_info.room_type =4 THEN booked_hotel_info.quantity ELSE 0 END) - max(CASE WHEN booked_hotel_info.room_type =4 THEN booked_hotel_info.booked_quantity ELSE 0 END)) > 0))",
             nativeQuery = true)
     Page<HotelView> searchHotel(Boolean checkStar, List<Integer> stars, String locality, Integer roomType, String startDate, String endDate, Pageable pageable);
+
+    @Query(value = "select booked_hotel_info.id, booked_hotel_info.star, booked_hotel_info.locality, booked_hotel_info.address, " +
+            "booked_hotel_info.json_file_id, booked_hotel_info.name, " +
+            "max(CASE WHEN booked_hotel_info.room_type =1 THEN booked_hotel_info.quantity ELSE 0 END) AS single_room, " +
+            "max(CASE WHEN booked_hotel_info.room_type =2 THEN booked_hotel_info.quantity ELSE 0 END) AS double_room, " +
+            "max(CASE WHEN booked_hotel_info.room_type =4 THEN booked_hotel_info.quantity ELSE 0 END) AS quad_room, " +
+            "max(CASE WHEN booked_hotel_info.room_type =1 THEN booked_hotel_info.price ELSE 0 END) AS single_room_price, " +
+            "max(CASE WHEN booked_hotel_info.room_type =2 THEN booked_hotel_info.price ELSE 0 END) AS double_room_price, " +
+            "max(CASE WHEN booked_hotel_info.room_type =4 THEN booked_hotel_info.price ELSE 0 END) AS quad_room_price, " +
+            "max(CASE WHEN booked_hotel_info.room_type =1 THEN booked_hotel_info.booked_quantity ELSE 0 END) AS booked_single_room, " +
+            "max(CASE WHEN booked_hotel_info.room_type =2 THEN booked_hotel_info.booked_quantity ELSE 0 END) AS booked_double_room, " +
+            "max(CASE WHEN booked_hotel_info.room_type =4 THEN booked_hotel_info.booked_quantity ELSE 0 END) AS booked_quad_room " +
+            " from booked_hotel_info " +
+            " where dt between :startDate and :endDate " +
+            " and  booked_hotel_info.json_file_id IN (:id )  " +
+            " group by booked_hotel_info.id, booked_hotel_info.star, booked_hotel_info.locality, booked_hotel_info.address, booked_hotel_info.json_file_id, booked_hotel_info.name ",
+    nativeQuery = true)
+    List<HotelView> findOne(List<Integer> id, String startDate, String endDate);
+
 }
