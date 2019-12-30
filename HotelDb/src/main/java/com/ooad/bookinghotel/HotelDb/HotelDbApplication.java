@@ -133,9 +133,6 @@ public class HotelDbApplication implements CommandLineRunner {
 				log.info(fileDate);
 
 				//如果檔案重複，就放棄新增
-//				jdbcTemplate.batchUpdate("INSERT INTO hotel (create_time, update_time, address, json_file_id, locality, name, star) " +
-//						"VALUES (current_timestamp, current_timestamp, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE id=id ;", Hotels);
-
 				jdbcTemplate.batchUpdate("INSERT INTO hotel_room (hotel_id, price, quantity, room_type, create_time, update_time) " +
 						"VALUES (?, ?, ?, ?, current_timestamp, current_timestamp) ON DUPLICATE KEY UPDATE id=id ;", HotelRooms);
 

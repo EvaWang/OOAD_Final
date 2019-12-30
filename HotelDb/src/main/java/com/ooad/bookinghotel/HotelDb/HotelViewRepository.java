@@ -47,9 +47,9 @@ public interface HotelViewRepository extends PagingAndSortingRepository<HotelVie
                     " and  (:roomType is null or 1=1) " +
                     " group by booked_hotel_info.id, booked_hotel_info.star, booked_hotel_info.locality, booked_hotel_info.address, booked_hotel_info.json_file_id, booked_hotel_info.name " +
                     " HAVING (:roomType is null) or (" +
-                    "(1 <> 4 or (max(CASE WHEN booked_hotel_info.room_type =1 THEN booked_hotel_info.quantity ELSE 0 END) - max(CASE WHEN booked_hotel_info.room_type =1 THEN booked_hotel_info.booked_quantity ELSE 0 END)) > 0) \n" +
-                    "and ( 2 <> 4 or (max(CASE WHEN booked_hotel_info.room_type =2 THEN booked_hotel_info.quantity ELSE 0 END) - max(CASE WHEN booked_hotel_info.room_type =2 THEN booked_hotel_info.booked_quantity ELSE 0 END)) > 0) \n" +
-                    "and ( 4 <> 4 or (max(CASE WHEN booked_hotel_info.room_type =4 THEN booked_hotel_info.quantity ELSE 0 END) - max(CASE WHEN booked_hotel_info.room_type =4 THEN booked_hotel_info.booked_quantity ELSE 0 END)) > 0))",
+                    "(:room_type <> 1 or (max(CASE WHEN booked_hotel_info.room_type =1 THEN booked_hotel_info.quantity ELSE 0 END) - max(CASE WHEN booked_hotel_info.room_type =1 THEN booked_hotel_info.booked_quantity ELSE 0 END)) > 0) \n" +
+                    "and ( :room_type <> 2 or (max(CASE WHEN booked_hotel_info.room_type =2 THEN booked_hotel_info.quantity ELSE 0 END) - max(CASE WHEN booked_hotel_info.room_type =2 THEN booked_hotel_info.booked_quantity ELSE 0 END)) > 0) \n" +
+                    "and ( :room_type <> 4 or (max(CASE WHEN booked_hotel_info.room_type =4 THEN booked_hotel_info.quantity ELSE 0 END) - max(CASE WHEN booked_hotel_info.room_type =4 THEN booked_hotel_info.booked_quantity ELSE 0 END)) > 0))",
             nativeQuery = true)
     Page<HotelView> searchHotel(Boolean checkStar, List<Integer> stars, String locality, Integer roomType, String startDate, String endDate, Pageable pageable);
 

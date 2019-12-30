@@ -1,6 +1,5 @@
 package com.ooad.bookinghotel.Controller;
 
-import com.ooad.bookinghotel.HotelDb.HotelRoom;
 import com.ooad.bookinghotel.HotelDb.HotelRoomRepository;
 import com.ooad.bookinghotel.HotelDb.HotelView;
 import com.ooad.bookinghotel.HotelDb.HotelViewRepository;
@@ -9,11 +8,17 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.TimeZone;
 
 @Controller    // This means that this class is a Controller
 @RequestMapping(path="/Hotel") // This means URL's start with /demo (after Application path)
@@ -103,9 +108,9 @@ public class HotelController {
 
 //    http://localhost:8080/Hotel/test?jsonFileId=5&roomIds=2854, 2852
 //    @GetMapping(path="/test")
-//    public @ResponseBody
-//    List<HotelRoom> test(@RequestParam List<Integer> roomIds, @RequestParam Integer jsonFileId) {
-//        // This returns a JSON or XML with the users
-//        return hotelRoomRepository.findByRoomIds(roomIds, jsonFileId);
-//    }
+////    public @ResponseBody
+////    List<HotelRoom> test(@RequestParam List<Integer> roomIds, @RequestParam Integer jsonFileId) {
+////        // This returns a JSON or XML with the users
+////        return hotelRoomRepository.findByRoomIds(roomIds, jsonFileId);
+////    }
 }
