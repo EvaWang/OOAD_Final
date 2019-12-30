@@ -35,7 +35,7 @@ export default new Vuex.Store({
       delete state.checkoutList["Room" + newHotel.id]
     },
     updateOrder(state, orderItem){
-      console.log(orderItem)
+      // console.log(orderItem)
       var newOrder = {
         HotelId: orderItem.HotelId,
         StartDate: orderItem.StartDate,

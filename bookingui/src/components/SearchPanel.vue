@@ -225,6 +225,7 @@ export default {
         endDate: vm.picker_end
       };
       vm.$store.commit("searchConditionUpdate", condition);
+      vm.$emit("searchClick");
     }
   }
 };
