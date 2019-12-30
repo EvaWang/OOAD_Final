@@ -36,6 +36,9 @@ public class Ordering extends BaseDbo{
     @Column(columnDefinition = "varchar(500) default 0", nullable = false)
     private String Memo;
 
+    @Column(nullable = false)
+    private Boolean isPaid;
+
     public Integer getId() { return id; }
 
     //public Integer getBookingId() { return BookingId; }
@@ -79,7 +82,11 @@ public class Ordering extends BaseDbo{
     public void setIsDisabled(Boolean isDisabled) { this.isDisabled = isDisabled; }
 
 
+    public Boolean getIsPaid() { return  isPaid; }
+
+
     public Boolean getIsPaid() { return isPaid; }
+
 
     public void setIsPaid(Boolean isPaid) { this.isPaid = isPaid; }
 }

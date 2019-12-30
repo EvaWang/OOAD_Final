@@ -61,19 +61,6 @@ public class OrderingController {
     List<Ordering> test () {
         return orderingRepository.findByUserId(1);
     }
-    
-    @PutMapping("/updateOne/{id}")
-    Ordering updateOrderingByInformation(@RequestBody Ordering newordering,@PathVariable int id) {
-
-        return orderingRepository.findById(id)
-                .map(updateOrdering -> {
-                    updateOrdering.setDiscount(newordering.getDiscount());
-                    updateOrdering.setUserId(newordering.getUserId());
-                    updateOrdering.setTotal(newordering.getTotal());
-                    updateOrdering.setMemo(newordering.getMemo());
-                    return orderingRepository.save(updateOrdering);
-                }).orElseThrow(() -> new NotFoundException(id));
-    }
 
     @PostMapping(path="/add", consumes = "application/json")
     Ordering newOrdering(@RequestBody Map<String, String> orderingObj) throws ParseException {
@@ -149,13 +136,16 @@ public class OrderingController {
         //Get information "endDate"
         Date endDate = formatter1.parse(orderingObj.get("EndDate"));
 
-        //Get System Date
-        //Date now = formatter1.parse(orderingObj.get(new Date()));
-
         Ordering originalOrdering = orderingRepository.findById(id).get();
 
         //The order has been disabled
         if (originalOrdering.getIsDisabled() == true) {
+            System.out.println("This order has been disabled");
+            return originalOrdering;
+        }
+
+        if (originalOrdering.getIsPaid() == true) {
+            System.out.println("This order has been paid,can't modified");
             return originalOrdering;
         }
 
@@ -183,24 +173,7 @@ public class OrderingController {
 
         originalOrdering.setTotal(newTotal);
 
-        /*for (Booking Book : BookingList) {
-            if (Book.getIsDisabled() == false) {
-                Booking newBooking = new Booking();
-                newBooking.setOrderId(Book.getOrderId());
-                newBooking.setHotelId(Book.getHotelId());
-                newBooking.setHotelRoomId(Book.getHotelRoomId());
-                newBooking.setIsDisabled(Book.getIsDisabled());
-                Book.setIsDisabled(true);
-                bookingArray.add(newBooking);
-            } else {
-                BookingList.remove(Book);
-            }
-        }*/
-
         orderingRepository.save(originalOrdering);
-
-
-
         return originalOrdering;
     }
 
