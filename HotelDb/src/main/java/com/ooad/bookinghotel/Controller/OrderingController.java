@@ -4,6 +4,10 @@ import com.ooad.bookinghotel.HotelDb.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
@@ -21,6 +25,9 @@ public class OrderingController {
     private OrderingRepository orderingRepository;
     @Autowired
     private HotelRoomRepository hotelRoomRepository;
+
+    @Autowired
+    private OrderViewRepository orderViewRepository;
 
     public Boolean CheckLegalDateRegion (Date StartDate,Date EndDate) {
         Date now = new Date();
@@ -57,8 +64,30 @@ public class OrderingController {
     }
 
     @GetMapping("/findMyOrders/{id}")
-    List<Ordering> findMyOrders (@PathVariable int id) {
-        return orderingRepository.findByUserId(id);
+    Page<OrderView> findMyOrders (@PathVariable int id,
+                                  @RequestParam(value="page", defaultValue = "0", required = false) int page,
+                                  @RequestParam(value = "size", defaultValue = "-1", required = false) int size,
+                                  @RequestParam(value = "sortKey", required = false) String sortKey,
+                                  @RequestParam(value = "sortDesc", required = false) Boolean sortDesc) {
+        Pageable pageable = null;
+        if(size<0){
+            pageable = PageRequest.of(0, Integer.MAX_VALUE);
+        }else {
+            pageable = PageRequest.of(page, size);
+        }
+
+        if(sortKey != null && sortKey.isEmpty()==false ){
+            Sort sort = Sort.by(sortKey);
+            if(sortDesc){
+                sort = sort.descending();
+            }else {
+                sort = sort.ascending();
+            }
+
+            pageable = PageRequest.of(page, size, sort);
+        }
+
+        return orderViewRepository.findAll(id, pageable);
     }
 
     @PostMapping(path="/add", consumes = "application/json")

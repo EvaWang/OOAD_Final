@@ -244,9 +244,9 @@ public class HotelDbApplication implements CommandLineRunner {
 		System.out.println("order_info exist: " + check_view_name_order_info);
 		if(check_view_name_order_info==null || check_view_name_order_info.size()==0){
 			jdbcTemplate.execute("CREATE OR REPLACE VIEW  order_info  AS " +
-					" select ordering.id, ordering.start_date, ordering.end_date, ordering.is_disabled, " +
-					" booking_info.room_type, hotel.json_file_id, hotel.address, hotel.name, " +
-					" booking_info.is_disabled as booked_is_disabled, count(booking_info.room_type) as bookedQuantity " +
+					" select ordering.*, booking_info.room_type, hotel.json_file_id, hotel.address, hotel.name, " +
+					" hotel.locality, hotel.star," +
+					" booking_info.is_disabled as booked_is_disabled, count(booking_info.room_type) as booked_quantity " +
 					" from ordering " +
 					" inner join ( " +
 					" select booking.*,hotel_room.room_type " +
@@ -255,7 +255,8 @@ public class HotelDbApplication implements CommandLineRunner {
 					" ) AS booking_info on booking_info.order_id = ordering.id " +
 					" inner join hotel on booking_info.hotel_id = hotel.json_file_id " +
 					" group by ordering.id, ordering.start_date, ordering.end_date, ordering.is_disabled, " +
-					" booking_info.room_type, hotel.json_file_id, hotel.address, hotel.name ,booking_info.is_disabled");
+					" booking_info.room_type, hotel.json_file_id, hotel.address, hotel.name, " +
+					" hotel.locality, hotel.star, booking_info.is_disabled");
 		}
 
 		List<Map<String, Object>> check_hotel_unique_index = jdbcTemplate.queryForList("show keys from hotel where key_name='hotel_unique_index'");
