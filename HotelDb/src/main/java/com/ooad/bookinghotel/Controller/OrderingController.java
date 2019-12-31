@@ -135,7 +135,7 @@ public class OrderingController {
             Total = Total + roomPrice;
         }
 
-        Long days = (endDate.getTime() - startDate.getTime())/(24*60*60*1000)+1;
+        Long days = (endDate.getTime() - startDate.getTime())/(24*60*60*1000);
         int Days = Math.toIntExact(days);
 
         newOrdering.setTotal(Total*Days);
