@@ -1,5 +1,5 @@
 <template>
-  <v-stepper class="checkout-container" v-model="e1">
+  <v-stepper v-model="e1">
     <v-stepper-header>
       <v-stepper-step :complete="e1 > 1" step="1">Confirm</v-stepper-step>
       <v-divider></v-divider>
@@ -23,7 +23,7 @@
               <h1>Check-In: {{ order.StartDate }}</h1>
               <h1>Check-Out: {{ order.EndDate }}</h1>
               <h1>Total: {{ Total }}</h1>
-              <v-textarea v-model="memo" color="teal">
+              <v-textarea outlined v-model="memo" color="teal">
                 <template v-slot:label>
                   <div>Memo <small>(optional)</small></div>
                 </template>
@@ -73,14 +73,14 @@
         </v-container>
       </v-stepper-content>
       <v-stepper-content step="2">
-        <v-card class="mb-12 checkout-content" color="grey lighten-1"></v-card>
+        <v-card class="checkout-content" color="grey lighten-1"></v-card>
         <v-btn color="primary" @click="pay">
           Submit Order
         </v-btn>
         <v-btn class="ml-2" @click="$router.push('order')">Pay Later</v-btn>
       </v-stepper-content>
         <v-stepper-content step="3">
-        <v-card class="mb-12 checkout-content" color="grey lighten-1">
+        <v-card class="checkout-content" color="grey lighten-1">
           <h1>Complete.</h1>
         </v-card>
         <v-btn class="ml-2" @click="$router.push('hotel')">Book Another Room</v-btn>
@@ -89,9 +89,6 @@
   </v-stepper>
 </template>
 <style scoped>
-.checkout-container {
-  padding-top: 64px;
-}
 .checkout-content {
   height: calc(100vh - (212px));
 }
