@@ -63,8 +63,9 @@ public class OrderingController {
                 .orElseThrow(()->new NotFoundException(id));
     }
 
-    @GetMapping("/findMyOrders/{id}")
-    Page<OrderView> findMyOrders (@PathVariable int id,
+    @GetMapping("/findMyOrders/{orderId}")
+    Page<OrderView> findMyOrders (@PathVariable int orderId,
+                                  @RequestParam(value="userId") int userId,
                                   @RequestParam(value="page", defaultValue = "0", required = false) int page,
                                   @RequestParam(value = "size", defaultValue = "-1", required = false) int size,
                                   @RequestParam(value = "sortKey", required = false) String sortKey,
@@ -87,7 +88,7 @@ public class OrderingController {
             pageable = PageRequest.of(page, size, sort);
         }
 
-        return orderViewRepository.findAll(id, pageable);
+        return orderViewRepository.searchOrder(userId, orderId, pageable);
     }
 
     @PostMapping(path="/add", consumes = "application/json")
@@ -134,7 +135,7 @@ public class OrderingController {
             Total = Total + roomPrice;
         }
 
-        Long days = (endDate.getTime() - startDate.getTime())/(24*60*60*1000);
+        Long days = (endDate.getTime() - startDate.getTime())/(24*60*60*1000)+1;
         int Days = Math.toIntExact(days);
 
         newOrdering.setTotal(Total*Days);
@@ -203,6 +204,30 @@ public class OrderingController {
 
         orderingRepository.save(originalOrdering);
         return originalOrdering;
+    }
+
+    @PutMapping("/payOrder/{id}")
+    Ordering payOrder(@PathVariable int id){
+        Optional<Ordering> findOrder = orderingRepository.findById(id);
+        if(findOrder.isPresent() == false){
+            return findOrder.orElseThrow(() -> new NotFoundException(id));
+        }
+
+        Ordering updateOrder = findOrder.get();
+        Date startDate = updateOrder.getStartDate();
+        Date now = new Date();
+
+        Boolean canUpdatePay = CheckLegalDateRegion(now, startDate);
+        if(canUpdatePay){
+            updateOrder.setIsPaid(true);
+            orderingRepository.save(updateOrder);
+        }else {
+            updateOrder.setIsDisabled(true);
+            orderingRepository.save(updateOrder);
+            throw new RuleException(id, "Payment deadline is passed.");
+        }
+
+        return updateOrder;
     }
 
 }

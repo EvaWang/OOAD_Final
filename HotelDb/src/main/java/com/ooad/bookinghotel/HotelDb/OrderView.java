@@ -8,7 +8,7 @@ import java.util.Date;
 
 @Immutable
 @Entity
-public class OrderView {
+public class OrderView extends BaseDbo{
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     @Column(updatable = false, nullable = false)

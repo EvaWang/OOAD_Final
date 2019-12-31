@@ -43,7 +43,7 @@ public class HotelDbApplication implements CommandLineRunner {
 				String origins = environment.getProperty("cors.urls");
 				log.info("cors whitelist:"+origins);
 
-				registry.addMapping("/**").allowedOrigins(origins);
+				registry.addMapping("/**").allowedOrigins(origins).allowedMethods("*");
 			}
 		};
 	}
