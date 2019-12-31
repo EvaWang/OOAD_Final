@@ -6,21 +6,20 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface HotelViewRepository extends PagingAndSortingRepository<HotelView, Integer> {
-    @Query(
-            value ="select * " +
-                    "from hotel_info " +
-                    "where address LIKE %:searchKey% or name like %:searchKey% or locality like %:searchKey%",
-            nativeQuery = true)
-    Page<HotelView> findAllDetail(String searchKey, Pageable pageable);
-
-    @Query(
-            value ="select * " +
-                    "from hotel_info ",
-            nativeQuery = true)
-    Page<HotelView> findAll(Pageable pageable);
+//    @Query(
+//            value ="select * " +
+//                    "from hotel_info " +
+//                    "where address LIKE %:searchKey% or name like %:searchKey% or locality like %:searchKey%",
+//            nativeQuery = true)
+//    Page<HotelView> findAllDetail(String searchKey, Pageable pageable);
+//
+//    @Query(
+//            value ="select * " +
+//                    "from hotel_info ",
+//            nativeQuery = true)
+//    Page<HotelView> findAll(Pageable pageable);
 
     @Query(value ="select booked_hotel_info.id, booked_hotel_info.star, booked_hotel_info.locality, booked_hotel_info.address, " +
                     "booked_hotel_info.json_file_id, booked_hotel_info.name, " +
