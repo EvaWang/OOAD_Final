@@ -3,12 +3,10 @@
     <v-form ref="form" lazy-validation>
       <v-row justify="center">
         <v-col cols="12">
-          <v-autocomplete
+          <v-text-field
             v-model="location"
             label="Location"
-            :items="locationList"
-            required
-          ></v-autocomplete>
+          ></v-text-field>
         </v-col>
         <v-col cols="6">
           <v-combobox

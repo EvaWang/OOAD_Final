@@ -69,7 +69,7 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapGetters } from "vuex";
 import HotelDetail from "@/components/HotelDetail";
 
 export default {
@@ -107,7 +107,13 @@ export default {
       options: {}
     };
   },
-  computed: mapState(["searchCondition"]),
+  computed: {
+    // mix the getters into computed with object spread operator
+    ...mapGetters([
+      'getSearchCondition',
+    ])
+  },
+  // computed: mapGetters(["searchCondition"]),
   watch: {
     options: {
       handler() {
@@ -116,9 +122,9 @@ export default {
       },
       deep: true
     },
-    searchCondition: {
+    getSearchCondition: {
       handler() {
-        // console.log("searchCondition fires");
+        // console.log("getSearchCondition fires");
         this.getHotelList();
       },
       deep: true
@@ -128,9 +134,9 @@ export default {
     starArray2list() {
       var vm = this;
       var starList = [];
-      if (vm.searchCondition.stars && vm.searchCondition.stars.length > 0) {
+      if (vm.getSearchCondition.stars && vm.getSearchCondition.stars.length > 0) {
         for (var i = 0; i < 5; i++) {
-          if (vm.searchCondition.stars[i]) {
+          if (vm.getSearchCondition.stars[i]) {
             starList.push(i + 1);
           }
         }
@@ -146,12 +152,12 @@ export default {
       vm.search.sortKey = vm.options.sortBy[0];
       vm.search.sortDesc = vm.options.sortDesc[0];
       vm.search.stars = vm.starArray2list();
-      vm.search.locality = vm.searchCondition.locality;
-      vm.search.roomType = vm.searchCondition.roomType;
+      vm.search.locality = vm.getSearchCondition.locality;
+      vm.search.roomType = vm.getSearchCondition.roomType;
       vm.search.startDate =
-        vm.searchCondition.startDate || new Date().toISOString().substr(0, 10);
+        vm.getSearchCondition.startDate || new Date().toISOString().substr(0, 10);
       vm.search.endDate =
-        vm.searchCondition.endDate || new Date().toISOString().substr(0, 10);
+        vm.getSearchCondition.endDate || new Date().toISOString().substr(0, 10);
 
       vm.isLoading = true;
       vm.axios
