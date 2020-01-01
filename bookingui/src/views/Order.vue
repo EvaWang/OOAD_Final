@@ -1,11 +1,6 @@
 <template>
   <div>
-    <v-overlay :absolute="'absolute'" :value="overlay">
-
-      <v-btn color="success" @click="overlay = false">
-        Hide Overlay
-      </v-btn>
-    </v-overlay>
+    <OrderDetail :dialogControl="dialog" @closeDialog="dialog = !dialog"></OrderDetail>
 
     <v-simple-table>
       <template v-slot:default>
@@ -25,16 +20,30 @@
           <tr v-for="item in orderList" :key="item.id">
             <td>{{ item.name }}</td>
             <td>{{ $moment(item.startDate).format("YYYY-MM-DD") }}</td>
-            <td>{{ $moment(item.endDate).format("YYYY-MM-DD")}}</td>
+            <td>{{ $moment(item.endDate).format("YYYY-MM-DD") }}</td>
             <td>{{ item.bookedQuantity }}</td>
             <td>{{ item.isDisabled }}</td>
             <td v-if="item.isPaid">{{ item.isPaid }}</td>
             <td v-if="item.isPaid == false">
-              <v-btn class="ma-2" outlined color="indigo" :disabled="item.isDisabled" @click="go2Pay(item.id)">Pay Now</v-btn>
+              <v-btn
+                class="ma-2"
+                outlined
+                color="indigo"
+                :disabled="item.isDisabled"
+                @click="go2Pay(item.id)"
+                >Pay Now</v-btn
+              >
             </td>
             <td>{{ item.total }}</td>
             <td>
-              <v-btn class="ma-2" outlined color="warning" :disabled="item.isDisabled" @click="overlay = !overlay">Change</v-btn>
+              <v-btn
+                class="ma-2"
+                outlined
+                color="warning"
+                :disabled="item.isDisabled"
+                @click="dialog = !dialog"
+                >Change</v-btn
+              >
             </td>
           </tr>
         </tbody>
@@ -45,23 +54,23 @@
 
 <script>
 // @ is an alias to /src
-// import SearchPanel from "@/components/SearchPanel.vue";
+import OrderDetail from "@/components/OrderDetail.vue";
 
 export default {
   name: "order",
   components: {
-    // SearchPanel
+    OrderDetail
   },
   data: () => ({
     isLoading: false,
     orderList: [],
-    pageLength:[],
-    overlay:false,
+    pageLength: [],
     selectedId: null,
+    dialog:false
   }),
   methods: {
-    go2Pay(orderId){
-      this.$router.push({ path: "/checkout/2", query: {orderId: orderId}});
+    go2Pay(orderId) {
+      this.$router.push({ path: "/checkout/2", query: { orderId: orderId } });
     },
     getOrderList: function() {
       var vm = this;
