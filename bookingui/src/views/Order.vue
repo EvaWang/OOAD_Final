@@ -24,17 +24,17 @@
         <tbody>
           <tr v-for="item in orderList" :key="item.id">
             <td>{{ item.name }}</td>
-            <td>{{ new Date(item.startDate).toLocaleDateString() }}</td>
-            <td>{{ new Date(item.endDate).toLocaleDateString() }}</td>
+            <td>{{ $moment(item.startDate).format("YYYY-MM-DD") }}</td>
+            <td>{{ $moment(item.endDate).format("YYYY-MM-DD")}}</td>
             <td>{{ item.bookedQuantity }}</td>
             <td>{{ item.isDisabled }}</td>
             <td v-if="item.isPaid">{{ item.isPaid }}</td>
             <td v-if="item.isPaid == false">
-              <v-btn class="ma-2" outlined color="indigo" @click="go2Pay(item.id)">Pay Now</v-btn>
+              <v-btn class="ma-2" outlined color="indigo" :disabled="item.isDisabled" @click="go2Pay(item.id)">Pay Now</v-btn>
             </td>
             <td>{{ item.total }}</td>
             <td>
-              <v-btn class="ma-2" outlined color="warning" @click="overlay = !overlay">Change</v-btn>
+              <v-btn class="ma-2" outlined color="warning" :disabled="item.isDisabled" @click="overlay = !overlay">Change</v-btn>
             </td>
           </tr>
         </tbody>
@@ -55,6 +55,7 @@ export default {
   data: () => ({
     isLoading: false,
     orderList: [],
+    pageLength:[],
     overlay:false,
     selectedId: null,
   }),
@@ -67,11 +68,9 @@ export default {
       vm.isLoading = true;
 
       vm.axios
-        .get("Ordering/all", {
-          params: {}
-        })
+        .get("Ordering/findMyOrders/8849")
         .then(response => {
-          vm.items = response.data.content;
+          vm.orderList = response.data.content;
           vm.pageLength = response.data.totalPages;
           console.log("i success");
         })
@@ -201,7 +200,8 @@ export default {
     }
   },
   mounted: function() {
-    this.fakeData();
+    // this.fakeData();
+    this.getOrderList();
   }
 };
 </script>

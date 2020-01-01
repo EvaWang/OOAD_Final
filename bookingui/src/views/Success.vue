@@ -21,7 +21,6 @@ export default {
     message: ""
   }),
   mounted() {
-    console.log(this.$route.query);
     this.message = this.$route.query.message;
   }
 };

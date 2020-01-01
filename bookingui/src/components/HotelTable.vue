@@ -53,7 +53,7 @@
           :showCheckout="true"
         ></HotelDetail>
         <HotelDetail
-          :title="'Double Room'"
+          :title="'Quad Room'"
           :imgPath="require('../assets/quad.jpg')"
           :Price="item.quadRoomPrice"
           :Quantity="item.quadRoom - item.bookedQuadRoom"
@@ -155,9 +155,9 @@ export default {
       vm.search.locality = vm.getSearchCondition.locality;
       vm.search.roomType = vm.getSearchCondition.roomType;
       vm.search.startDate =
-        vm.getSearchCondition.startDate || new Date().toISOString().substr(0, 10);
+        vm.getSearchCondition.startDate || vm.$moment(vm.picker_start).add(1, 'day').format("YYYY-MM-DD");
       vm.search.endDate =
-        vm.getSearchCondition.endDate || new Date().toISOString().substr(0, 10);
+        vm.getSearchCondition.endDate || vm.$moment(vm.picker_start).add(1, 'month').format("YYYY-MM-DD");
 
       vm.isLoading = true;
       vm.axios

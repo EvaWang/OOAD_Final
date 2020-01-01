@@ -51,7 +51,7 @@ public class OrderingController {
 
     @GetMapping("/findMyOrders/{userId}")
     Page<OrderView> findMyOrders (@PathVariable int userId,
-                                  @RequestParam(value="orderId") int orderId,
+                                  @RequestParam(value="orderId", required = false) Integer orderId,
                                   @RequestParam(value="page", defaultValue = "0", required = false) int page,
                                   @RequestParam(value = "size", defaultValue = "-1", required = false) int size,
                                   @RequestParam(value = "sortKey", required = false) String sortKey,

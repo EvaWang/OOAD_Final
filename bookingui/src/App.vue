@@ -24,7 +24,7 @@
 
       <v-spacer></v-spacer>
       <v-btn
-        @click="$router.push('/hotel')"
+        @click="$router.push('/hotel').catch(err => {})"
         text
       >
         <span class="mr-2">Search</span>
@@ -47,7 +47,7 @@
         </v-badge>
       </v-btn>
       <v-btn
-        @click="$router.push('/order')"
+        @click="$router.push('/order').catch(err => {})"
         text
         v-if="this.$store.state.userInfo.signedIn"
       >

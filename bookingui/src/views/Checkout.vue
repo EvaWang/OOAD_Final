@@ -30,6 +30,7 @@
             <v-col cols="12" md="8">
               <!-- v-if="order.rooms" -->
               <HotelDetail
+                v-if="order.rooms"
                 :title="'Single Room'"
                 :imgPath="require('../assets/single.jpg')"
                 :Price="order.singleRoomPrice"
@@ -40,6 +41,7 @@
                 :BookingQuantityDefault="(order.rooms['type1'] || {}).Quantity"
               ></HotelDetail>
               <HotelDetail
+                v-if="order.rooms"
                 :title="'Double Room'"
                 :imgPath="require('../assets/double.jpg')"
                 :Price="order.doubleRoomPrice"
@@ -50,6 +52,7 @@
                 :BookingQuantityDefault="(order.rooms['type2'] || {}).Quantity"
               ></HotelDetail>
               <HotelDetail
+                v-if="order.rooms"
                 :title="'Double Room'"
                 :imgPath="require('../assets/quad.jpg')"
                 :Price="order.quadRoomPrice"
@@ -93,12 +96,13 @@
         }}</v-btn>
       </v-stepper-content>
       <v-stepper-content step="3">
-        <v-card class="checkout-content" color="grey lighten-1">
+        <v-card class="mb-12 checkout-content">
           <h1>Complete.</h1>
         </v-card>
-        <v-btn class="ml-2" @click="$router.push('/hotel')"
-          >Book Another Room</v-btn
-        >
+        <v-btn color="primary" class="ml-2" @click="$router.push('/hotel')"
+          >Book Another Room</v-btn>
+        <v-btn color="success" class="ml-2" @click="$router.push('/order')"
+          >My Orders</v-btn>
       </v-stepper-content>
     </v-stepper-items>
   </v-stepper>
@@ -228,10 +232,6 @@ export default {
           vm.order.OrderId = item.id;
           vm.order.total = item.total;
           vm.order.jsonFileId = item.jsonFileId;
-          // vm.order.startDate = new Date(item.startDate)
-          //   .toISOString()
-          //   .substr(0, 10);
-          // vm.order.endDate = new Date(item.endDate).toISOString().substr(0, 10);
           vm.order.isDisabled = item.isDisabled;
           vm.order.singleRoom = item.singleRoom;
           vm.order.singleRoomPrice = item.singleRoomPrice;
@@ -270,10 +270,8 @@ export default {
           vm.order.address = item.address;
           vm.order.OrderId = item.id;
           vm.order.total = item.total;
-          vm.order.startDate = new Date(item.startDate)
-            .toISOString()
-            .substr(0, 10);
-          vm.order.endDate = new Date(item.endDate).toISOString().substr(0, 10);
+          vm.order.startDate = vm.$moment(item.startDate).format("YYYY-MM-DD");
+          vm.order.endDate = vm.$moment(item.endDate).format("YYYY-MM-DD");
           vm.order.isDisabled = item.isDisabled;
           console.log("i success");
         })
