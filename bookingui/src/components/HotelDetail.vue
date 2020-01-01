@@ -1,7 +1,7 @@
 <template>
   <v-card class="mx-auto mt-1 mb-1" outlined v-show="Quantity > 0">
     <div class="d-flex">
-      <v-avatar class="ma-3" size="160" tile>
+      <v-avatar class="ma-3" size="120" tile>
         <v-img :src="imgPath"></v-img>
       </v-avatar>
       <div class="mx-auto">
@@ -10,44 +10,55 @@
           Only {{ Quantity }} room(s) left.</v-card-subtitle
         >
         <v-card-subtitle v-show="Quantity >= 5"> Enough rooms.</v-card-subtitle>
-        <v-divider class="mx-4"></v-divider>
-        <v-card-title>$ {{ Price }} NTD</v-card-title>
       </div>
-      <div class="d-flex">
-        <v-card-actions>
-          <v-row justify="center" dense>
-            <v-col cols="4" class="text-right">
-              <v-btn text large icon @click="addRoom(-1)">
-                <v-icon>mdi-minus</v-icon>
-              </v-btn>
-            </v-col>
-            <v-col cols="4">
-              <v-text-field
-                label="Room(s)"
-                placeholder="Placeholder"
-                outlined
-                type="number"
-                v-model="BookingQuantity"
-              ></v-text-field>
-            </v-col>
-            <v-col cols="4" class="text-left">
-              <v-btn text large icon @click="addRoom(+1)">
-                <v-icon>mdi-plus</v-icon>
-              </v-btn>
-            </v-col>
-            <v-col cols="auto" v-if="showCheckout">
-              <v-btn
-                text
-                icon
-                color="indigo"
-                @click="go2checkout"
-                :disabled="Quantity <= 0"
-              >
-                <v-icon>mdi-cart-arrow-down</v-icon>
-              </v-btn>
-            </v-col>
-          </v-row>
-        </v-card-actions>
+      <div class="mx-auto">
+        <v-card-title class="text-right">$ {{ Price }} NTD</v-card-title>
+        <v-divider class="mx-4"></v-divider>
+        <v-item-group style="height:40px">
+          <v-container>
+            <v-row justify="center" dense>
+              <v-col cols="3">
+                <v-item
+                  ><v-btn text large icon @click="addRoom(-1)">
+                    <v-icon>mdi-minus</v-icon>
+                  </v-btn>
+                </v-item>
+              </v-col>
+              <v-col cols="3">
+                <v-item>
+                  <v-text-field
+                    label="Room(s)"
+                    placeholder="Placeholder"
+                    outlined
+                    type="number"
+                    v-model="BookingQuantity"
+                  >
+                  </v-text-field>
+                </v-item>
+              </v-col>
+              <v-col cols="3">
+                <v-item>
+                  <v-btn text large icon @click="addRoom(+1)">
+                    <v-icon>mdi-plus</v-icon>
+                  </v-btn>
+                </v-item>
+              </v-col>
+              <v-col cols="3" v-if="showCheckout">
+                <v-item>
+                  <v-btn
+                    text
+                    icon
+                    color="indigo"
+                    @click="go2checkout"
+                    :disabled="Quantity <= 0"
+                  >
+                    <v-icon>mdi-cart-arrow-down</v-icon>
+                  </v-btn>
+                </v-item>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-item-group>
       </div>
     </div>
   </v-card>
@@ -94,7 +105,10 @@ export default {
       if (val > 0) {
         vm.BookingQuantity = parseInt(vm.BookingQuantity) + 1;
       }
-      vm.$emit("updateBooking", { RoomType: vm.RoomType, Quantity: vm.BookingQuantity });
+      vm.$emit("updateBooking", {
+        RoomType: vm.RoomType,
+        Quantity: vm.BookingQuantity
+      });
     },
     go2checkout() {
       var vm = this;
@@ -104,7 +118,7 @@ export default {
         Price: vm.Price,
         StartDate: vm.StartDate,
         EndDate: vm.EndDate,
-        Quantity: vm.BookingQuantity,
+        Quantity: vm.BookingQuantity
       };
       vm.$store.commit("updateOrder", newRoom);
       vm.$router.push({ path: "/checkout", params: { step: 1 } }).catch();

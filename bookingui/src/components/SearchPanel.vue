@@ -3,12 +3,7 @@
     <v-form ref="form" lazy-validation>
       <v-row justify="center">
         <v-col cols="12">
-          <v-autocomplete
-            v-model="location"
-            label="Location"
-            :items="locationList"
-            required
-          ></v-autocomplete>
+          <v-text-field v-model="location" label="Location"></v-text-field>
         </v-col>
         <v-col cols="6">
           <v-combobox
@@ -32,6 +27,7 @@
       <v-row justify="center">
         <v-col cols="12" md="6">
           <v-menu
+            v-if="picker_start!=''"
             ref="menu_start"
             v-model="menu_start"
             :close-on-content-click="false"
@@ -73,6 +69,7 @@
         <!-- <v-spacer></v-spacer> -->
         <v-col cols="12" md="6">
           <v-menu
+            v-if="picker_end!=''"
             ref="menu_end"
             v-model="menu_end"
             :close-on-content-click="false"
@@ -85,7 +82,7 @@
             <template v-slot:activator="{ on }">
               <v-text-field
                 v-model="picker_end"
-                label="Check In"
+                label="Check Out"
                 prepend-icon="mdi-calendar"
                 readonly
                 v-on="on"
@@ -93,7 +90,7 @@
             </template>
             <v-date-picker
               v-model="picker_end"
-              :min="picker_start"
+              :min="picker_end_min"
               :max="max_date"
               no-title
               scrollable
@@ -174,9 +171,12 @@ export default {
   data: () => ({
     menu_start: false,
     menu_end: false,
-    picker_start: new Date().toISOString().substr(0, 10),
-    picker_end: new Date().toISOString().substr(0, 10),
-    today: new Date().toISOString().substr(0, 10),
+    picker_start: "",
+    // picker_start: new Date().toISOString().substr(0, 10),
+    picker_end: "",
+    // picker_end: new Date().toISOString().substr(0, 10),
+    today: "",
+    // today: new Date().toISOString().substr(0, 10),
     NumberOfCustomer: 1,
     selectRoomType: { Name: "Single", Limit: 1 },
     selectRoomTypeList: [
@@ -195,11 +195,17 @@ export default {
       var starDate = new Date(vm.picker_start);
 
       if (endDate < starDate) {
-        vm.picker_end = vm.picker_start;
+        vm.picker_end = vm.picker_end_min;
       }
     }
   },
   computed: {
+    picker_end_min() {
+      var vm = this;
+      var starDate = new Date(vm.picker_start);
+      starDate.setDate(starDate.getDate() + 1);
+      return starDate.toISOString().substr(0, 10);
+    },
     max_date() {
       var vm = this;
       var starDate = new Date(vm.picker_start);
@@ -227,6 +233,11 @@ export default {
       vm.$store.commit("searchConditionUpdate", condition);
       vm.$emit("searchClick");
     }
+  },
+  mounted:function(){
+    this.today = new Date().toISOString().substr(0, 10);
+    this.picker_start = this.today;
+    this.picker_end = this.picker_end_min;
   }
 };
 </script>

@@ -23,7 +23,21 @@
       </div>
 
       <v-spacer></v-spacer>
-      <v-btn text @click="$router.push({ path: '/checkout', params: { step: 1 } }).catch(err => {})">
+      <v-btn
+        @click="$router.push('hotel')"
+        text
+      >
+        <span class="mr-2">Search</span>
+        <v-icon>mdi-magnify</v-icon>
+      </v-btn>
+      <v-btn
+        text
+        @click="
+          $router
+            .push({ path: '/checkout', params: { step: 1 } })
+            .catch(err => {})
+        "
+      >
         <span class="mr-2">Checkout</span>
         <v-badge color="red" right>
           <v-icon>mdi-shopping-outline</v-icon>
@@ -31,6 +45,15 @@
             {{ checkoutLen }}
           </template>
         </v-badge>
+      </v-btn>
+      <v-btn
+        @click="$router.push('order')"
+        target="_self"
+        text
+        v-if="this.$store.state.userInfo.signedIn"
+      >
+        <span class="mr-2">My Order</span>
+        <v-icon>mdi-hotel</v-icon>
       </v-btn>
       <v-menu offset-y v-if="this.$store.state.userInfo.signedIn">
         <template v-slot:activator="{ on }">
@@ -40,17 +63,6 @@
           </v-btn>
         </template>
         <v-list>
-          <v-list-item>
-            <v-btn
-              @click="$router.push('order')"
-              target="_self"
-              text
-              v-if="this.$store.state.userInfo.signedIn"
-            >
-              <span class="mr-2">My Order</span>
-              <v-icon>mdi-hotel</v-icon>
-            </v-btn>
-          </v-list-item>
           <v-list-item>
             <v-btn text @click="signOut">
               <span class="mr-2">Sign Out</span>
@@ -69,13 +81,13 @@
       </v-btn>
     </v-app-bar>
 
+    <div style="color:transparent; height:64px">Blank</div>
     <transition name="fade" mode="out-in">
-      <router-view/>
+      <router-view />
     </transition>
   </v-app>
 </template>
 <style scoped>
-
 </style>
 <script>
 import { mapState } from "vuex";
