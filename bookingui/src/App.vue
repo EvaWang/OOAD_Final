@@ -24,7 +24,7 @@
 
       <v-spacer></v-spacer>
       <v-btn
-        @click="$router.push('hotel')"
+        @click="$router.push('/hotel')"
         text
       >
         <span class="mr-2">Search</span>
@@ -34,7 +34,7 @@
         text
         @click="
           $router
-            .push({ path: '/checkout', params: { step: 1 } })
+            .push({ path: '/checkout/1' })
             .catch(err => {})
         "
       >
@@ -47,8 +47,7 @@
         </v-badge>
       </v-btn>
       <v-btn
-        @click="$router.push('order')"
-        target="_self"
+        @click="$router.push('/order')"
         text
         v-if="this.$store.state.userInfo.signedIn"
       >

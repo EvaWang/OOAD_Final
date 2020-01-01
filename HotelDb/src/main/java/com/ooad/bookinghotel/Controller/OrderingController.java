@@ -42,20 +42,6 @@ public class OrderingController {
         }
     }
 
-//    @PostMapping(path="/add", consumes = "application/json")
-//    Ordering newordering (@RequestBody Map<String, String> OrderingObj) throws ParseException {
-//
-//        Ordering newordering = new Ordering();
-//
-//        //newordering.setBookingId(Integer.parseInt(OrderingObj.get("BookingId")));
-//        newordering.setUserId(Integer.parseInt(OrderingObj.get("UserId")));
-//        newordering.setTotal(Integer.parseInt(OrderingObj.get("Total"))); //May be modified
-//        newordering.setDiscount(Double.parseDouble(OrderingObj.get("Discount")));
-//        newordering.setMemo(OrderingObj.get("Memo"));
-//
-//        return orderingRepository.save(newordering);
-//    }
-
     //Single item
     @GetMapping("/findOne/{id}")
     Ordering one (@PathVariable int id) {
@@ -63,9 +49,9 @@ public class OrderingController {
                 .orElseThrow(()->new NotFoundException(id));
     }
 
-    @GetMapping("/findMyOrders/{orderId}")
-    Page<OrderView> findMyOrders (@PathVariable int orderId,
-                                  @RequestParam(value="userId") int userId,
+    @GetMapping("/findMyOrders/{userId}")
+    Page<OrderView> findMyOrders (@PathVariable int userId,
+                                  @RequestParam(value="orderId") int orderId,
                                   @RequestParam(value="page", defaultValue = "0", required = false) int page,
                                   @RequestParam(value = "size", defaultValue = "-1", required = false) int size,
                                   @RequestParam(value = "sortKey", required = false) String sortKey,

@@ -37,8 +37,8 @@
           :Quantity="item.singleRoom - item.bookedSingleRoom"
           :HotelId="item.jsonFileId"
           :RoomType="1"
-          :StartDate="search.startDate"
-          :EndDate="search.endDate"
+          :startDate="search.startDate"
+          :endDate="search.endDate"
           :showCheckout="true"
         ></HotelDetail>
         <HotelDetail
@@ -48,8 +48,8 @@
           :Quantity="item.doubleRoom - item.bookedDoubleRoom"
           :HotelId="item.jsonFileId"
           :RoomType="2"
-          :StartDate="search.startDate"
-          :EndDate="search.endDate"
+          :startDate="search.startDate"
+          :endDate="search.endDate"
           :showCheckout="true"
         ></HotelDetail>
         <HotelDetail
@@ -59,8 +59,8 @@
           :Quantity="item.quadRoom - item.bookedQuadRoom"
           :HotelId="item.jsonFileId"
           :RoomType="4"
-          :StartDate="search.startDate"
-          :EndDate="search.endDate"
+          :startDate="search.startDate"
+          :endDate="search.endDate"
           :showCheckout="true"
         ></HotelDetail>
       </td>

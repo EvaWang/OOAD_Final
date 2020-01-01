@@ -1,10 +1,6 @@
 <template>
   <div>
-    <!-- <v-btn color="success" class="mt-12" @click="overlay = !overlay">
-      Show Overlay
-    </v-btn> -->
-
-    <v-overlay :absolute="absolute" :value="overlay">
+    <v-overlay :absolute="'absolute'" :value="overlay">
 
       <v-btn color="success" @click="overlay = false">
         Hide Overlay
@@ -34,7 +30,7 @@
             <td>{{ item.isDisabled }}</td>
             <td v-if="item.isPaid">{{ item.isPaid }}</td>
             <td v-if="item.isPaid == false">
-              <v-btn class="ma-2" outlined color="indigo">Pay Now</v-btn>
+              <v-btn class="ma-2" outlined color="indigo" @click="go2Pay(item.id)">Pay Now</v-btn>
             </td>
             <td>{{ item.total }}</td>
             <td>
@@ -63,6 +59,9 @@ export default {
     selectedId: null,
   }),
   methods: {
+    go2Pay(orderId){
+      this.$router.push({ path: "/checkout/2", query: {orderId: orderId}});
+    },
     getOrderList: function() {
       var vm = this;
       vm.isLoading = true;
