@@ -243,20 +243,23 @@ public class HotelDbApplication implements CommandLineRunner {
 		List<Map<String, Object>> check_view_name_order_info = jdbcTemplate.queryForList("show tables like '"+ view_name_order_info +"';");
 		System.out.println("order_info exist: " + check_view_name_order_info);
 		if(check_view_name_order_info==null || check_view_name_order_info.size()==0){
-			jdbcTemplate.execute("CREATE OR REPLACE VIEW  order_info  AS " +
-					" select ordering.*, booking_info.room_type, hotel.json_file_id, hotel.address, hotel.name, " +
-					" hotel.locality, hotel.star," +
-					" booking_info.is_disabled as booked_is_disabled, count(booking_info.room_type) as booked_quantity " +
-					" from ordering " +
-					" inner join ( " +
-					" select booking.*,hotel_room.room_type " +
-					" from booking  " +
+			jdbcTemplate.execute("select hotel_room_id, ordering.id, ordering.create_time, ordering.update_time, " +
+					"ordering.discount, ordering.memo, ordering.total, ordering.user_id, " +
+					"ordering.is_disabled, ordering.end_date, ordering.start_date, ordering.is_paid, hotel.json_file_id, " +
+					"hotel.star, hotel.locality, hotel.address, hotel.name, booking_info.room_type, booking_info.price, " +
+					"booking_info.is_disabled as booked_is_disabled, count(ordering.id) as booked_quantity " +
+					"from ordering " +
+					"inner join ( " +
+					" select booking.*, hotel_room.room_type, hotel_room.price " +
+					" from booking " +
 					" inner join hotel_room on booking.hotel_room_id = hotel_room.id " +
-					" ) AS booking_info on booking_info.order_id = ordering.id " +
-					" inner join hotel on booking_info.hotel_id = hotel.json_file_id " +
-					" group by ordering.id, ordering.start_date, ordering.end_date, ordering.is_disabled, " +
-					" booking_info.room_type, hotel.json_file_id, hotel.address, hotel.name, " +
-					" hotel.locality, hotel.star, booking_info.is_disabled");
+					") AS booking_info on booking_info.order_id = ordering.id " +
+					"inner join hotel on booking_info.hotel_id = hotel.json_file_id " +
+					"group by hotel_room_id, ordering.id, ordering.create_time, ordering.update_time, ordering.discount, ordering.memo, " +
+					"ordering.total, ordering.user_id, " +
+					"ordering.is_disabled, ordering.end_date, ordering.start_date, ordering.is_paid, hotel.json_file_id, " +
+					"hotel.star, hotel.locality, hotel.address, hotel.name, booking_info.room_type, " +
+					"booking_info.price,booking_info.is_disabled ");
 		}
 
 		List<Map<String, Object>> check_hotel_unique_index = jdbcTemplate.queryForList("show keys from hotel where key_name='hotel_unique_index'");
