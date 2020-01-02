@@ -220,6 +220,24 @@ public class OrderingController {
         return originalOrdering;
     }
 
+    /*@PutMapping
+    Ordering updateOrderByBooking(@RequestBody Map<String, String> orderingObj,@PathVariable int id) {
+        Ordering originalOrdering = orderingRepository.findById(id).get();
+
+        if (originalOrdering.getIsPaid() == true) {
+            System.out.println("This order has been Paid");
+            return originalOrdering;
+        }
+
+        if (originalOrdering.getIsDisabled() == true) {
+            System.out.println("This order has been disabled");
+            return originalOrdering;
+        }
+
+
+        return originalOrdering;
+    }*/
+
     @PutMapping("/payOrder/{id}")
     Ordering payOrder(@PathVariable int id){
         Optional<Ordering> findOrder = orderingRepository.findById(id);

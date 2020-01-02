@@ -78,8 +78,8 @@ public class Ordering extends BaseDbo{
 
     public void setIsDisabled(Boolean isDisabled) { this.isDisabled = isDisabled; }
 
+    public Boolean getIsPaid() { return isPaid; }
 
-    public Boolean getIsPaid() { return  isPaid; }
 
     public void setIsPaid(Boolean isPaid) { this.isPaid = isPaid; }
 }
