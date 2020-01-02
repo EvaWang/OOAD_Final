@@ -74,8 +74,8 @@ export default {
     HotelId: Number,
     RoomType: Number,
     bookedRoom: Number,
-    StartDate: String,
-    EndDate: String,
+    startDate: String,
+    endDate: String,
     showCheckout: Boolean,
     BookingQuantityDefault: {
       default: 0,
@@ -92,8 +92,8 @@ export default {
         HotelId: vm.HotelId,
         RoomType: vm.RoomType,
         Price: vm.Price,
-        StartDate: vm.StartDate,
-        EndDate: vm.EndDate
+        startDate: vm.startDate,
+        endDate: vm.endDate
       };
       vm.$store.commit("addCheckoutList", newRoom);
     },
@@ -116,12 +116,12 @@ export default {
         HotelId: vm.HotelId,
         RoomType: vm.RoomType,
         Price: vm.Price,
-        StartDate: vm.StartDate,
-        EndDate: vm.EndDate,
+        startDate: vm.startDate,
+        endDate: vm.endDate,
         Quantity: vm.BookingQuantity
       };
       vm.$store.commit("updateOrder", newRoom);
-      vm.$router.push({ path: "/checkout", params: { step: 1 } }).catch();
+      vm.$router.push({ path: "/checkout/1" }).catch();
     }
   },
   mounted: function() {

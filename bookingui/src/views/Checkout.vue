@@ -7,19 +7,19 @@
       <v-divider></v-divider>
       <v-stepper-step step="3">Complete</v-stepper-step>
     </v-stepper-header>
-
+    <div class="mb-1" v-show="!isLoading"></div>
+    <v-progress-linear v-show="isLoading" indeterminate></v-progress-linear>
     <v-stepper-items>
       <v-stepper-content step="1">
-        <v-progress-linear v-show="isLoading" indeterminate></v-progress-linear>
-        <v-container>
+        <v-container class="mb-12 checkout-content">
           <v-row>
             <v-col cols="12" md="4">
-              <h1>{{ item.name }}</h1>
-              <h1>{{ item.star }}</h1>
-              <h1>{{ item.locality }}</h1>
-              <h1>{{ item.address }}</h1>
-              <h1>Check-In: {{ order.StartDate }}</h1>
-              <h1>Check-Out: {{ order.EndDate }}</h1>
+              <h1>{{ order.name }}</h1>
+              <h1>{{ order.star }}</h1>
+              <h1>{{ order.locality }}</h1>
+              <h1>{{ order.address }}</h1>
+              <h1>Check-In: {{ order.startDate }}</h1>
+              <h1>Check-Out: {{ order.endDate }}</h1>
               <h1>Total: {{ Total }}</h1>
               <v-textarea outlined v-model="memo" color="teal">
                 <template v-slot:label>
@@ -28,13 +28,14 @@
               </v-textarea>
             </v-col>
             <v-col cols="12" md="8">
+              <!-- v-if="order.rooms" -->
               <HotelDetail
                 v-if="order.rooms"
                 :title="'Single Room'"
                 :imgPath="require('../assets/single.jpg')"
-                :Price="item.singleRoomPrice"
-                :HotelId="item.jsonFileId"
-                :Quantity="item.singleRoom - item.bookedSingleRoom"
+                :Price="order.singleRoomPrice"
+                :HotelId="order.jsonFileId"
+                :Quantity="order.singleRoom - order.bookedSingleRoom"
                 :RoomType="1"
                 @updateBooking="updateBooking"
                 :BookingQuantityDefault="(order.rooms['type1'] || {}).Quantity"
@@ -43,9 +44,9 @@
                 v-if="order.rooms"
                 :title="'Double Room'"
                 :imgPath="require('../assets/double.jpg')"
-                :Price="item.doubleRoomPrice"
-                :HotelId="item.jsonFileId"
-                :Quantity="item.doubleRoom - item.bookedDoubleRoom"
+                :Price="order.doubleRoomPrice"
+                :HotelId="order.jsonFileId"
+                :Quantity="order.doubleRoom - order.bookedDoubleRoom"
                 :RoomType="2"
                 @updateBooking="updateBooking"
                 :BookingQuantityDefault="(order.rooms['type2'] || {}).Quantity"
@@ -54,65 +55,62 @@
                 v-if="order.rooms"
                 :title="'Double Room'"
                 :imgPath="require('../assets/quad.jpg')"
-                :Price="item.quadRoomPrice"
-                :Quantity="item.quadRoom - item.bookedQuadRoom"
+                :Price="order.quadRoomPrice"
+                :Quantity="order.quadRoom - order.bookedQuadRoom"
                 :BookingQuantity="1"
-                :HotelId="item.jsonFileId"
+                :HotelId="order.jsonFileId"
                 :RoomType="4"
                 @updateBooking="updateBooking"
                 :BookingQuantityDefault="(order.rooms['type4'] || {}).Quantity"
               ></HotelDetail>
             </v-col>
           </v-row>
-          <v-btn color="primary" @click="sendOrder" :disabled="isLoading">
+        </v-container>
+           <v-btn color="primary" @click="sendOrder" :disabled="isLoading">
             Send Order
           </v-btn>
-          <v-btn class="ml-2" @click="$router.push('hotel')"
+          <v-btn class="ml-2" @click="$router.push('/hotel')"
             >Back To Search</v-btn
           >
-        </v-container>
       </v-stepper-content>
       <v-stepper-content step="2">
-        <v-card class="checkout-content">
+        <v-card class="mb-12 checkout-content">
           <h1>order</h1>
           <h1>{{ order.name }}</h1>
           <h1>{{ order.star }}</h1>
           <h1>{{ order.locality }}</h1>
           <h1>{{ order.address }}</h1>
-          <h1>Check-In: {{ order.StartDate }}</h1>
-          <h1>Check-Out: {{ order.EndDate }}</h1>
+          <h1>Check-In: {{ order.startDate }}</h1>
+          <h1>Check-Out: {{ order.endDate }}</h1>
           <h1>Total: {{ order.total }}</h1>
-          <!-- <h1>{{ order.star }}</h1>
-              <h1>{{ order.locality }}</h1>
-              <h1>{{ order.address }}</h1>
-              <h1>Check-In: {{ order.StartDate }}</h1>
-              <h1>Check-Out: {{ order.EndDate }}</h1>
-              <h1>Total: {{ Total }}</h1>
-              <h1>Memo: {{ order.memo }}</h1> -->
+          <h1>Canceled: {{ order.isDisabled }}</h1>
           <v-alert dense outlined type="error" v-show="errorMsg != ''">
             Failed: <strong>{{ errorMsg }}</strong>
           </v-alert>
         </v-card>
-
-        <v-btn color="primary" @click="pay">
-          Submit Order
+        <v-btn color="primary" @click="pay" :disabled="order.isDisabled">
+          Pay
         </v-btn>
-        <v-btn class="ml-2" @click="$router.push('order')">Pay Later</v-btn>
+        <v-btn class="ml-2" @click="$router.push('/order')">{{
+          order.isDisabled ? "My Orders" : "Pay Later"
+        }}</v-btn>
       </v-stepper-content>
       <v-stepper-content step="3">
-        <v-card class="checkout-content" color="grey lighten-1">
+        <v-card class="mb-12 checkout-content">
           <h1>Complete.</h1>
         </v-card>
-        <v-btn class="ml-2" @click="$router.push('hotel')"
-          >Book Another Room</v-btn
-        >
+        <v-btn color="primary" class="ml-2" @click="$router.push('/hotel')"
+          >Book Another Room</v-btn>
+        <v-btn color="success" class="ml-2" @click="$router.push('/order')"
+          >My Orders</v-btn>
       </v-stepper-content>
     </v-stepper-items>
   </v-stepper>
 </template>
 <style scoped>
 .checkout-content {
-  height: calc(100vh - (212px));
+  height: calc(100vh - (264px));
+  overflow: auto;
 }
 </style>
 <script>
@@ -128,9 +126,6 @@ export default {
     step: { default: 0, type: Number }
   },
   watch: {
-    step: function() {
-      this.e1 = this.step;
-    },
     getOrder: {
       handler() {
         console.log("getOrder changed.");
@@ -138,16 +133,14 @@ export default {
       deep: true
     }
   },
-  // computed: mapState(["order"]),
   computed: {
-    // mix the getters into computed with object spread operator
     ...mapGetters(["getOrder"])
   },
   data() {
     return {
       e1: 0,
       Total: 0,
-      item: {},
+      // item: {},
       memo: "",
       isLoading: false,
       order: {},
@@ -192,19 +185,18 @@ export default {
       }
       vm.axios
         .post("/Ordering/add", {
-          StartDate: vm.order.StartDate,
-          EndDate: vm.order.EndDate,
+          StartDate: vm.order.startDate,
+          EndDate: vm.order.endDate,
           UserId: 8849,
           Memo: vm.memo,
           HotelRoomTypes: roomTypeList.join(","),
-          HotelId: vm.item.jsonFileId
+          HotelId: vm.order.jsonFileId
         })
         .then(function(response) {
           vm.e1 = 2;
           vm.order.OrderId = response.data.id;
           vm.order.total = response.data.total;
           console.log(response.data);
-          
         })
         .catch(function(error) {
           console.log(error);
@@ -220,22 +212,38 @@ export default {
     },
     getHotelDetail: function() {
       var vm = this;
+      vm.isLoading = true;
       vm.axios
         .get("Hotel/findById", {
           params: {
             ids: vm.order.HotelId,
-            startDate: vm.order.StartDate,
-            endDate: vm.order.EndDate
+            startDate: vm.order.startDate,
+            endDate: vm.order.endDate
           }
         })
         .then(response => {
           console.log(response);
-          vm.item = response.data[0];
-          vm.order.name = vm.item.name;
-          vm.order.star = vm.item.star;
-          vm.order.locality = vm.item.locality;
-          vm.order.address = vm.item.address;
+          var item = response.data[0];
+          // vm.order = item;
+          vm.$set(vm.order, "name", item.name);
+          vm.order.star = item.star;
+          vm.order.locality = item.locality;
+          vm.order.address = item.address;
+          vm.order.OrderId = item.id;
+          vm.order.total = item.total;
+          vm.order.jsonFileId = item.jsonFileId;
+          vm.order.isDisabled = item.isDisabled;
+          vm.order.singleRoom = item.singleRoom;
+          vm.order.singleRoomPrice = item.singleRoomPrice;
+          vm.order.doubleRoom = item.doubleRoom;
+          vm.order.doubleRoomPrice = item.doubleRoomPrice;
+          vm.order.quadRoom = item.quadRoom;
+          vm.order.quadRoomPrice = item.quadRoomPrice;
+          vm.order.bookedSingleRoom = item.bookedSingleRoom;
+          vm.order.bookedDoubleRoom = item.bookedDoubleRoom;
+          vm.order.bookedQuadRoom = item.bookedQuadRoom;
           console.log("i success");
+          console.log(vm.order);
         })
         .catch(error => {
           console.log(error);
@@ -247,15 +255,24 @@ export default {
     },
     getOrderDetail: function() {
       var vm = this;
+      vm.$router;
       vm.axios
-        .get("Ordering/findMyOrders/" + vm.order.OrderId, {
+        .get("Ordering/findMyOrders/8849", {
           params: {
-            userId: 8849
+            orderId: vm.order.OrderId
           }
         })
         .then(response => {
-          console.log(response);
-          vm.item = response.content;
+          var item = response.data.content[0];
+          vm.$set(vm.order, "name", item.name);
+          vm.order.star = item.star;
+          vm.order.locality = item.locality;
+          vm.order.address = item.address;
+          vm.order.OrderId = item.id;
+          vm.order.total = item.total;
+          vm.order.startDate = vm.$moment(item.startDate).format("YYYY-MM-DD");
+          vm.order.endDate = vm.$moment(item.endDate).format("YYYY-MM-DD");
+          vm.order.isDisabled = item.isDisabled;
           console.log("i success");
         })
         .catch(error => {
@@ -269,15 +286,22 @@ export default {
   },
   mounted: function() {
     var vm = this;
-    console.log(vm.order);
-    vm.order.HotelId = vm.getOrder.HotelId;
-    vm.order.StartDate = vm.getOrder.StartDate;
-    vm.order.EndDate = vm.getOrder.EndDate;
-    vm.order.rooms = vm.getOrder.rooms;
+    vm.e1 = vm.$route.params.step;
+    console.log(vm.e1 <= 1)
+    console.log(vm.order.HotelId)
 
-    if (vm.e1 <= 1 && vm.order.HotelId) {
+    if (vm.e1 <= 1 && vm.getOrder.HotelId) {
+      console.log('here')
+      vm.$set(vm.order, "HotelId", vm.getOrder.HotelId);
+      vm.order.startDate = vm.getOrder.startDate;
+      vm.order.endDate = vm.getOrder.endDate;
+      vm.order.rooms = vm.getOrder.rooms;
+      // vm.$set(vm.order.rooms.type1, "type1", vm.getOrder.rooms["type1"]);
+      // vm.$set(vm.order.rooms.type2, "type2", vm.getOrder.rooms["type2"]);
+      // vm.$set(vm.order.rooms.type3, "type3", vm.getOrder.rooms["type3"]);
       vm.getHotelDetail();
     } else if (vm.e1 <= 2 && vm.e1 > 1) {
+      vm.order.OrderId = vm.$route.query.orderId;
       vm.getOrderDetail();
     }
   }

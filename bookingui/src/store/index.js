@@ -45,8 +45,8 @@ export default new Vuex.Store({
       item[roomTypeKey].Quantiy = (item[roomTypeKey].Quantiy || 0) +1;
       item[roomTypeKey].HotelId = newHotelRoom.HotelId;
       item[roomTypeKey].Price = newHotelRoom.Price;
-      item[roomTypeKey].StartDate = newHotelRoom.StartDate;
-      item[roomTypeKey].EndDate = newHotelRoom.EndDate;
+      item[roomTypeKey].startDate = newHotelRoom.startDate;
+      item[roomTypeKey].endDate = newHotelRoom.endDate;
       state.checkoutLen = Object.keys(state.checkoutList).length;
       localStorage.setItem('checkoutList', JSON.stringify(state.checkoutList));
     },
@@ -57,8 +57,8 @@ export default new Vuex.Store({
     updateOrder(state, orderItem){
       var newOrder = {
         HotelId: orderItem.HotelId,
-        StartDate: orderItem.StartDate,
-        EndDate: orderItem.EndDate,
+        startDate: orderItem.startDate,
+        endDate: orderItem.endDate,
         rooms:{}
       }
       newOrder.rooms["type"+orderItem.RoomType] = {

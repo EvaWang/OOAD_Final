@@ -172,11 +172,8 @@ export default {
     menu_start: false,
     menu_end: false,
     picker_start: "",
-    // picker_start: new Date().toISOString().substr(0, 10),
     picker_end: "",
-    // picker_end: new Date().toISOString().substr(0, 10),
     today: "",
-    // today: new Date().toISOString().substr(0, 10),
     NumberOfCustomer: 1,
     selectRoomType: { Name: "Single", Limit: 1 },
     selectRoomTypeList: [
@@ -191,10 +188,10 @@ export default {
   watch: {
     picker_start() {
       var vm = this;
-      var endDate = new Date(vm.picker_end);
-      var starDate = new Date(vm.picker_start);
+      var endDate = new Date(vm.picker_end).getTime();
+      var starDate = new Date(vm.picker_start).getTime();
 
-      if (endDate < starDate) {
+      if (endDate <= starDate) {
         vm.picker_end = vm.picker_end_min;
       }
     }
@@ -202,19 +199,11 @@ export default {
   computed: {
     picker_end_min() {
       var vm = this;
-      var starDate = new Date(vm.picker_start);
-      starDate.setDate(starDate.getDate() + 1);
-      return starDate.toISOString().substr(0, 10);
+      return vm.$moment(vm.picker_start).add(1, 'day').format("YYYY-MM-DD");
     },
     max_date() {
       var vm = this;
-      var starDate = new Date(vm.picker_start);
-      var nextThreeMonth = new Date(
-        starDate.getFullYear(),
-        starDate.getMonth() + 3,
-        starDate.getDate()
-      );
-      return nextThreeMonth.toISOString().substr(0, 10);
+      return vm.$moment(vm.picker_start).add(1, 'month').format("YYYY-MM-DD");
     }
   },
   methods: {
@@ -235,8 +224,7 @@ export default {
     }
   },
   mounted:function(){
-    this.today = new Date().toISOString().substr(0, 10);
-    this.picker_start = this.today;
+    this.picker_start = this.$moment().add(1, 'day').format("YYYY-MM-DD");
     this.picker_end = this.picker_end_min;
   }
 };

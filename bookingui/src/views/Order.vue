@@ -1,15 +1,6 @@
 <template>
   <div>
-    <!-- <v-btn color="success" class="mt-12" @click="overlay = !overlay">
-      Show Overlay
-    </v-btn> -->
-
-    <v-overlay :absolute="absolute" :value="overlay">
-
-      <v-btn color="success" @click="overlay = false">
-        Hide Overlay
-      </v-btn>
-    </v-overlay>
+    <OrderDetail :dialogControl="dialog" @closeDialog="dialog = !dialog"></OrderDetail>
 
     <v-simple-table>
       <template v-slot:default>
@@ -28,17 +19,31 @@
         <tbody>
           <tr v-for="item in orderList" :key="item.id">
             <td>{{ item.name }}</td>
-            <td>{{ new Date(item.startDate).toLocaleDateString() }}</td>
-            <td>{{ new Date(item.endDate).toLocaleDateString() }}</td>
+            <td>{{ $moment(item.startDate).format("YYYY-MM-DD") }}</td>
+            <td>{{ $moment(item.endDate).format("YYYY-MM-DD") }}</td>
             <td>{{ item.bookedQuantity }}</td>
             <td>{{ item.isDisabled }}</td>
             <td v-if="item.isPaid">{{ item.isPaid }}</td>
             <td v-if="item.isPaid == false">
-              <v-btn class="ma-2" outlined color="indigo">Pay Now</v-btn>
+              <v-btn
+                class="ma-2"
+                outlined
+                color="indigo"
+                :disabled="item.isDisabled"
+                @click="go2Pay(item.id)"
+                >Pay Now</v-btn
+              >
             </td>
             <td>{{ item.total }}</td>
             <td>
-              <v-btn class="ma-2" outlined color="warning" @click="overlay = !overlay">Change</v-btn>
+              <v-btn
+                class="ma-2"
+                outlined
+                color="warning"
+                :disabled="item.isDisabled"
+                @click="dialog = !dialog"
+                >Change</v-btn
+              >
             </td>
           </tr>
         </tbody>
@@ -49,30 +54,32 @@
 
 <script>
 // @ is an alias to /src
-// import SearchPanel from "@/components/SearchPanel.vue";
+import OrderDetail from "@/components/OrderDetail.vue";
 
 export default {
   name: "order",
   components: {
-    // SearchPanel
+    OrderDetail
   },
   data: () => ({
     isLoading: false,
     orderList: [],
-    overlay:false,
+    pageLength: [],
     selectedId: null,
+    dialog:false
   }),
   methods: {
+    go2Pay(orderId) {
+      this.$router.push({ path: "/checkout/2", query: { orderId: orderId } });
+    },
     getOrderList: function() {
       var vm = this;
       vm.isLoading = true;
 
       vm.axios
-        .get("Ordering/all", {
-          params: {}
-        })
+        .get("Ordering/findMyOrders/8849")
         .then(response => {
-          vm.items = response.data.content;
+          vm.orderList = response.data.content;
           vm.pageLength = response.data.totalPages;
           console.log("i success");
         })
@@ -202,7 +209,8 @@ export default {
     }
   },
   mounted: function() {
-    this.fakeData();
+    // this.fakeData();
+    this.getOrderList();
   }
 };
 </script>
