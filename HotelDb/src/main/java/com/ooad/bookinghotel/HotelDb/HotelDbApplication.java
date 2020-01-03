@@ -288,7 +288,9 @@ public class HotelDbApplication implements CommandLineRunner {
 		boolean updateData = true;
 
 		try {
-			File resource = new ClassPathResource("systemFile/HotelList.json").getFile();
+
+			ClassLoader classLoader = getClass().getClassLoader();
+			File resource = new File(classLoader.getResource("systemFile/HotelList.json").getFile());
 			String HotelListString = new String(Files.readAllBytes(resource.toPath()));
 
 			JSONParser jsonParser = new JSONParser(HotelListString);

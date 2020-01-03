@@ -17,7 +17,7 @@ public interface OrderViewRepository extends CrudRepository<OrderView, Integer> 
             value =" select id as hotel_room_id, id, create_time, update_time, discount, memo, total, user_id, is_disabled, " +
                     " end_date, start_date, is_paid, json_file_id, star, locality, address, name, " +
                     " 0 as booked_is_disabled, 0 as room_type, 0 as price, " +
-                    " SUM(CASE WHEN order_info.booked_is_disabled = 0 THEN 1 ELSE 0 END) as booked_quantity " +
+                    " SUM(booked_quantity) as booked_quantity " +
                     " from order_info " +
                     " where user_id=:userId AND (:orderId is null or :orderId = id) AND booked_is_disabled = 0" +
                     " group by id, create_time, update_time, discount, memo, total, user_id, is_disabled, " +
