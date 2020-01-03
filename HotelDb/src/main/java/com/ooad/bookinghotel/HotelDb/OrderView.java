@@ -9,36 +9,42 @@ import java.util.Date;
 @Immutable
 @Entity
 public class OrderView extends BaseDbo{
-    @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
-    @Column(updatable = false, nullable = false)
+
+    @Column
     private Integer id;
 
-    @Column(nullable = false)
+    @Id
+    @Column
+    private Integer hotelRoomId;
+
+    @Column
     private Boolean isDisabled;
 
-    @Column(nullable = false)
+    @Column
     private Boolean isPaid;
 
-    @Column(nullable = false, columnDefinition = "date")
+    @Column
     private Date startDate;
 
-    @Column(nullable = false, columnDefinition = "date")
+    @Column
     private Date endDate;
 
-    @Column(updatable = false, nullable = false)
+    @Column
     private Integer userId;
 
-    @Column(columnDefinition = "varchar(255) default 0", nullable = false)
+    @Column
     private Integer Total;
 
-    @Column(columnDefinition = "varchar(255) default 1", nullable = false)
+    @Column
     private Double Discount;
 
-    @Column(columnDefinition = "varchar(500) default 0", nullable = false)
+    @Column
     private String Memo;
 
     public Integer getId() { return id; }
+
+    public Integer getHotelRoomId() { return hotelRoomId; }
+
 
     public Integer getUserId() { return userId; }
 
@@ -81,19 +87,19 @@ public class OrderView extends BaseDbo{
     public void setIsPaid(Boolean isPaid) { this.isPaid = isPaid; }
 
 
-    @Column(columnDefinition = "varchar(255) default ''", nullable = false)
+    @Column
     private String name;
 
-    @Column(columnDefinition = "varchar(255) default 0", nullable = false)
+    @Column
     private Integer star;
 
-    @Column(columnDefinition = "varchar(255) default ''", nullable = false)
+    @Column
     private String locality;
 
-    @Column(columnDefinition = "varchar(255) default ''", nullable = false)
+    @Column
     private String address;
 
-    @Column(updatable = false, nullable = false)
+    @Column
     private Integer jsonFileId;
 
     public String getName() {
@@ -136,32 +142,40 @@ public class OrderView extends BaseDbo{
         this.jsonFileId = jsonFileId;
     }
 
-    @Column(columnDefinition = "varchar(255) default 0", nullable = false)
-    private int roomType;
+    @Column
+    private Integer roomType;
 
-    public int getRoomType() {
+    public Integer getRoomType() {
         return roomType;
     }
 
-    public void setRoomType(RoomType roomType) {
-        this.roomType = roomType.number;
+    public void setRoomType(Integer roomType) {
+        this.roomType = roomType;
     }
 
-//    booked_is_disabled
-    //bookedQuantity
-
-    @Column(nullable = false)
+    @Column
     private Boolean bookedIsDisabled;
 
     public Boolean getBookedIsDisabled() { return bookedIsDisabled; }
 
     public void setBookedIsDisabled(Boolean bookedIsDisabled) { this.bookedIsDisabled = bookedIsDisabled; }
 
-    @Column(nullable = false)
+    @Column
     private Integer bookedQuantity;
 
     public Integer getBookedQuantity() { return bookedQuantity; }
 
     public void setBookedQuantity(Integer bookedQuantity) { this.bookedQuantity = bookedQuantity; }
+
+    @Column
+    private Integer price;
+
+    public void setPrice(Integer price) {
+        this.price = price;
+    }
+
+    public Integer getPrice() {
+        return price;
+    }
 
 }

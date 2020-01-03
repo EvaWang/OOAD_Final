@@ -77,6 +77,34 @@ public class OrderingController {
         return orderViewRepository.searchOrder(userId, orderId, pageable);
     }
 
+    @GetMapping("/findMyOrderDetails/{userId}")
+    Page<OrderView> findMyOrderDetails (@PathVariable int userId,
+                                  @RequestParam(value="orderId", required = false) Integer orderId,
+                                  @RequestParam(value="page", defaultValue = "0", required = false) int page,
+                                  @RequestParam(value = "size", defaultValue = "-1", required = false) int size,
+                                  @RequestParam(value = "sortKey", required = false) String sortKey,
+                                  @RequestParam(value = "sortDesc", required = false) Boolean sortDesc) {
+        Pageable pageable = null;
+        if(size<0){
+            pageable = PageRequest.of(0, Integer.MAX_VALUE);
+        }else {
+            pageable = PageRequest.of(page, size);
+        }
+
+        if(sortKey != null && sortKey.isEmpty()==false ){
+            Sort sort = Sort.by(sortKey);
+            if(sortDesc){
+                sort = sort.descending();
+            }else {
+                sort = sort.ascending();
+            }
+
+            pageable = PageRequest.of(page, size, sort);
+        }
+
+        return orderViewRepository.searchDetail(userId, orderId, pageable);
+    }
+
     @PostMapping(path="/add", consumes = "application/json")
     Ordering newOrdering(@RequestBody Map<String, String> orderingObj) throws ParseException {
 
