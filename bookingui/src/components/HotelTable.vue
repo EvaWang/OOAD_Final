@@ -39,7 +39,7 @@
           :RoomType="1"
           :startDate="search.startDate"
           :endDate="search.endDate"
-          :showCheckout="true"
+          :mode_Checkout="true"
         ></HotelDetail>
         <HotelDetail
           :title="'Double Room'"
@@ -50,7 +50,7 @@
           :RoomType="2"
           :startDate="search.startDate"
           :endDate="search.endDate"
-          :showCheckout="true"
+          :mode_Checkout="true"
         ></HotelDetail>
         <HotelDetail
           :title="'Quad Room'"
@@ -61,7 +61,7 @@
           :RoomType="4"
           :startDate="search.startDate"
           :endDate="search.endDate"
-          :showCheckout="true"
+          :mode_Checkout="true"
         ></HotelDetail>
       </td>
     </template>

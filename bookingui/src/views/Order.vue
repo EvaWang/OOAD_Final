@@ -1,6 +1,6 @@
 <template>
   <div>
-    <OrderDetail :dialogControl="dialog" @closeDialog="dialog = !dialog"></OrderDetail>
+    <OrderDetail :dialogControl="dialog" :selectedId="selectedId" @closeDialog="closeDialog"></OrderDetail>
 
     <v-simple-table>
       <template v-slot:default>
@@ -41,7 +41,7 @@
                 outlined
                 color="warning"
                 :disabled="item.isDisabled"
-                @click="dialog = !dialog"
+                @click="changeOrder(item.id)"
                 >Change</v-btn
               >
             </td>
@@ -66,9 +66,21 @@ export default {
     orderList: [],
     pageLength: [],
     selectedId: null,
-    dialog:false
+    dialog:false,
+    // selectedId: 9113
+    msg:""
   }),
   methods: {
+    changeOrder(orderId){
+      var vm = this;
+      vm.dialog = true;
+      vm.selectedId = orderId;
+    },
+    closeDialog(){
+      var vm = this;
+      vm.dialog = false;
+      vm.selectedId = null;
+    },
     go2Pay(orderId) {
       this.$router.push({ path: "/checkout/2", query: { orderId: orderId } });
     },
@@ -81,136 +93,21 @@ export default {
         .then(response => {
           vm.orderList = response.data.content;
           vm.pageLength = response.data.totalPages;
-          console.log("i success");
+          // console.log("i success");
         })
         .catch(error => {
-          console.log(error);
-          console.warn("Not good man :(");
+          // console.log(error);
+          // console.warn("Not good man :(");
+          vm.msg = error.response.data.message;
         })
         .finally(function() {
           vm.isLoading = false;
         });
-    },
-    fakeData: function() {
-      var sampleObj = {
-        content: [
-          {
-            createTime: "2019-12-29T19:14:49.019+0000",
-            updateTime: "2019-12-29T19:14:49.019+0000",
-            id: 8971,
-            isDisabled: false,
-            isPaid: false,
-            startDate: "2019-12-28T00:00:00.000+0000",
-            endDate: "2019-12-28T00:00:00.000+0000",
-            userId: 8849,
-            name: "台北17",
-            star: 2,
-            locality: "台北",
-            address: "大安區忠孝東路四段180號1樓",
-            jsonFileId: 17,
-            roomType: 0,
-            bookedIsDisabled: false,
-            bookedQuantity: 1,
-            total: 0,
-            discount: 1.0,
-            memo: "MEMO"
-          },
-          {
-            createTime: "2019-12-29T19:16:13.192+0000",
-            updateTime: "2019-12-29T19:16:13.192+0000",
-            id: 8974,
-            isDisabled: false,
-            isPaid: false,
-            startDate: "2019-12-28T00:00:00.000+0000",
-            endDate: "2019-12-28T00:00:00.000+0000",
-            userId: 8849,
-            name: "台北17",
-            star: 2,
-            locality: "台北",
-            address: "大安區忠孝東路四段180號1樓",
-            jsonFileId: 17,
-            roomType: 0,
-            bookedIsDisabled: false,
-            bookedQuantity: 3,
-            total: 0,
-            discount: 1.0,
-            memo: "MEMO"
-          },
-          {
-            createTime: "2019-12-30T05:23:54.313+0000",
-            updateTime: "2019-12-30T05:23:54.313+0000",
-            id: 8981,
-            isDisabled: false,
-            isPaid: false,
-            startDate: "2019-12-29T00:00:00.000+0000",
-            endDate: "2019-12-29T00:00:00.000+0000",
-            userId: 8849,
-            name: "台北17",
-            star: 2,
-            locality: "台北",
-            address: "大安區忠孝東路四段180號1樓",
-            jsonFileId: 17,
-            roomType: 0,
-            bookedIsDisabled: false,
-            bookedQuantity: 1,
-            total: 0,
-            discount: 1.0,
-            memo: "MEMO"
-          },
-          {
-            createTime: "2019-12-30T05:47:42.516+0000",
-            updateTime: "2019-12-30T05:47:42.516+0000",
-            id: 8984,
-            isDisabled: false,
-            isPaid: false,
-            startDate: "2019-12-29T00:00:00.000+0000",
-            endDate: "2019-12-29T00:00:00.000+0000",
-            userId: 8849,
-            name: "台北16",
-            star: 3,
-            locality: "台北",
-            address: "大同區民生西路198號2樓",
-            jsonFileId: 16,
-            roomType: 0,
-            bookedIsDisabled: false,
-            bookedQuantity: 1,
-            total: 0,
-            discount: 1.0,
-            memo: "MEMO"
-          }
-        ],
-        pageable: {
-          sort: {
-            sorted: false,
-            unsorted: true,
-            empty: true
-          },
-          offset: 0,
-          pageNumber: 0,
-          pageSize: 2147483647,
-          unpaged: false,
-          paged: true
-        },
-        totalPages: 1,
-        totalElements: 29,
-        last: true,
-        size: 2147483647,
-        number: 0,
-        first: true,
-        numberOfElements: 29,
-        sort: {
-          sorted: false,
-          unsorted: true,
-          empty: true
-        },
-        empty: false
-      };
-      this.orderList = sampleObj.content;
     }
   },
   mounted: function() {
-    // this.fakeData();
     this.getOrderList();
+    // this.dialog = true;
   }
 };
 </script>

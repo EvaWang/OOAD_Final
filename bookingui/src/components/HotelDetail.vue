@@ -6,10 +6,10 @@
       </v-avatar>
       <div class="mx-auto">
         <v-card-title class="headline">{{ title }}</v-card-title>
-        <v-card-subtitle v-show="Quantity < 5">
+        <v-card-subtitle v-show="Quantity < 5" v-if="!mode_OldOrder">
           Only {{ Quantity }} room(s) left.</v-card-subtitle
         >
-        <v-card-subtitle v-show="Quantity >= 5"> Enough rooms.</v-card-subtitle>
+        <v-card-subtitle v-show="Quantity >= 5" v-if="!mode_OldOrder"> Enough rooms.</v-card-subtitle>
       </div>
       <div class="mx-auto">
         <v-card-title class="text-right">$ {{ Price }} NTD</v-card-title>
@@ -19,31 +19,51 @@
             <v-row justify="center" dense>
               <v-col cols="3">
                 <v-item
-                  ><v-btn text large icon @click="addRoom(-1)">
+                  ><v-btn class="ma-1" text large icon @click="addRoom(-1)">
                     <v-icon>mdi-minus</v-icon>
                   </v-btn>
                 </v-item>
               </v-col>
               <v-col cols="3">
                 <v-item>
-                  <v-text-field
-                    label="Room(s)"
-                    placeholder="Placeholder"
+                  <v-chip
+                    class="ma-2"
+                    color="indigo"
+                    label
                     outlined
-                    type="number"
-                    v-model="BookingQuantity"
                   >
-                  </v-text-field>
+                    {{BookingQuantity}}
+                  </v-chip>
                 </v-item>
               </v-col>
-              <v-col cols="3">
+              <v-col cols="3" v-if="!mode_OldOrder">
                 <v-item>
                   <v-btn text large icon @click="addRoom(+1)">
                     <v-icon>mdi-plus</v-icon>
                   </v-btn>
                 </v-item>
               </v-col>
-              <v-col cols="3" v-if="showCheckout">
+              <v-col cols="2" v-if="mode_OldOrder">
+                <v-item>
+                  <v-btn text large icon color="indigo"
+                   class="ma-1 ml-4"
+                    @click="addRoom(-1 * BookingQuantity)"
+                  >
+                    <v-icon>mdi-cart-remove</v-icon>
+                  </v-btn>
+                </v-item>
+              </v-col>
+              <v-col cols="2" v-if="mode_OldOrder">
+                <v-item>
+                  <v-btn text large icon color="success"
+                   class="ma-1 ml-4"
+                    @click="BookingQuantity = BookingQuantityDefault"
+                  >
+                    <v-icon>mdi-restore</v-icon>
+                  </v-btn>
+                </v-item>
+              </v-col>
+              <v-col cols="3" v-if="mode_Checkout">
                 <v-item>
                   <v-btn
                     text
@@ -76,7 +96,11 @@ export default {
     bookedRoom: Number,
     startDate: String,
     endDate: String,
-    showCheckout: Boolean,
+    mode_Checkout: Boolean,
+    mode_OldOrder: {
+      default: false,
+      type: Boolean
+    },
     BookingQuantityDefault: {
       default: 0,
       type: Number
@@ -85,6 +109,11 @@ export default {
   data: () => ({
     BookingQuantity: 0
   }),
+  watch:{
+    BookingQuantityDefault(){
+      console.log(this.BookingQuantityDefault);
+    }
+  },
   methods: {
     add2Favourite() {
       var vm = this;
@@ -99,12 +128,11 @@ export default {
     },
     addRoom(val) {
       var vm = this;
-      if (val < 0 && vm.BookingQuantity > 0) {
-        vm.BookingQuantity = parseInt(vm.BookingQuantity) - 1;
+      var newVal = vm.BookingQuantity + val;
+      if (newVal < 0) {
+        newVal = 0;
       }
-      if (val > 0) {
-        vm.BookingQuantity = parseInt(vm.BookingQuantity) + 1;
-      }
+      vm.BookingQuantity = newVal;
       vm.$emit("updateBooking", {
         RoomType: vm.RoomType,
         Quantity: vm.BookingQuantity

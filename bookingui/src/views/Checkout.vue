@@ -53,7 +53,7 @@
               ></HotelDetail>
               <HotelDetail
                 v-if="order.rooms"
-                :title="'Double Room'"
+                :title="'Quad Room'"
                 :imgPath="require('../assets/quad.jpg')"
                 :Price="order.quadRoomPrice"
                 :Quantity="order.quadRoom - order.bookedQuadRoom"
@@ -255,7 +255,6 @@ export default {
     },
     getOrderDetail: function() {
       var vm = this;
-      vm.$router;
       vm.axios
         .get("Ordering/findMyOrders/8849", {
           params: {
