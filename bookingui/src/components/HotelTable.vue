@@ -11,6 +11,8 @@
     :loading="isLoading"
     loading-text="Loading... Please wait"
     :server-items-length="pageLength"
+    height="calc(100vh - 188px)"
+    :fixed-header="true"
   >
     <template v-slot:top> </template>
     <template v-slot:item.action="{ item }">
