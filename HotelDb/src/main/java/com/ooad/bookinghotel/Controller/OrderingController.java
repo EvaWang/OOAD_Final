@@ -105,7 +105,7 @@ public class OrderingController {
         for(String s : roomIdList_toList) int_roomIdList_toList.add(Integer.valueOf(s));
 
         List<HotelRoom> roomIdList_checked = new ArrayList<>();
-        roomIdList_checked =  hotelRoomRepository.findByRoomTypes(int_roomIdList_toList, hotelId);
+        roomIdList_checked = hotelRoomRepository.findByRoomTypes(int_roomIdList_toList, hotelId);
         Integer Total = 0;
 
         Dictionary<Integer, Integer> roomDict = new Hashtable();
@@ -141,7 +141,7 @@ public class OrderingController {
         return newOrdering;
     }
 
-    @PostMapping("/updateOne/{id}")
+    @PostMapping("/updateByDate/{id}")
     Ordering updateOrderingByDate(@RequestBody Map<String, String> orderingObj,@PathVariable int id) throws ParseException {
         SimpleDateFormat formatter1 = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -192,8 +192,8 @@ public class OrderingController {
         return originalOrdering;
     }
 
-    /*@PutMapping
-    Ordering updateOrderByBooking(@RequestBody Map<String, String> orderingObj,@PathVariable int id) {
+    @PostMapping("/updateByBooking/{id}")
+    Ordering updateOrderByDecreaseBooking(@RequestBody Map<String, String> orderingObj,@PathVariable int id) {
         Ordering originalOrdering = orderingRepository.findById(id).get();
 
         if (originalOrdering.getIsPaid() == true) {
@@ -206,9 +206,23 @@ public class OrderingController {
             return originalOrdering;
         }
 
+        Date startDate = originalOrdering.getStartDate();
+        Date endDate = originalOrdering.getEndDate();
+        Long days = (endDate.getTime() - startDate.getTime())/(24*60*60*1000);
+        int Days = Math.toIntExact(days);
+
+        List<Booking> BookingList = bookingRepository.findByOrderId(id);
+
+        for (Booking Book: BookingList) {
+            if (Book.getIsDisabled() == true) {
+                BookingList.remove(Book);
+            }
+        }
+
+
 
         return originalOrdering;
-    }*/
+    }
 
     @PutMapping("/payOrder/{id}")
     Ordering payOrder(@PathVariable int id){
