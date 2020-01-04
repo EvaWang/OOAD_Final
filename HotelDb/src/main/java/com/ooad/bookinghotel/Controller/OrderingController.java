@@ -32,6 +32,9 @@ public class OrderingController {
     @Autowired
     private HotelViewRepository hotelViewRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     public Boolean CheckLegalDateRegion (Date StartDate,Date EndDate) {
         Date now = new Date();
         if (StartDate.compareTo(EndDate) >= 0) {
@@ -59,6 +62,10 @@ public class OrderingController {
                                   @RequestParam(value = "size", defaultValue = "-1", required = false) int size,
                                   @RequestParam(value = "sortKey", required = false) String sortKey,
                                   @RequestParam(value = "sortDesc", required = false) Boolean sortDesc) {
+        Optional<User> findUser = userRepository.findById(userId);
+        if (findUser.isPresent() == false) {
+            throw new NotFoundException(userId);
+        }
         Pageable pageable = null;
         if(size<0){
             pageable = PageRequest.of(0, Integer.MAX_VALUE);
@@ -89,12 +96,17 @@ public class OrderingController {
                                   @RequestParam(value = "size", defaultValue = "-1", required = false) int size,
                                   @RequestParam(value = "sortKey", required = false) String sortKey,
                                   @RequestParam(value = "sortDesc", required = false) Boolean sortDesc) {
+        Optional<User> findUser = userRepository.findById(userId);
+        if (findUser.isPresent() == false) {
+            throw new NotFoundException(userId);
+        }
         Pageable pageable = null;
         if(size<0){
             pageable = PageRequest.of(0, Integer.MAX_VALUE);
         }else {
             pageable = PageRequest.of(page, size);
         }
+
 
         if(sortKey != null && sortKey.isEmpty()==false ){
             Sort sort = Sort.by(sortKey);
@@ -119,7 +131,7 @@ public class OrderingController {
 
         Ordering newOrdering = new Ordering();
         if (CheckLegalDateRegion(startDate,endDate) == false) {
-            return newOrdering;
+            throw new ValidationException("Illegal Date Region");
         }
         String HotelRoomTypes = orderingObj.get("HotelRoomTypes");
         String[] roomTypeList = HotelRoomTypes.split(",");
@@ -153,14 +165,11 @@ public class OrderingController {
         //Check if this hotel has enough rooms for this order
         for (HotelView RoomView:CheckIfExist) {
             if ((RoomView.getSingleRoom() - RoomView.getBookedSingleRoom()) < RoomsNeeded_Single) {
-                System.out.println("Not enough single rooms in this hotel between " + startDate + " ~ " + endDate);
-                return newOrdering;
+                throw new ValidationException("Not enough single rooms in this hotel between " + startDate + " ~ " + endDate);
             } else if ((RoomView.getDoubleRoom() - RoomView.getBookedDoubleRoom()) < RoomsNeeded_Double) {
-                System.out.println("Not enough double rooms in this hotel between " + startDate + " ~ " + endDate);
-                return newOrdering;
+                throw new ValidationException("Not enough double rooms in this hotel between " + startDate + " ~ " + endDate);
             } else if ( (RoomView.getQuadRoom() - RoomView.getBookedQuadRoom()) < RoomsNeeded_Quad) {
-                System.out.println("Not enough quad rooms in this hotel between " + startDate + " ~ " + endDate);
-                return newOrdering;
+                throw new ValidationException("Not enough double rooms in this hotel between " + startDate + " ~ " + endDate);
             }
         }
 
@@ -213,7 +222,6 @@ public class OrderingController {
         SimpleDateFormat formatter1 = new SimpleDateFormat("yyyy-MM-dd");
         Date startDate = formatter1.parse(orderingObj.get("StartDate"));
         Date endDate = formatter1.parse(orderingObj.get("EndDate"));
-        Date now = new Date();
 
         Optional<Ordering> findOrder = orderingRepository.findById(id);
         if(findOrder.isPresent() == false){
@@ -224,20 +232,16 @@ public class OrderingController {
 
         //The order has been disabled
         if (originalOrdering.getIsDisabled() == true) {
-            System.out.println("This order has been disabled");
-            return originalOrdering;
+            throw new RuleException(id, "This Order has been disabled.");
         }
 
         if (originalOrdering.getIsPaid() == true) {
-            System.out.println("This order has been paid,can't modified");
-            return originalOrdering;
+            throw new RuleException(id, "This Order has been paid,can't modified");
         }
 
         if (CheckLegalDateRegion(startDate,endDate) == false) {
-            return originalOrdering;
+            throw new ValidationException("Illegal Date Region");
         }
-
-
 
         List<Booking> BookingList = bookingRepository.findByOrderId(id);
 
@@ -263,14 +267,11 @@ public class OrderingController {
         List<HotelView> hotelViews = hotelViewRepository.findOne(HotelIds,orderingObj.get("StartDate"),orderingObj.get("EndDate"));
         for (HotelView RoomView:hotelViews) {
             if ((RoomView.getSingleRoom() - RoomView.getBookedSingleRoom()) < 0) {
-                System.out.println("Not enough single rooms in this hotel between " + startDate + " ~ " + endDate);
-                return originalOrdering;
+                throw new ValidationException("Not enough double rooms in this hotel between " + startDate + " ~ " + endDate);
             } else if ((RoomView.getDoubleRoom() - RoomView.getBookedDoubleRoom()) < RoomsNeeded_Double) {
-                System.out.println("Not enough double rooms in this hotel between " + startDate + " ~ " + endDate);
-                return originalOrdering;
+                throw new ValidationException("Not enough double rooms in this hotel between " + startDate + " ~ " + endDate);
             } else if ( (RoomView.getQuadRoom() - RoomView.getBookedQuadRoom()) < RoomsNeeded_Quad) {
-                System.out.println("Not enough quad rooms in this hotel between " + startDate + " ~ " + endDate);
-                return originalOrdering;
+                throw new ValidationException("Not enough quad rooms in this hotel between " + startDate + " ~ " + endDate);
             }
         }
         Date originalStartDate = originalOrdering.getStartDate();
@@ -305,9 +306,8 @@ public class OrderingController {
             newTotal = originalTotal*newDays/originalDays;
         }
 
-        System.out.println(startDate);
         originalOrdering.setTotal(newTotal);
-        System.out.println(startDate);
+
         return orderingRepository.save(originalOrdering);
     }
 
@@ -323,19 +323,16 @@ public class OrderingController {
         Ordering originalOrdering = findOrder.get();
 
         if (originalOrdering.getIsPaid() == true) {
-            System.out.println("This order has been Paid");
-            return originalOrdering;
+            throw new RuleException(id,"This Order has been paid,can't modified");
         }
 
         if (originalOrdering.getIsDisabled() == true) {
-            System.out.println("This order has been disabled");
-            return originalOrdering;
+            throw new RuleException(id, "This Order is disabled.");
         }
 
         Date startDate = originalOrdering.getStartDate();
         if (CheckLegalDateRegion(now,startDate) == false) {
-            System.out.println("Can't modify this Order anymore");
-            return originalOrdering;
+            throw new ValidationException("Can't modified this Order");
         }
 
         Date endDate = originalOrdering.getEndDate();
@@ -355,7 +352,7 @@ public class OrderingController {
         }
         if (Total == 0) {
             originalOrdering.setIsDisabled(true);
-            return originalOrdering;
+            return orderingRepository.save(originalOrdering);
         }
 
         Total = Total * Days;
@@ -374,6 +371,9 @@ public class OrderingController {
         Ordering updateOrder = findOrder.get();
         if(updateOrder.getIsDisabled()){
             throw new RuleException(id, "This Order is disabled.");
+        }
+        if (updateOrder.getIsPaid()) {
+            throw new RuleException(id, "This Order has been paid.");
         }
 
         Date startDate = updateOrder.getStartDate();
