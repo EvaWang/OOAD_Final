@@ -1,9 +1,7 @@
 package com.ooad.bookinghotel.HotelDb;
 
 import javax.persistence.*;
-import java.text.ParseException;
 import java.util.Date;
-import java.text.SimpleDateFormat;
 
 @Entity // This tells Hibernate to make a table out of this class
 public class Ordering extends BaseDbo{

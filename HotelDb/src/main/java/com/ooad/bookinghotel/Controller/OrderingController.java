@@ -372,6 +372,10 @@ public class OrderingController {
         }
 
         Ordering updateOrder = findOrder.get();
+        if(updateOrder.getIsDisabled()){
+            throw new RuleException(id, "This Order is disabled.");
+        }
+
         Date startDate = updateOrder.getStartDate();
         Date now = new Date();
 
