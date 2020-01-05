@@ -128,7 +128,7 @@ export default {
   watch: {
     getOrder: {
       handler() {
-        console.log("getOrder changed.");
+        // console.log("getOrder changed.");
       },
       deep: true
     }
@@ -160,13 +160,15 @@ export default {
       vm.isLoading = true;
       vm.axios
         .put("/Ordering/payOrder/" + vm.order.OrderId)
-        .then(function(response) {
+        .then(function() {
           vm.e1 = 3;
-          console.log(response.data);
+          
+          // console.log(response.data);
         })
         .catch(function(error) {
-          console.log(error);
-          console.log(error.response);
+          // console.log(error);
+          // console.log(error.response);
+          vm.error = error.response;
           vm.errorMsg = error.response.data.message;
         })
         .finally(function() {
@@ -187,7 +189,6 @@ export default {
         .post("/Ordering/add", {
           StartDate: vm.order.startDate,
           EndDate: vm.order.endDate,
-          UserId: 8849,
           Memo: vm.memo,
           HotelRoomTypes: roomTypeList.join(","),
           HotelId: vm.order.jsonFileId
@@ -196,10 +197,12 @@ export default {
           vm.e1 = 2;
           vm.order.OrderId = response.data.id;
           vm.order.total = response.data.total;
-          console.log(response.data);
+          // console.log(response.data);
         })
         .catch(function(error) {
-          console.log(error);
+          vm.error = error.response;
+          // console.log(error.response);
+          // console.log(error);
           vm.errorMsg = error.message;
         })
         .finally(function() {
@@ -207,7 +210,7 @@ export default {
         });
     },
     updateBooking(val) {
-      console.log(val);
+      // console.log(val);
       this.$store.commit("updateOrderDetail", val);
     },
     getHotelDetail: function() {
@@ -222,7 +225,7 @@ export default {
           }
         })
         .then(response => {
-          console.log(response);
+          // console.log(response);
           var item = response.data[0];
           // vm.order = item;
           vm.$set(vm.order, "name", item.name);
@@ -242,12 +245,15 @@ export default {
           vm.order.bookedSingleRoom = item.bookedSingleRoom;
           vm.order.bookedDoubleRoom = item.bookedDoubleRoom;
           vm.order.bookedQuadRoom = item.bookedQuadRoom;
-          console.log("i success");
-          console.log(vm.order);
+          // console.log("i success");
+          // console.log(vm.order);
         })
         .catch(error => {
-          console.log(error);
-          console.warn("Not good man :(");
+          // alert(error)
+          // console.log(error.response);
+          vm.error = error.response;
+          // console.log(error);
+          // console.warn("Not good man :(");
         })
         .finally(function() {
           vm.isLoading = false;
@@ -256,7 +262,7 @@ export default {
     getOrderDetail: function() {
       var vm = this;
       vm.axios
-        .get("Ordering/findMyOrders/8849", {
+        .get("Ordering/findMyOrders", {
           params: {
             orderId: vm.order.OrderId
           }
@@ -272,11 +278,12 @@ export default {
           vm.order.startDate = vm.$moment(item.startDate).format("YYYY-MM-DD");
           vm.order.endDate = vm.$moment(item.endDate).format("YYYY-MM-DD");
           vm.order.isDisabled = item.isDisabled;
-          console.log("i success");
+          // console.log("i success");
         })
         .catch(error => {
-          console.log(error);
-          console.warn("Not good man :(");
+          // console.log(error.response);
+          vm.error = error.response;
+          // console.warn("Not good man :(");
         })
         .finally(function() {
           vm.isLoading = false;
@@ -286,11 +293,11 @@ export default {
   mounted: function() {
     var vm = this;
     vm.e1 = vm.$route.params.step;
-    console.log(vm.e1 <= 1)
-    console.log(vm.order.HotelId)
+    // console.log(vm.e1 <= 1)
+    // console.log(vm.order.HotelId)
 
     if (vm.e1 <= 1 && vm.getOrder.HotelId) {
-      console.log('here')
+      // console.log('here')
       vm.$set(vm.order, "HotelId", vm.getOrder.HotelId);
       vm.order.startDate = vm.getOrder.startDate;
       vm.order.endDate = vm.getOrder.endDate;

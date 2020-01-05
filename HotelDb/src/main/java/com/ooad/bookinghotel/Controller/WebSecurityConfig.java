@@ -56,15 +56,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         //測試用
-        httpSecurity.csrf().disable().authorizeRequests().antMatchers("/").permitAll();
-        //token驗證
-//        httpSecurity.csrf().disable().authorizeRequests()
-//                .antMatchers("/Auth/authenticate","/User/add", "/Hotel/all", "/Hotel/findById")
-//                .permitAll().
-//                anyRequest().authenticated().and().exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-//
-//        httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+//        httpSecurity.csrf().disable().authorizeRequests().antMatchers("/").permitAll();
+//        token驗證
+        httpSecurity.cors();
+        httpSecurity.csrf().disable().authorizeRequests()
+                .antMatchers("/Auth/authenticate","/User/add", "/Hotel/all", "/Hotel/findById", "/").permitAll()
+                .anyRequest().authenticated().and().exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
+        httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
     }
 
 }

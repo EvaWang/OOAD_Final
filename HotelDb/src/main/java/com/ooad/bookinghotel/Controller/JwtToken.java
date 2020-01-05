@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -38,6 +37,11 @@ public class JwtToken implements Serializable {
         return claimsResolver.apply(claims);
     }
 
+    public Integer getUserId(String token){
+        final Claims claims = getAllClaimsFromToken(token);
+        return claims.get("id", Integer.class);
+    }
+
 
     private Claims getAllClaimsFromToken(String token) {
         return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
@@ -50,8 +54,8 @@ public class JwtToken implements Serializable {
     }
 
 
-    public String generateToken(UserDetails userDetails) {
-        Map<String, Object> claims = new HashMap<>();
+    public String generateToken(UserDetails userDetails, Map<String, Object> claims) {
+//        Map<String, Object> claims = new HashMap<>();
 
         return doGenerateToken(claims, userDetails.getUsername());
     }

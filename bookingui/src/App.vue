@@ -39,25 +39,26 @@
         "
       >
         <span class="mr-2">Checkout</span>
-        <v-badge color="red" right>
+        <v-badge color="red" right v-if="checkoutLen>0">
           <v-icon>mdi-shopping-outline</v-icon>
           <template v-slot:badge>
-            {{ checkoutLen }}
+            <v-icon>mdi-bell-outline</v-icon>
           </template>
         </v-badge>
+        <v-icon v-if="checkoutLen>0">mdi-shopping-outline</v-icon>
       </v-btn>
       <v-btn
         @click="$router.push('/order').catch(err => {})"
         text
-        v-if="this.$store.state.userInfo.signedIn"
+        v-if="this.$store.state.userInfo.token!==''"
       >
         <span class="mr-2">My Order</span>
         <v-icon>mdi-hotel</v-icon>
       </v-btn>
-      <v-menu offset-y v-if="this.$store.state.userInfo.signedIn">
+      <v-menu offset-y v-if="this.$store.state.userInfo.token!==''">
         <template v-slot:activator="{ on }">
           <v-btn v-on="on" text>
-            <span class="mr-2">USERNAME</span>
+            <span class="mr-2">{{getUserInfo.username}}</span>
             <v-icon>mdi-face</v-icon>
           </v-btn>
         </template>
@@ -72,8 +73,8 @@
       </v-menu>
       <v-btn
         text
-        v-if="this.$store.state.userInfo.signedIn === false"
-        @click="signIn"
+        v-if="this.$store.state.userInfo.token == ''"
+        @click="$router.push('/login').catch(err => {})"
       >
         <span class="mr-2">Login</span>
         <v-icon>mdi-login-variant</v-icon>
@@ -90,10 +91,14 @@
 </style>
 <script>
 import { mapState } from "vuex";
+import { mapGetters } from "vuex";
 
 export default {
   name: "App",
-  computed: mapState(["checkoutLen"]),
+  computed: {
+    ...mapGetters(["getUserInfo"]),
+    ...mapState(["checkoutLen"])
+  },
   data: () => ({
     // CheckoutLength: 0
   }),
@@ -102,7 +107,7 @@ export default {
       this.$store.commit("userInfoChange", true);
     },
     signOut: function() {
-      this.$store.commit("userInfoChange", false);
+      this.$store.commit("removeUserInfo", false);
     }
   }
 };

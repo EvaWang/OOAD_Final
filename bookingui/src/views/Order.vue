@@ -22,7 +22,7 @@
             <td>{{ $moment(item.startDate).format("YYYY-MM-DD") }}</td>
             <td>{{ $moment(item.endDate).format("YYYY-MM-DD") }}</td>
             <td>{{ item.bookedQuantity }}</td>
-            <td>{{ item.isDisabled }}</td>
+            <td>{{ !item.isDisabled }}</td>
             <td v-if="item.isPaid">{{ item.isPaid }}</td>
             <td v-if="item.isPaid == false">
               <v-btn
@@ -89,16 +89,16 @@ export default {
       vm.isLoading = true;
 
       vm.axios
-        .get("Ordering/findMyOrders/8849")
+        .get("Ordering/findMyOrders")
         .then(response => {
           vm.orderList = response.data.content;
           vm.pageLength = response.data.totalPages;
           // console.log("i success");
         })
         .catch(error => {
-          // console.log(error);
-          // console.warn("Not good man :(");
-          vm.msg = error.response.data.message;
+          console.log(JSON.stringify(error));
+          console.warn("Not good man :(");
+          // vm.msg = error.response.data.message;
         })
         .finally(function() {
           vm.isLoading = false;
