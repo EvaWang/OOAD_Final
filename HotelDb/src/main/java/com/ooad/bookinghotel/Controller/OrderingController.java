@@ -93,9 +93,11 @@ public class OrderingController {
         String startDateString =  startDate.toInstant().atZone(TimeZone.getTimeZone("Asia/Taipei").toZoneId()).toLocalDate().toString();
 
         Page<OrderView> returnList = null;
-        if(isPast){
+        if(isPast == null){
+            returnList = orderViewRepository.searchOrder(userId, orderId, null, null, pageable);
+        }else if(isPast){
             returnList = orderViewRepository.searchOrder(userId, orderId, null, startDateString, pageable);
-        }else{
+        }else if(isPast == false){
             returnList = orderViewRepository.searchOrder(userId, orderId, startDateString, null, pageable);
         }
 
