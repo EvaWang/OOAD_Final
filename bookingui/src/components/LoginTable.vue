@@ -25,8 +25,8 @@
       </v-form>
     </v-card-text>
     <v-card-text>
-      <v-alert dense outlined type="error" v-show="errorMsg!=''">
-        {{errorMsg}}
+      <v-alert dense outlined type="error" v-show="errorMsg != ''">
+        {{ errorMsg }}
       </v-alert>
     </v-card-text>
     <v-card-actions>
@@ -34,6 +34,7 @@
       <v-btn color="success" @click="createUser">Create Account</v-btn>
       <v-btn color="primary" @click="signIn">Login</v-btn>
     </v-card-actions>
+    <v-progress-linear v-show="isLoading" indeterminate></v-progress-linear>
   </v-card>
 </template>
 
@@ -48,12 +49,12 @@ export default {
     nextLink: {
       default: "/order",
       type: String
-    },
+    }
   },
   data: () => ({
     username: "",
     password: "",
-    isLoading: "",
+    isLoading: false,
     errorMsg: ""
   }),
   methods: {
@@ -74,8 +75,8 @@ export default {
         .then(response => {
           vm.$store.commit("userInfoChange", response.data);
           vm.$emit("signIn");
-          if(!vm.mode_popup){
-            vm.$router.push({path: vm.nextLink});
+          if (!vm.mode_popup) {
+            vm.$router.push({ path: vm.nextLink });
           }
         })
         .catch(error => {
