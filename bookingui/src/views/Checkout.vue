@@ -12,7 +12,7 @@
     <v-stepper-items>
       <v-stepper-content step="1">
         <v-dialog v-model="dialog" persistent max-width="290">
-          <LoginTable></LoginTable>
+          <LoginTable @signIn="signIn" :mode_popup="true"></LoginTable>
         </v-dialog>
         <v-container class="mb-12 checkout-content">
           <v-row>
@@ -162,6 +162,9 @@ export default {
     };
   },
   methods: {
+    signIn() {
+      this.dialog = false;
+    },
     fillArray(value, len) {
       var arr = [];
       for (var i = 0; i < len; i++) {

@@ -24,6 +24,11 @@
         />
       </v-form>
     </v-card-text>
+    <v-card-text>
+      <v-alert dense outlined type="error" v-show="errorMsg!=''">
+        {{errorMsg}}
+      </v-alert>
+    </v-card-text>
     <v-card-actions>
       <v-spacer />
       <v-btn color="success" @click="createUser">Create Account</v-btn>
@@ -35,11 +40,21 @@
 <script>
 export default {
   name: "LoginTable",
+  props: {
+    mode_popup: {
+      default: false,
+      type: Boolean
+    },
+    nextLink: {
+      default: "/order",
+      type: String
+    },
+  },
   data: () => ({
     username: "",
     password: "",
     isLoading: "",
-    msg: ""
+    errorMsg: ""
   }),
   methods: {
     createUser: function() {
@@ -58,12 +73,13 @@ export default {
         })
         .then(response => {
           vm.$store.commit("userInfoChange", response.data);
-          vm.$router.push({
-            path: "/order"
-          });
+          vm.$emit("signIn");
+          if(!vm.mode_popup){
+            vm.$router.push({path: vm.nextLink});
+          }
         })
         .catch(error => {
-          vm.ErrorMsg = error.response.data;
+          vm.errorMsg = error.response.data.message;
         })
         .finally(function() {
           // always executed

@@ -107,6 +107,7 @@ export default {
     },
     signOut: function() {
       this.$store.commit("removeUserInfo", false);
+      this.$router.push('/').catch()
     }
   }
 };
