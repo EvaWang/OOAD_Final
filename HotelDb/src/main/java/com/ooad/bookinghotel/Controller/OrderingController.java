@@ -160,7 +160,7 @@ public class OrderingController {
             } else if ((RoomView.getDoubleRoom() - RoomView.getBookedDoubleRoom()) < RoomsNeeded_Double) {
                 throw new ValidationException("Not enough double rooms in this hotel between " + startDate + " ~ " + endDate);
             } else if ( (RoomView.getQuadRoom() - RoomView.getBookedQuadRoom()) < RoomsNeeded_Quad) {
-                throw new ValidationException("Not enough double rooms in this hotel between " + startDate + " ~ " + endDate);
+                throw new ValidationException("Not enough quad rooms in this hotel between " + startDate + " ~ " + endDate);
             }
         }
 
@@ -258,7 +258,7 @@ public class OrderingController {
         List<HotelView> hotelViews = hotelViewRepository.findOne(HotelIds,orderingObj.get("StartDate"),orderingObj.get("EndDate"));
         for (HotelView RoomView:hotelViews) {
             if ((RoomView.getSingleRoom() - RoomView.getBookedSingleRoom()) < 0) {
-                throw new ValidationException("Not enough double rooms in this hotel between " + startDate + " ~ " + endDate);
+                throw new ValidationException("Not enough single rooms in this hotel between " + startDate + " ~ " + endDate);
             } else if ((RoomView.getDoubleRoom() - RoomView.getBookedDoubleRoom()) < RoomsNeeded_Double) {
                 throw new ValidationException("Not enough double rooms in this hotel between " + startDate + " ~ " + endDate);
             } else if ( (RoomView.getQuadRoom() - RoomView.getBookedQuadRoom()) < RoomsNeeded_Quad) {
@@ -303,7 +303,8 @@ public class OrderingController {
     }
 
     @PostMapping("/updateByBooking/{id}")
-    Ordering updateOrderByBooking(@PathVariable int id) {
+    Ordering updateOrderByBooking(@RequestBody Map<String, String> orderingObj,@PathVariable int id) throws ParseException{
+        SimpleDateFormat formatter1 = new SimpleDateFormat("yyyy-MM-dd");
         Date now = new Date();
 
         Optional<Ordering> findOrder = orderingRepository.findById(id);
@@ -318,7 +319,7 @@ public class OrderingController {
         }
 
         if (originalOrdering.getIsDisabled() == true) {
-            throw new RuleException(id, "This Order is disabled.");
+            throw new RuleException(id, "This Order has been disabled.");
         }
 
         Date startDate = originalOrdering.getStartDate();
@@ -332,20 +333,84 @@ public class OrderingController {
 
         List<Booking> BookingList = bookingRepository.findByOrderId(id);
 
-        Integer Total = 0;
+        Integer hotelId = 0;
+
+
+        String HotelRoomTypes = orderingObj.get("HotelRoomTypes");
+        String[] roomTypeList = HotelRoomTypes.split(",");
+
+        ArrayList bookingArray = new ArrayList();
+
         for (Booking Book: BookingList) {
-            if (Book.getIsDisabled() == false) {
-                HotelRoom newHotelRoom = hotelRoomRepository.findById(Book.getHotelRoomId()).get();
-                Total = Total + newHotelRoom.getPrice();
+            hotelId = Book.getHotelId();
+            break;
+        }
+
+        List<String> roomIdList_toList = Arrays.asList(roomTypeList);
+
+        List<Integer> int_roomIdList_toList = new ArrayList<>();
+
+        //Count the rooms needed for this order
+        Integer RoomsNeeded_Single = 0;
+        Integer RoomsNeeded_Double = 0;
+        Integer RoomsNeeded_Quad = 0;
+        for(String s : roomIdList_toList) {
+            int_roomIdList_toList.add(Integer.valueOf(s));
+            Integer Value = Integer.valueOf(s);
+            if (Value == 1) RoomsNeeded_Single = RoomsNeeded_Single + 1;
+            else if (Value == 2) RoomsNeeded_Double = RoomsNeeded_Double + 1;
+            else if (Value == 4) RoomsNeeded_Quad = RoomsNeeded_Quad + 1;
+        }
+
+
+        List<HotelRoom> roomIdList_checked = hotelRoomRepository.findByRoomTypes(int_roomIdList_toList, hotelId);;
+        List<Integer> HotelIds = new ArrayList<>();
+        HotelIds.add(hotelId);
+        List<HotelView> CheckIfExist = hotelViewRepository.findOne(HotelIds,formatter1.format(startDate),formatter1.format(endDate));
+
+        //Check if this hotel has enough rooms for this order
+        for (HotelView RoomView:CheckIfExist) {
+            if ((RoomView.getSingleRoom() - RoomView.getBookedSingleRoom()) < RoomsNeeded_Single) {
+                throw new ValidationException("Not enough single rooms in this hotel between " + startDate + " ~ " + endDate);
+            } else if ((RoomView.getDoubleRoom() - RoomView.getBookedDoubleRoom()) < RoomsNeeded_Double) {
+                throw new ValidationException("Not enough double rooms in this hotel between " + startDate + " ~ " + endDate);
+            } else if ( (RoomView.getQuadRoom() - RoomView.getBookedQuadRoom()) < RoomsNeeded_Quad) {
+                throw new ValidationException("Not enough quad rooms in this hotel between " + startDate + " ~ " + endDate);
             }
+        }
+        for (Booking Book: BookingList) {
+            Book.setIsDisabled(true);
+        }
+        Integer Total = 0;
+        Dictionary<Integer, Integer> roomDict = new Hashtable();
+        Dictionary<Integer, Integer> roomIdDict = new Hashtable();
+        for(HotelRoom item : roomIdList_checked){
+            roomDict.put(item.getRoomType(), item.getPrice());
+            roomIdDict.put(item.getRoomType(), item.getId());
+        }
+        Integer roomPrice = 0;
+        for(Integer i : int_roomIdList_toList){
+            //System.out.println(roomDict.get(i));
+            roomPrice = roomDict.get(i);
+            Total = Total + roomPrice;
         }
         if (Total == 0) {
             originalOrdering.setIsDisabled(true);
             return orderingRepository.save(originalOrdering);
         }
 
-        Total = Total * Days;
-        originalOrdering.setTotal(Total);
+        originalOrdering.setTotal(Total*Days);
+
+        for(String roomType: roomTypeList){
+            Booking newBooking = new Booking();
+            newBooking.setHotelId(hotelId);
+            newBooking.setHotelRoomId(roomIdDict.get(Integer.parseInt(roomType)));
+            newBooking.setOrderId(originalOrdering.getId());
+            newBooking.setIsDisabled(false);
+            bookingArray.add(newBooking);
+        }
+
+        bookingRepository.saveAll(bookingArray);
 
         return orderingRepository.save(originalOrdering);
     }
