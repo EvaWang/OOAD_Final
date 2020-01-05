@@ -17,9 +17,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.swing.text.html.Option;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(path="/Auth") // This means URL's start with /demo (after Application path)
@@ -41,21 +43,21 @@ public class AuthController {
     @RequestMapping(value = "/authenticate", method = RequestMethod.POST, consumes = "application/json")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest) throws Exception {
         String account = authenticationRequest.getUsername();
-        User user = userRepository.findByAccount(account).get();
-        if (user == null) {
+        Optional<User> user = userRepository.findByAccount(account);
+        if (user.isPresent() == false) {
             throw new UsernameNotFoundException("User not found with username: " + account);
         }
 
         Map<String, Object> claims = new HashMap<String, Object>();
-        claims.put("id", user.getId());
-        claims.put("name", user.getName());
+        claims.put("id", user.get().getId());
+        claims.put("name", user.get().getName());
 
-        final UserDetails userDetails = new org.springframework.security.core.userdetails.User(user.getAccount(), user.getPassword(),
+        final UserDetails userDetails = new org.springframework.security.core.userdetails.User(user.get().getAccount(), user.get().getPassword(),
                 new ArrayList<>());
         final String token = jwtToken.generateToken(userDetails, claims);
         authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
 
-        return ResponseEntity.ok(new JwtResponse(token, user.getName()));
+        return ResponseEntity.ok(new JwtResponse(token, user.get().getName()));
     }
 
     private void authenticate(String username, String password) throws Exception {

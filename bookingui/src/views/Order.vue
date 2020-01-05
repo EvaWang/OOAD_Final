@@ -80,6 +80,7 @@ export default {
       var vm = this;
       vm.dialog = false;
       vm.selectedId = null;
+      vm.getOrderList();
     },
     go2Pay(orderId) {
       this.$router.push({ path: "/checkout/2", query: { orderId: orderId } });

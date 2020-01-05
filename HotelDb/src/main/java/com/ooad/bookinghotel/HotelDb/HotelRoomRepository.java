@@ -16,7 +16,7 @@ public interface HotelRoomRepository  extends CrudRepository<HotelRoom, Integer>
     List<HotelRoom> findByHotelIdAndRoomType(Integer hotelId, Integer roomType);
 
     /**
-     * @param roomIds
+     * @param roomTypes
      * @param hotelId id from related hotel jsonFileId
      * @return
      */

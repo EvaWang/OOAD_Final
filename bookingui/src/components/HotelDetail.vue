@@ -57,7 +57,7 @@
                 <v-item>
                   <v-btn text large icon color="success"
                    class="ma-1 ml-4"
-                    @click="BookingQuantity = BookingQuantityDefault"
+                    @click="$emit('restoreBooking', RoomType)"
                   >
                     <v-icon>mdi-restore</v-icon>
                   </v-btn>
@@ -111,7 +111,8 @@ export default {
   }),
   watch:{
     BookingQuantityDefault(){
-      console.log(this.BookingQuantityDefault);
+      console.log('this.BookingQuantityDefault');
+      this.BookingQuantity = this.BookingQuantityDefault;
     }
   },
   methods: {
@@ -155,7 +156,7 @@ export default {
   mounted: function() {
     var vm = this;
     if (vm.BookingQuantityDefault > 0) {
-      vm.BookingQuantity = vm.BookingQuantityDefault;
+      vm.BookingQuantity = parseInt(vm.BookingQuantityDefault);
     }
   }
 };

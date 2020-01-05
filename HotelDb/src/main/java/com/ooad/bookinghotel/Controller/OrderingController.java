@@ -53,7 +53,11 @@ public class OrderingController {
     //Single item
     @GetMapping("/findOne/{id}")
     Ordering one (@PathVariable int id) {
-        return orderingRepository.findById(id)
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String credentials = auth.getCredentials().toString();
+        Integer  userId = jwtToken.getUserId(credentials);
+
+        return orderingRepository.findByIdAndUserId(id, userId)
                 .orElseThrow(()->new NotFoundException(id));
     }
 
@@ -137,11 +141,11 @@ public class OrderingController {
 
         Ordering newOrdering = new Ordering();
         if (CheckLegalDateRegion(startDate,endDate) == false) {
-            throw new ValidationException("Illegal Date Region");
+            throw new RuleException(0, "Illegal Date Region");
         }
         String HotelRoomTypes = orderingObj.get("HotelRoomTypes");
-        if (HotelRoomTypes == null) {
-            throw new ValidationException("No Room Types Entered");
+        if (HotelRoomTypes == null || HotelRoomTypes=="") {
+            throw new RuleException(0, "Please select at least one room.");
         }
         String[] roomTypeList = HotelRoomTypes.split(",");
 
@@ -174,11 +178,11 @@ public class OrderingController {
         //Check if this hotel has enough rooms for this order
         for (HotelView RoomView:CheckIfExist) {
             if ((RoomView.getSingleRoom() - RoomView.getBookedSingleRoom()) < RoomsNeeded_Single) {
-                throw new ValidationException("Not enough single rooms in this hotel between " + startDate + " ~ " + endDate);
+                throw new RuleException(-1, "Not enough single rooms in this hotel between " + startDate + " ~ " + endDate);
             } else if ((RoomView.getDoubleRoom() - RoomView.getBookedDoubleRoom()) < RoomsNeeded_Double) {
-                throw new ValidationException("Not enough double rooms in this hotel between " + startDate + " ~ " + endDate);
+                throw new RuleException(-1, "Not enough double rooms in this hotel between " + startDate + " ~ " + endDate);
             } else if ( (RoomView.getQuadRoom() - RoomView.getBookedQuadRoom()) < RoomsNeeded_Quad) {
-                throw new ValidationException("Not enough quad rooms in this hotel between " + startDate + " ~ " + endDate);
+                throw new RuleException(-1, "Not enough quad rooms in this hotel between " + startDate + " ~ " + endDate);
             }
         }
 
@@ -236,7 +240,11 @@ public class OrderingController {
         Date startDate = formatter1.parse(orderingObj.get("StartDate"));
         Date endDate = formatter1.parse(orderingObj.get("EndDate"));
 
-        Optional<Ordering> findOrder = orderingRepository.findById(id);
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String credentials = auth.getCredentials().toString();
+        Integer  userId = jwtToken.getUserId(credentials);
+
+        Optional<Ordering> findOrder = orderingRepository.findByIdAndUserId(id, userId);
         if(findOrder.isPresent() == false){
             return findOrder.orElseThrow(() -> new NotFoundException(id));
         }
@@ -253,7 +261,7 @@ public class OrderingController {
         }
 
         if (CheckLegalDateRegion(startDate,endDate) == false) {
-            throw new ValidationException("Illegal Date Region");
+            throw new RuleException(id, "Illegal Date Region");
         }
 
         List<Booking> BookingList = bookingRepository.findByOrderId(id);
@@ -280,11 +288,11 @@ public class OrderingController {
         List<HotelView> hotelViews = hotelViewRepository.findOne(HotelIds,orderingObj.get("StartDate"),orderingObj.get("EndDate"));
         for (HotelView RoomView:hotelViews) {
             if ((RoomView.getSingleRoom() - RoomView.getBookedSingleRoom()) < 0) {
-                throw new ValidationException("Not enough single rooms in this hotel between " + startDate + " ~ " + endDate);
+                throw new RuleException(id, "Not enough single rooms in this hotel between " + startDate + " ~ " + endDate);
             } else if ((RoomView.getDoubleRoom() - RoomView.getBookedDoubleRoom()) < RoomsNeeded_Double) {
-                throw new ValidationException("Not enough double rooms in this hotel between " + startDate + " ~ " + endDate);
+                throw new RuleException(id, "Not enough double rooms in this hotel between " + startDate + " ~ " + endDate);
             } else if ( (RoomView.getQuadRoom() - RoomView.getBookedQuadRoom()) < RoomsNeeded_Quad) {
-                throw new ValidationException("Not enough quad rooms in this hotel between " + startDate + " ~ " + endDate);
+                throw new RuleException(id, "Not enough quad rooms in this hotel between " + startDate + " ~ " + endDate);
             }
         }
         Date originalStartDate = originalOrdering.getStartDate();
@@ -322,24 +330,28 @@ public class OrderingController {
         SimpleDateFormat formatter1 = new SimpleDateFormat("yyyy-MM-dd");
         Date now = new Date();
 
-        Optional<Ordering> findOrder = orderingRepository.findById(id);
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String credentials = auth.getCredentials().toString();
+        Integer  userId = jwtToken.getUserId(credentials);
+
+        Optional<Ordering> findOrder = orderingRepository.findByIdAndUserId(id, userId);
         if(findOrder.isPresent() == false){
-            return findOrder.orElseThrow(() -> new NotFoundException(id));
+            throw new NotFoundException(id);
         }
 
         Ordering originalOrdering = findOrder.get();
 
-        if (originalOrdering.getIsPaid() == true) {
-            throw new RuleException(id,"This Order has been paid,can't modified");
-        }
+//        if (originalOrdering.getIsPaid() == true) {
+//            throw new RuleException(id,"This Order has been paid,can't modified");
+//        }
 
         if (originalOrdering.getIsDisabled() == true) {
-            throw new RuleException(id, "This Order has been disabled.");
+            throw new RuleException(id, "This Order is canceled.");
         }
 
         Date startDate = originalOrdering.getStartDate();
         if (CheckLegalDateRegion(now,startDate) == false) {
-            throw new ValidationException("Can't modified this Order due to deadline");
+            throw new RuleException(id, "Orders cannot be changed on check-in date.");
         }
 
         Date endDate = originalOrdering.getEndDate();
@@ -390,11 +402,11 @@ public class OrderingController {
         //Check if this hotel has enough rooms for this order
         for (HotelView RoomView:CheckIfExist) {
             if ((RoomView.getSingleRoom() - RoomView.getBookedSingleRoom()) < RoomsNeeded_Single) {
-                throw new ValidationException("Not enough single rooms in this hotel between " + startDate + " ~ " + endDate);
+                throw new RuleException(id, "Not enough single rooms in this hotel between " + startDate + " ~ " + endDate);
             } else if ((RoomView.getDoubleRoom() - RoomView.getBookedDoubleRoom()) < RoomsNeeded_Double) {
-                throw new ValidationException("Not enough double rooms in this hotel between " + startDate + " ~ " + endDate);
+                throw new RuleException(id, "Not enough double rooms in this hotel between " + startDate + " ~ " + endDate);
             } else if ( (RoomView.getQuadRoom() - RoomView.getBookedQuadRoom()) < RoomsNeeded_Quad) {
-                throw new ValidationException("Not enough quad rooms in this hotel between " + startDate + " ~ " + endDate);
+                throw new RuleException(id, "Not enough quad rooms in this hotel between " + startDate + " ~ " + endDate);
             }
         }
         for (Booking Book: BookingList) {
@@ -432,7 +444,11 @@ public class OrderingController {
 
     @PutMapping("/payOrder/{id}")
     Ordering payOrder(@PathVariable int id){
-        Optional<Ordering> findOrder = orderingRepository.findById(id);
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String credentials = auth.getCredentials().toString();
+        Integer  userId = jwtToken.getUserId(credentials);
+
+        Optional<Ordering> findOrder = orderingRepository.findByIdAndUserId(id, userId);
         if(findOrder.isPresent() == false){
             return findOrder.orElseThrow(() -> new NotFoundException(id));
         }
