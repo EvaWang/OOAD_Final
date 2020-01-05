@@ -256,9 +256,9 @@ public class OrderingController {
             throw new RuleException(id, "This Order has been disabled.");
         }
 
-        if (originalOrdering.getIsPaid() == true) {
-            throw new RuleException(id, "This Order has been paid,can't modified");
-        }
+//        if (originalOrdering.getIsPaid() == true) {
+//            throw new RuleException(id, "This Order has been paid,can't modified");
+//        }
 
         if (CheckLegalDateRegion(startDate,endDate) == false) {
             throw new RuleException(id, "Illegal Date Region");
@@ -320,6 +320,11 @@ public class OrderingController {
             newTotal = originalTotal*newDays/originalDays;
         }
 
+        if(newTotal>originalOrdering.getTotal()){
+            originalOrdering.setIsPaid(false);
+//            錢不夠要補
+        }
+
         originalOrdering.setTotal(newTotal);
 
         return orderingRepository.save(originalOrdering);
@@ -363,7 +368,7 @@ public class OrderingController {
         Integer hotelId = 0;
 
         String HotelRoomTypes = orderingObj.get("HotelRoomTypes");
-        if (HotelRoomTypes == null) {
+        if (HotelRoomTypes == null || HotelRoomTypes.isEmpty()) {
             originalOrdering.setIsDisabled(true);
             return orderingRepository.save(originalOrdering);
         }
@@ -424,6 +429,11 @@ public class OrderingController {
             //System.out.println(roomDict.get(i));
             roomPrice = roomDict.get(i);
             Total = Total + roomPrice;
+        }
+
+        if(Total>originalOrdering.getTotal()){
+            originalOrdering.setIsPaid(false);
+//            錢不夠要補
         }
 
         originalOrdering.setTotal(Total*Days);

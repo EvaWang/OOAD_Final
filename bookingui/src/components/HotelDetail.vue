@@ -111,7 +111,6 @@ export default {
   }),
   watch:{
     BookingQuantityDefault(){
-      console.log('this.BookingQuantityDefault');
       this.BookingQuantity = this.BookingQuantityDefault;
     }
   },
@@ -136,7 +135,8 @@ export default {
       vm.BookingQuantity = newVal;
       vm.$emit("updateBooking", {
         RoomType: vm.RoomType,
-        Quantity: vm.BookingQuantity
+        Quantity: vm.BookingQuantity,
+        Price: vm.Price
       });
     },
     go2checkout() {

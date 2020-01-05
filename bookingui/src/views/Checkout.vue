@@ -17,13 +17,7 @@
         <v-container class="mb-12 checkout-content">
           <v-row>
             <v-col cols="12" md="4">
-              <h1>{{ order.name }}</h1>
-              <h1>{{ order.star }}</h1>
-              <h1>{{ order.locality }}</h1>
-              <h1>{{ order.address }}</h1>
-              <h1>Check-In: {{ order.startDate }}</h1>
-              <h1>Check-Out: {{ order.endDate }}</h1>
-              <h1>Total: {{ Total }}</h1>
+            <OrderInfo :order="order"></OrderInfo>
               <v-textarea outlined v-model="memo" color="teal">
                 <template v-slot:label>
                   <div>Memo <small>(optional)</small></div>
@@ -77,15 +71,7 @@
       </v-stepper-content>
       <v-stepper-content step="2">
         <v-card class="mb-12 checkout-content">
-          <h1>order</h1>
-          <h1>{{ order.name }}</h1>
-          <h1>{{ order.star }}</h1>
-          <h1>{{ order.locality }}</h1>
-          <h1>{{ order.address }}</h1>
-          <h1>Check-In: {{ order.startDate }}</h1>
-          <h1>Check-Out: {{ order.endDate }}</h1>
-          <h1>Total: {{ order.total }}</h1>
-          <h1>Canceled: {{ order.isDisabled }}</h1>
+          <OrderInfo :order="order"></OrderInfo>
           <v-alert dense outlined type="error" v-show="errorMsg != ''">
             Failed: <strong>{{ errorMsg }}</strong>
           </v-alert>
@@ -121,23 +107,19 @@
 import { mapGetters } from "vuex";
 import HotelDetail from "@/components/HotelDetail";
 import LoginTable from "@/components/LoginTable";
+import OrderInfo from "@/components/OrderInfo";
 
 export default {
   name: "checkout",
   components: {
     HotelDetail,
-    LoginTable
+    LoginTable,
+    OrderInfo
   },
   props: {
     step: { default: 0, type: Number }
   },
   watch: {
-    getOrder: {
-      handler() {
-        // console.log("getOrder changed.");
-      },
-      deep: true
-    },
     getUserInfo: {
       handler() {
         var vm = this;
@@ -148,20 +130,34 @@ export default {
   },
   computed: {
     ...mapGetters(["getOrder"]),
-    ...mapGetters(["getUserInfo"])
+    ...mapGetters(["getUserInfo"]),
   },
   data() {
     return {
       e1: 0,
-      Total: 0,
       memo: "",
       isLoading: false,
-      order: {},
+      order: {
+        id: null,
+        name:"",
+        star: 0,
+        address: "",
+        locality:"",
+        startDate:"",
+        endDate:"",
+        stayNights:0,
+        total:0,
+      },
       errorMsg: "",
       dialog: false
     };
   },
   methods: {
+    calcStayNights(){
+      var aDay = (1000*60*60*24);
+      var nights = (new Date(this.order.endDate)-new Date(this.order.startDate))/aDay;
+      this.order.stayNights = nights;
+    },
     signIn() {
       this.dialog = false;
     },
@@ -171,6 +167,16 @@ export default {
         arr.push(value);
       }
       return arr;
+    },
+    calcTotal(){
+      var vm = this;
+      var total = 0
+      for (var roomType in vm.order.rooms) {
+        var q = vm.order.rooms[roomType].Quantity;
+        var p = vm.order.rooms[roomType].Price;
+        total = total+ p*q;
+      }
+      vm.order.total = total*vm.order.stayNights ;
     },
     pay() {
       var vm = this;
@@ -222,6 +228,7 @@ export default {
     },
     updateBooking(val) {
       this.$store.commit("updateOrderDetail", val);
+      this.calcTotal();
     },
     getHotelDetail: function() {
       var vm = this;
@@ -240,8 +247,6 @@ export default {
           vm.order.star = item.star;
           vm.order.locality = item.locality;
           vm.order.address = item.address;
-          vm.order.OrderId = item.id;
-          vm.order.total = item.total;
           vm.order.jsonFileId = item.jsonFileId;
           vm.order.isDisabled = item.isDisabled;
           vm.order.singleRoom = item.singleRoom;
@@ -273,6 +278,7 @@ export default {
         .then(response => {
           var item = response.data.content[0];
           vm.$set(vm.order, "name", item.name);
+          vm.order.id = item.id;
           vm.order.star = item.star;
           vm.order.locality = item.locality;
           vm.order.address = item.address;
@@ -301,6 +307,8 @@ export default {
       vm.order.startDate = vm.getOrder.startDate;
       vm.order.endDate = vm.getOrder.endDate;
       vm.order.rooms = vm.getOrder.rooms;
+      vm.calcStayNights()
+      vm.calcTotal(vm.order.rooms)
       vm.getHotelDetail();
     } else if (vm.e1 <= 2 && vm.e1 > 1) {
       vm.order.OrderId = vm.$route.query.orderId;

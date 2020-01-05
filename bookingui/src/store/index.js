@@ -79,7 +79,8 @@ export default new Vuex.Store({
         rooms: {}
       }
       newOrder.rooms["type" + orderItem.RoomType] = {
-        Quantity: orderItem.Quantity
+        Quantity: orderItem.Quantity,
+        Price: orderItem.Price,
       }
       state.order = newOrder;
       localStorage.setItem('order', JSON.stringify(state.order));
@@ -88,6 +89,7 @@ export default new Vuex.Store({
       var rooms = state.order.rooms;
       rooms["type" + roomItem.RoomType] = rooms["type" + roomItem.RoomType] || {};
       rooms["type" + roomItem.RoomType].Quantity = roomItem.Quantity;
+      rooms["type" + roomItem.RoomType].Price = roomItem.Price;
 
       state.order.rooms = rooms;
       localStorage.setItem('order', JSON.stringify(state.order));

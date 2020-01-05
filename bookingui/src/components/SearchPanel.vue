@@ -174,7 +174,7 @@ export default {
     menu_end: false,
     picker_start: "",
     picker_end: "",
-    tomorrow: this.$moment().add(1, "day").format("YYYY-MM-DD"),
+    tomorrow: "",
     NumberOfCustomer: 1,
     selectRoomType: { Name: "Single", Limit: 1 },
     selectRoomTypeList: [
@@ -262,6 +262,7 @@ export default {
         .format("YYYY-MM-DD");
       this.picker_end = this.picker_end_min;
     }
+    this.tomorrow = this.$moment().add(1, "day").format("YYYY-MM-DD")
   }
 };
 </script>
