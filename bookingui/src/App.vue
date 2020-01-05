@@ -106,7 +106,7 @@ export default {
       this.$store.commit("userInfoChange", true);
     },
     signOut: function() {
-      this.$store.commit("removeUserInfo", false);
+      this.$store.commit("removeUserInfo");
       this.$router.push('/').catch()
     }
   }
