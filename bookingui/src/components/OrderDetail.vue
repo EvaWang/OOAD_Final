@@ -97,7 +97,12 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-
+    <v-snackbar v-model="snackbar">
+      Update Successfully. Refund will be credited within three days. If this new order costs more, the status will be changed to unpaid.
+      <v-btn color="pink" text @click="snackbar = false">
+        Close
+      </v-btn>
+    </v-snackbar>
     <v-dialog
       v-model="dialog"
       fullscreen
@@ -116,6 +121,8 @@
             <v-btn dark text @click="closeDialog">Close</v-btn>
           </v-toolbar-items>
         </v-toolbar>
+        <v-progress-linear v-show="isLoading" indeterminate></v-progress-linear>
+
         <v-container v-if="order" class="mb-12 detail-container">
           <v-row>
             <v-col cols="12" md="4">
@@ -201,7 +208,9 @@
               <v-divider></v-divider>
             </v-col>
             <v-col cols="12" md="8">
-              <v-alert dense outlined type="error">{{ errorMsg }}</v-alert>
+              <v-alert v-show="errorMsg != ''" dense outlined type="error">{{
+                errorMsg
+              }}</v-alert>
               <!-- 這裡的 Quantity 是假的  -->
               <HotelDetail
                 v-if="(ori_room['type1'] || {}).Quantity > 0"
@@ -274,12 +283,16 @@ export default {
   },
   data() {
     return {
+      isLoading: false,
+      snackbar: false,
       dialog: false,
       pickDate: false,
       order: {},
       ori_room: {},
       errorMsg: "",
-      tomorrow: this.$moment().add(1, "day").format("YYYY-MM-DD"),
+      tomorrow: this.$moment()
+        .add(1, "day")
+        .format("YYYY-MM-DD"),
       menu_start: false,
       menu_end: false
     };
@@ -333,6 +346,7 @@ export default {
         })
         .then(function() {
           // .then(function(response) {
+          vm.snackbar = true;
           vm.errorMsg = "";
         })
         .catch(function(error) {
@@ -359,6 +373,7 @@ export default {
         })
         .then(function() {
           // .then(function(response) {
+          vm.snackbar = true;
           vm.errorMsg = "";
         })
         .catch(function(error) {
