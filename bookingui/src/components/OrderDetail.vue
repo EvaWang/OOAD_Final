@@ -1,5 +1,103 @@
 <template>
   <v-row justify="center">
+    <v-dialog v-model="pickDate" persistent>
+      <v-card>
+        <v-card-title class="headline">Select New Date Range</v-card-title>
+        <v-card-text>
+          <v-row justify="center">
+            <v-col cols="12" md="6">
+              <v-menu
+                ref="menu_start"
+                v-model="menu_start"
+                :close-on-content-click="false"
+                :return-value.sync="order.startDate"
+                transition="scale-transition"
+                offset-y
+                max-width="290px"
+                min-width="290px"
+              >
+                <template v-slot:activator="{ on }">
+                  <v-text-field
+                    v-model="order.startDate"
+                    label="Check In"
+                    prepend-icon="mdi-calendar"
+                    readonly
+                    v-on="on"
+                  ></v-text-field>
+                </template>
+                <v-date-picker
+                  v-model="order.startDate"
+                  :min="tomorrow"
+                  :max="max_date"
+                  no-title
+                  scrollable
+                >
+                  <v-spacer></v-spacer>
+                  <v-btn text color="primary" @click="menu_start = false"
+                    >Cancel</v-btn
+                  >
+                  <v-btn
+                    text
+                    color="primary"
+                    @click="$refs.menu_start.save(order.startDate)"
+                    >OK</v-btn
+                  >
+                </v-date-picker>
+              </v-menu>
+            </v-col>
+            <!-- <v-spacer></v-spacer> -->
+            <v-col cols="12" md="6">
+              <v-menu
+                ref="menu_end"
+                v-model="menu_end"
+                :close-on-content-click="false"
+                :return-value.sync="order.endDate"
+                transition="scale-transition"
+                offset-y
+                max-width="290px"
+                min-width="290px"
+              >
+                <template v-slot:activator="{ on }">
+                  <v-text-field
+                    v-model="order.endDate"
+                    label="Check Out"
+                    prepend-icon="mdi-calendar"
+                    readonly
+                    v-on="on"
+                  ></v-text-field>
+                </template>
+                <v-date-picker
+                  v-model="order.endDate"
+                  :min="picker_end_min"
+                  :max="max_date"
+                  no-title
+                  scrollable
+                >
+                  <v-spacer></v-spacer>
+                  <v-btn text color="primary" @click="menu_end = false"
+                    >Cancel</v-btn
+                  >
+                  <v-btn
+                    text
+                    color="primary"
+                    @click="$refs.menu_end.save(order.endDate)"
+                    >OK</v-btn
+                  >
+                </v-date-picker>
+              </v-menu>
+            </v-col>
+          </v-row>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="green darken-1" text @click="pickDate = false"
+            >Cancel</v-btn
+          >
+          <v-btn color="green darken-1" text @click="updateDate">Submit</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
     <v-dialog
       v-model="dialog"
       fullscreen
@@ -52,7 +150,7 @@
                         depressed
                         small
                         color="warning"
-                        @click="updateDate"
+                        @click="changeDate"
                         >Change</v-btn
                       >
                       <!-- <v-row dense class="justify-space-between">
@@ -103,6 +201,7 @@
               <v-divider></v-divider>
             </v-col>
             <v-col cols="12" md="8">
+              <v-alert dense outlined type="error">{{ errorMsg }}</v-alert>
               <!-- 這裡的 Quantity 是假的  -->
               <HotelDetail
                 v-if="(ori_room['type1'] || {}).Quantity > 0"
@@ -146,22 +245,20 @@
               <!-- <v-btn class="ma-2" outlined color="warning" @click="restore">Restore</v-btn> -->
             </v-col>
           </v-row>
-          <v-alert dense outlined type="error">{{errorMsg}}
-          </v-alert>
         </v-container>
       </v-card>
     </v-dialog>
   </v-row>
 </template>
 <style scoped>
-  .detail-window{
-    height: 100vh;
-  }
+.detail-window {
+  height: 100vh;
+}
 
-  .detail-container{
-    height: calc(100vh - 136px);
-    overflow: auto;
-  }
+.detail-container {
+  height: calc(100vh - 136px);
+  overflow: auto;
+}
 </style>
 <script>
 import HotelDetail from "@/components/HotelDetail";
@@ -178,9 +275,13 @@ export default {
   data() {
     return {
       dialog: false,
+      pickDate: false,
       order: {},
       ori_room: {},
-      errorMsg:""
+      errorMsg: "",
+      tomorrow: this.$moment().add(1, "day").format("YYYY-MM-DD"),
+      menu_start: false,
+      menu_end: false
     };
   },
   watch: {
@@ -193,6 +294,22 @@ export default {
       }
     }
   },
+  computed: {
+    max_date() {
+      var vm = this;
+      return vm
+        .$moment(vm.order.startDate)
+        .add(1, "month")
+        .format("YYYY-MM-DD");
+    },
+    picker_end_min() {
+      var vm = this;
+      return vm
+        .$moment(vm.order.startDate)
+        .add(1, "day")
+        .format("YYYY-MM-DD");
+    }
+  },
   methods: {
     fillArray(value, len) {
       var arr = [];
@@ -201,7 +318,30 @@ export default {
       }
       return arr;
     },
-    updateDate() {},
+    changeDate() {
+      this.pickDate = true;
+    },
+    updateDate() {
+      var vm = this;
+      vm.pickDate = false;
+      vm.isLoading = true;
+
+      vm.axios
+        .post("/Ordering/updateByDate/" + vm.selectedId, {
+          StartDate: vm.order.startDate,
+          EndDate: vm.order.endDate
+        })
+        .then(function() {
+          // .then(function(response) {
+          vm.errorMsg = "";
+        })
+        .catch(function(error) {
+          vm.errorMsg = error.response.data.message;
+        })
+        .finally(function() {
+          vm.isLoading = false;
+        });
+    },
     updateRoom() {
       var vm = this;
       vm.isLoading = true;
@@ -217,12 +357,9 @@ export default {
         .post("/Ordering/updateByBooking/" + vm.selectedId, {
           HotelRoomTypes: roomTypeList.join(",")
         })
-        .then(function(response) {
-          vm.e1 = 2;
-          vm.order.OrderId = response.data.id;
-          vm.order.total = response.data.total;
+        .then(function() {
+          // .then(function(response) {
           vm.errorMsg = "";
-          vm.$store.commit("removeOrder");
         })
         .catch(function(error) {
           vm.errorMsg = error.response.data.message;
@@ -237,6 +374,7 @@ export default {
       vm.ori_room = {};
       vm.$set(vm.order, "rooms", {});
       vm.$set(vm, "order", {});
+      vm.errorMsg = "";
       this.$emit("closeDialog");
     },
     restoreBooking(type) {

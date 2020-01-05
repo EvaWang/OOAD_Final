@@ -48,7 +48,7 @@
             </template>
             <v-date-picker
               v-model="picker_start"
-              :min="today"
+              :min="tomorrow"
               :max="max_date"
               no-title
               scrollable
@@ -174,7 +174,7 @@ export default {
     menu_end: false,
     picker_start: "",
     picker_end: "",
-    today: "",
+    tomorrow: this.$moment().add(1, "day").format("YYYY-MM-DD"),
     NumberOfCustomer: 1,
     selectRoomType: { Name: "Single", Limit: 1 },
     selectRoomTypeList: [
