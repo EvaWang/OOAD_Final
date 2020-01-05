@@ -36,9 +36,6 @@ public class OrderingController {
     private HotelViewRepository hotelViewRepository;
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
     private JwtToken jwtToken;
 
     public Boolean CheckLegalDateRegion (Date StartDate,Date EndDate) {
@@ -63,6 +60,7 @@ public class OrderingController {
 
     @GetMapping("/findMyOrders")
     ResponseEntity<?> findMyOrders (@RequestParam(value="orderId", required = false) Integer orderId,
+                                    @RequestParam(value="isPast", required = false) Boolean isPast,
                                     @RequestParam(value="page", defaultValue = "0", required = false) int page,
                                     @RequestParam(value = "size", defaultValue = "-1", required = false) int size,
                                     @RequestParam(value = "sortKey", required = false) String sortKey,
@@ -72,16 +70,11 @@ public class OrderingController {
         String credentials = auth.getCredentials().toString();
         Integer  userId = jwtToken.getUserId(credentials);
 
-        Optional<User> findUser = userRepository.findById(userId);
-        if (findUser.isPresent() == false) {
-            throw new NotFoundException(userId);
-        }
         Pageable pageable = null;
         if(size<0){
-            pageable = PageRequest.of(0, Integer.MAX_VALUE);
-        }else {
-            pageable = PageRequest.of(page, size);
+            size = Integer.MAX_VALUE;
         }
+        pageable = PageRequest.of(page, size);
 
         if(sortKey != null && sortKey.isEmpty()==false ){
             Sort sort = Sort.by(sortKey);
@@ -94,7 +87,19 @@ public class OrderingController {
             pageable = PageRequest.of(page, size, sort);
         }
 
-        return ResponseEntity.ok(orderViewRepository.searchOrder(userId, orderId, pageable));
+        Calendar calendar = Calendar.getInstance();
+        // today
+        Date startDate = calendar.getTime();
+        String startDateString =  startDate.toInstant().atZone(TimeZone.getTimeZone("Asia/Taipei").toZoneId()).toLocalDate().toString();
+
+        Page<OrderView> returnList = null;
+        if(isPast){
+            returnList = orderViewRepository.searchOrder(userId, orderId, null, startDateString, pageable);
+        }else{
+            returnList = orderViewRepository.searchOrder(userId, orderId, startDateString, null, pageable);
+        }
+
+        return ResponseEntity.ok(returnList);
     }
 
 
@@ -112,10 +117,9 @@ public class OrderingController {
 
         Pageable pageable = null;
         if(size<0){
-            pageable = PageRequest.of(0, Integer.MAX_VALUE);
-        }else {
-            pageable = PageRequest.of(page, size);
+            size = Integer.MAX_VALUE;
         }
+        pageable = PageRequest.of(page, size);
 
 
         if(sortKey != null && sortKey.isEmpty()==false ){

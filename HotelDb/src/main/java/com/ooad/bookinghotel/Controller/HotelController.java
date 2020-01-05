@@ -48,7 +48,6 @@ public class HotelController {
         // today
         Date startDate = calendar.getTime();
         String startDateString =  startDate.toInstant().atZone(TimeZone.getTimeZone("Asia/Taipei").toZoneId()).toLocalDate().toString();
-        System.out.println("startDateString:"+startDateString);
 
         calendar.add(Calendar.MONTH, 1);
         Date endDate = calendar.getTime();

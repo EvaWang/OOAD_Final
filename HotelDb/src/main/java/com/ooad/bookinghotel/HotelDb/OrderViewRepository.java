@@ -19,10 +19,11 @@ public interface OrderViewRepository extends CrudRepository<OrderView, Integer> 
                     " 0 as booked_is_disabled, 0 as room_type, 0 as price, " +
                     " SUM(booked_quantity) as booked_quantity " +
                     " from order_info " +
-                    " where user_id=:userId AND (:orderId is null or :orderId = id) AND booked_is_disabled = 0" +
+                    " where user_id=:userId AND (:orderId is null or :orderId = id) AND booked_is_disabled = 0 " +
+                    " AND (:newerThan is null or :newerThan < start_date) AND (:olderThan is null or :olderThan >= start_date)" +
                     " group by id, create_time, update_time, discount, memo, total, user_id, is_disabled, " +
                     " end_date, start_date, is_paid, json_file_id, star, locality, address, name",
             nativeQuery = true)
-    Page<OrderView> searchOrder(Integer userId, Integer orderId,Pageable pageable);
+    Page<OrderView> searchOrder(Integer userId, Integer orderId, String newerThan, String olderThan, Pageable pageable);
 
 }
