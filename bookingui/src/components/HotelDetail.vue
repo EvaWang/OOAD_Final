@@ -1,11 +1,11 @@
 <template>
   <v-card class="mx-auto mt-1 mb-1" outlined v-show="Quantity > 0">
     <div class="d-flex">
-      <v-avatar class="ma-3" size="120" tile>
-        <v-img :src="imgPath"></v-img>
+      <v-avatar class="ma-3 d-none d-sm-flex" size="120" tile>
+        <v-img :src="imgPath" class="d-none d-sm-flex"></v-img>
       </v-avatar>
-      <div class="mx-auto">
-        <v-card-title class="headline">{{ title }}</v-card-title>
+      <div class="mx-auto" style="height:140px">
+        <v-card-title class="headline text-break">{{ title }}</v-card-title>
         <v-card-subtitle v-show="Quantity < 5" v-if="!mode_OldOrder">
           Only {{ Quantity }} room(s) left.</v-card-subtitle
         >

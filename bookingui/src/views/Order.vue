@@ -1,7 +1,7 @@
 <template>
   <div>
     <OrderDetail :dialogControl="dialog" :selectedId="selectedId" @closeDialog="closeDialog"></OrderDetail>
-
+    <v-progress-linear v-show="isLoading" indeterminate></v-progress-linear>
     <v-simple-table>
       <template v-slot:default>
         <thead>
