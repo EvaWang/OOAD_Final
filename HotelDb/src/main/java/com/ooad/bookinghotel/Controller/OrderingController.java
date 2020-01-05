@@ -140,6 +140,9 @@ public class OrderingController {
             throw new ValidationException("Illegal Date Region");
         }
         String HotelRoomTypes = orderingObj.get("HotelRoomTypes");
+        if (HotelRoomTypes == null) {
+            throw new ValidationException("No Room Types Entered");
+        }
         String[] roomTypeList = HotelRoomTypes.split(",");
 
         ArrayList bookingArray = new ArrayList();
@@ -292,21 +295,14 @@ public class OrderingController {
         int originalDays = Math.toIntExact(originaldays);
 
         originalOrdering.setStartDate(startDate);
-        originalOrdering.setEndDate(endDate);
 
-        System.out.println(startDate);
+        originalOrdering.setEndDate(endDate);
 
         Long days = (endDate.getTime() - startDate.getTime())/(24*60*60*1000);
 
-        System.out.println(startDate);
-
         int newDays = Math.toIntExact(days);
 
-        System.out.println(startDate);
-
         Integer originalTotal = originalOrdering.getTotal();
-
-        System.out.println(startDate);
 
         Integer newTotal = 0;
 
@@ -354,8 +350,12 @@ public class OrderingController {
 
         Integer hotelId = 0;
 
-
         String HotelRoomTypes = orderingObj.get("HotelRoomTypes");
+        if (HotelRoomTypes == null) {
+            originalOrdering.setIsDisabled(true);
+            return orderingRepository.save(originalOrdering);
+        }
+
         String[] roomTypeList = HotelRoomTypes.split(",");
 
         ArrayList bookingArray = new ArrayList();
@@ -412,10 +412,6 @@ public class OrderingController {
             //System.out.println(roomDict.get(i));
             roomPrice = roomDict.get(i);
             Total = Total + roomPrice;
-        }
-        if (Total == 0) {
-            originalOrdering.setIsDisabled(true);
-            return orderingRepository.save(originalOrdering);
         }
 
         originalOrdering.setTotal(Total*Days);
