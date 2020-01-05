@@ -11,6 +11,9 @@
     <v-progress-linear v-show="isLoading" indeterminate></v-progress-linear>
     <v-stepper-items>
       <v-stepper-content step="1">
+        <v-dialog v-model="dialog" persistent max-width="290">
+          <LoginTable></LoginTable>
+        </v-dialog>
         <v-container class="mb-12 checkout-content">
           <v-row>
             <v-col cols="12" md="4">
@@ -28,7 +31,6 @@
               </v-textarea>
             </v-col>
             <v-col cols="12" md="8">
-              <!-- v-if="order.rooms" -->
               <HotelDetail
                 v-if="order.rooms"
                 :title="'Single Room'"
@@ -66,12 +68,12 @@
             </v-col>
           </v-row>
         </v-container>
-           <v-btn color="primary" @click="sendOrder" :disabled="isLoading">
-            Send Order
-          </v-btn>
-          <v-btn class="ml-2" @click="$router.push('/hotel')"
-            >Back To Search</v-btn
-          >
+        <v-btn color="primary" @click="sendOrder" :disabled="isLoading">
+          Send Order
+        </v-btn>
+        <v-btn class="ml-2" @click="$router.push('/hotel')"
+          >Back To Search</v-btn
+        >
       </v-stepper-content>
       <v-stepper-content step="2">
         <v-card class="mb-12 checkout-content">
@@ -100,9 +102,11 @@
           <h1>Complete.</h1>
         </v-card>
         <v-btn color="primary" class="ml-2" @click="$router.push('/hotel')"
-          >Book Another Room</v-btn>
+          >Book Another Room</v-btn
+        >
         <v-btn color="success" class="ml-2" @click="$router.push('/order')"
-          >My Orders</v-btn>
+          >My Orders</v-btn
+        >
       </v-stepper-content>
     </v-stepper-items>
   </v-stepper>
@@ -116,11 +120,13 @@
 <script>
 import { mapGetters } from "vuex";
 import HotelDetail from "@/components/HotelDetail";
+import LoginTable from "@/components/LoginTable";
 
 export default {
   name: "checkout",
   components: {
-    HotelDetail
+    HotelDetail,
+    LoginTable
   },
   props: {
     step: { default: 0, type: Number }
@@ -131,20 +137,28 @@ export default {
         // console.log("getOrder changed.");
       },
       deep: true
+    },
+    getUserInfo: {
+      handler() {
+        var vm = this;
+        vm.dialog = vm.getUserInfo.token == "";
+      },
+      deep: true
     }
   },
   computed: {
-    ...mapGetters(["getOrder"])
+    ...mapGetters(["getOrder"]),
+    ...mapGetters(["getUserInfo"])
   },
   data() {
     return {
       e1: 0,
       Total: 0,
-      // item: {},
       memo: "",
       isLoading: false,
       order: {},
-      errorMsg: ""
+      errorMsg: "",
+      dialog: false
     };
   },
   methods: {
@@ -162,13 +176,9 @@ export default {
         .put("/Ordering/payOrder/" + vm.order.OrderId)
         .then(function() {
           vm.e1 = 3;
-          
-          // console.log(response.data);
+          vm.errorMsg = "";
         })
         .catch(function(error) {
-          // console.log(error);
-          // console.log(error.response);
-          vm.error = error.response;
           vm.errorMsg = error.response.data.message;
         })
         .finally(function() {
@@ -197,12 +207,10 @@ export default {
           vm.e1 = 2;
           vm.order.OrderId = response.data.id;
           vm.order.total = response.data.total;
-          // console.log(response.data);
+          vm.errorMsg = "";
+          vm.$store.commit("removeOrder");
         })
         .catch(function(error) {
-          vm.error = error.response;
-          // console.log(error.response);
-          // console.log(error);
           vm.errorMsg = error.message;
         })
         .finally(function() {
@@ -210,7 +218,6 @@ export default {
         });
     },
     updateBooking(val) {
-      // console.log(val);
       this.$store.commit("updateOrderDetail", val);
     },
     getHotelDetail: function() {
@@ -225,9 +232,7 @@ export default {
           }
         })
         .then(response => {
-          // console.log(response);
           var item = response.data[0];
-          // vm.order = item;
           vm.$set(vm.order, "name", item.name);
           vm.order.star = item.star;
           vm.order.locality = item.locality;
@@ -245,15 +250,10 @@ export default {
           vm.order.bookedSingleRoom = item.bookedSingleRoom;
           vm.order.bookedDoubleRoom = item.bookedDoubleRoom;
           vm.order.bookedQuadRoom = item.bookedQuadRoom;
-          // console.log("i success");
-          // console.log(vm.order);
+          vm.error = "";
         })
         .catch(error => {
-          // alert(error)
-          // console.log(error.response);
           vm.error = error.response;
-          // console.log(error);
-          // console.warn("Not good man :(");
         })
         .finally(function() {
           vm.isLoading = false;
@@ -278,12 +278,10 @@ export default {
           vm.order.startDate = vm.$moment(item.startDate).format("YYYY-MM-DD");
           vm.order.endDate = vm.$moment(item.endDate).format("YYYY-MM-DD");
           vm.order.isDisabled = item.isDisabled;
-          // console.log("i success");
+          vm.error = "";
         })
         .catch(error => {
-          // console.log(error.response);
           vm.error = error.response;
-          // console.warn("Not good man :(");
         })
         .finally(function() {
           vm.isLoading = false;
@@ -292,19 +290,14 @@ export default {
   },
   mounted: function() {
     var vm = this;
+    vm.dialog = vm.getUserInfo.token == "";
     vm.e1 = vm.$route.params.step;
-    // console.log(vm.e1 <= 1)
-    // console.log(vm.order.HotelId)
 
     if (vm.e1 <= 1 && vm.getOrder.HotelId) {
-      // console.log('here')
       vm.$set(vm.order, "HotelId", vm.getOrder.HotelId);
       vm.order.startDate = vm.getOrder.startDate;
       vm.order.endDate = vm.getOrder.endDate;
       vm.order.rooms = vm.getOrder.rooms;
-      // vm.$set(vm.order.rooms.type1, "type1", vm.getOrder.rooms["type1"]);
-      // vm.$set(vm.order.rooms.type2, "type2", vm.getOrder.rooms["type2"]);
-      // vm.$set(vm.order.rooms.type3, "type3", vm.getOrder.rooms["type3"]);
       vm.getHotelDetail();
     } else if (vm.e1 <= 2 && vm.e1 > 1) {
       vm.order.OrderId = vm.$route.query.orderId;
