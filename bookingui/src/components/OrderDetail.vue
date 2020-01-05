@@ -190,7 +190,7 @@ export default {
     getOrderDetail: function() {
       var vm = this;
       vm.axios
-        .get("Ordering/findMyOrderDetails/8849", {
+        .get("Ordering/findMyOrderDetails", {
           params: {
             orderId: vm.selectedId
           }
@@ -238,7 +238,9 @@ export default {
     }
   },
   mounted: function() {
-    this.getOrderDetail();
+    if(this.selectedId){
+      this.getOrderDetail();
+    }
   }
 };
 </script>

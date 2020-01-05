@@ -69,6 +69,7 @@
 <script>
 export default {
   data: () => ({
+    msg: "",
     isLoading: false,
     valid: true,
     account: "",
@@ -140,26 +141,22 @@ export default {
         vm.isLoading = true;
         vm.axios
           .post("User/add", {
-            firstname: vm.firstname,
-            lastname: vm.lastname,
+            name: vm.firstname + "," + vm.lastname,
             email: vm.email,
             account: vm.account,
             password: vm.password
           })
           .then(response => {
-            vm.items = response.data.content;
-            vm.pageLength = response.data.totalPages;
-            console.log("i success");
-
-            this.$router.push({
+            vm.msg = response.data;
+            vm.$router.push({
               path: "/Success",
               query: { message: "Account created successfully." }
             });
           })
           .catch(error => {
-            console.log(error);
-            console.warn("Not good man :(");
-            vm.ErrorMsg = error;
+            // console.log(error);
+            // console.warn("Not good man :(");
+            vm.ErrorMsg = error.response.data;
           })
           .finally(function() {
             // always executed

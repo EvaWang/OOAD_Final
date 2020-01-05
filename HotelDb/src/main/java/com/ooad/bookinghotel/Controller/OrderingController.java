@@ -8,6 +8,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
@@ -35,6 +38,9 @@ public class OrderingController {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private JwtToken jwtToken;
+
     public Boolean CheckLegalDateRegion (Date StartDate,Date EndDate) {
         Date now = new Date();
         if (StartDate.compareTo(EndDate) >= 0) {
@@ -55,13 +61,17 @@ public class OrderingController {
                 .orElseThrow(()->new NotFoundException(id));
     }
 
-    @GetMapping("/findMyOrders/{userId}")
-    Page<OrderView> findMyOrders (@PathVariable int userId,
-                                  @RequestParam(value="orderId", required = false) Integer orderId,
-                                  @RequestParam(value="page", defaultValue = "0", required = false) int page,
-                                  @RequestParam(value = "size", defaultValue = "-1", required = false) int size,
-                                  @RequestParam(value = "sortKey", required = false) String sortKey,
-                                  @RequestParam(value = "sortDesc", required = false) Boolean sortDesc) {
+    @GetMapping("/findMyOrders")
+    ResponseEntity<?> findMyOrders (@RequestParam(value="orderId", required = false) Integer orderId,
+                                    @RequestParam(value="page", defaultValue = "0", required = false) int page,
+                                    @RequestParam(value = "size", defaultValue = "-1", required = false) int size,
+                                    @RequestParam(value = "sortKey", required = false) String sortKey,
+                                    @RequestParam(value = "sortDesc", required = false) Boolean sortDesc) {
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String credentials = auth.getCredentials().toString();
+        Integer  userId = jwtToken.getUserId(credentials);
+
         Optional<User> findUser = userRepository.findById(userId);
         if (findUser.isPresent() == false) {
             throw new NotFoundException(userId);
@@ -84,22 +94,22 @@ public class OrderingController {
             pageable = PageRequest.of(page, size, sort);
         }
 
-        return orderViewRepository.searchOrder(userId, orderId, pageable);
+        return ResponseEntity.ok(orderViewRepository.searchOrder(userId, orderId, pageable));
     }
 
 
 
-    @GetMapping("/findMyOrderDetails/{userId}")
-    Page<OrderView> findMyOrderDetails (@PathVariable int userId,
-                                  @RequestParam(value="orderId", required = false) Integer orderId,
+    @GetMapping("/findMyOrderDetails")
+    Page<OrderView> findMyOrderDetails (@RequestParam(value="orderId", required = false) Integer orderId,
                                   @RequestParam(value="page", defaultValue = "0", required = false) int page,
                                   @RequestParam(value = "size", defaultValue = "-1", required = false) int size,
                                   @RequestParam(value = "sortKey", required = false) String sortKey,
                                   @RequestParam(value = "sortDesc", required = false) Boolean sortDesc) {
-        Optional<User> findUser = userRepository.findById(userId);
-        if (findUser.isPresent() == false) {
-            throw new NotFoundException(userId);
-        }
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String credentials = auth.getCredentials().toString();
+        Integer  userId = jwtToken.getUserId(credentials);
+
         Pageable pageable = null;
         if(size<0){
             pageable = PageRequest.of(0, Integer.MAX_VALUE);
@@ -173,7 +183,11 @@ public class OrderingController {
             }
         }
 
-        newOrdering.setUserId(Integer.parseInt(orderingObj.get("UserId")));
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String credentials = auth.getCredentials().toString();
+        Integer  userId = jwtToken.getUserId(credentials);
+
+        newOrdering.setUserId(userId);
 //        newOrdering.setDiscount(Double.parseDouble(orderingObj.get("Discount")));
         newOrdering.setDiscount(1.0);
         newOrdering.setStartDate(startDate);
