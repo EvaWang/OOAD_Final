@@ -30,3 +30,6 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### Static Files ###
+src/main/resources/static
