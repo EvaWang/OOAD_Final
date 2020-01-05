@@ -11,7 +11,6 @@ axios.interceptors.request.use(function (config) {
   // Do something before request is sent
   config.headers["Authorization"] = "Bearer " + store.getters.getUserInfo.token;
   config.headers["Access-Control-Allow-Origin"] = "*";
-  console.log(config)
   return config;
 }, function (error) {
   // Do something with request error
@@ -20,7 +19,7 @@ axios.interceptors.request.use(function (config) {
 
 Vue.use(VueAxios, axios)
 // Vue.axios.defaults.baseURL = "http://localhost:8080/";
-Vue.axios.defaults.baseURL = process.env.NODE_ENV === 'production' ? "http://13.78.15.94:8080/" : "http://localhost:8080/";
+Vue.axios.defaults.baseURL = process.env.NODE_ENV === 'production' ? "http://ooaddemo.japaneast.cloudapp.azure.com:8080/" : "http://localhost:8080/";
 
 Vue.use(require('vue-moment'));
 

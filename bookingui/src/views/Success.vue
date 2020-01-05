@@ -9,12 +9,12 @@
     </v-row>
     <v-row justify="center">
       <v-col class="text-center" cols="10" md="4">
-        <v-btn href="/" large color="primary">Back to Home</v-btn>
+        <v-btn @click="$router.push('/').catch(err => {})" large color="primary">Back to Home</v-btn>
       </v-col>
     </v-row>
     <v-row justify="center">
       <v-col class="text-center" cols="10" md="4">
-        <v-btn href="/login" large color="primary">Login</v-btn>
+        <v-btn @click="$router.push('/login').catch(err => {})" large color="primary">Login</v-btn>
       </v-col>
     </v-row>
   </v-container>

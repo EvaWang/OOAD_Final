@@ -1,5 +1,5 @@
 module.exports = {
-  "outputDir": "../HotelDb/src/main/resources/static/",
+  "outputDir": "../web/src/main/resources/static/",
   "transpileDependencies": [
     "vuetify"
   ]

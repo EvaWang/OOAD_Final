@@ -220,18 +220,20 @@ export default {
             vm.$set(vm.order.rooms, "type"+room.roomType, detail);
           }
           vm.ori_room = vm.order.rooms;
-          console.log("i success");
+          // console.log("i success");
         })
         .catch(error => {
-          console.log(error);
-          console.warn("Not good man :(");
+          // console.log(error);
+          // console.warn("Not good man :(");
+          vm.msg = error.response.data.message;
         })
         .finally(function() {
           vm.isLoading = false;
         });
     },
-    updateBooking: function(val){
-      console.log(val)
+    updateBooking: function(){
+    // updateBooking: function(val){
+      // console.log(val)
     },
     updateOrder: function(){
 

@@ -26,7 +26,7 @@
     </v-card-text>
     <v-card-actions>
       <v-spacer />
-      <v-btn color="success" href="/NewUser">Create Account</v-btn>
+      <v-btn color="success" @click="$router.push('/NewUser').catch(err => {})">Create Account</v-btn>
       <v-btn color="primary" @click="signIn">Login</v-btn>
     </v-card-actions>
   </v-card>

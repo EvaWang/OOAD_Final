@@ -96,9 +96,9 @@ export default {
           // console.log("i success");
         })
         .catch(error => {
-          console.log(JSON.stringify(error));
-          console.warn("Not good man :(");
-          // vm.msg = error.response.data.message;
+          // console.log(JSON.stringify(error));
+          // console.warn("Not good man :(");
+          vm.msg = error.response.data.message;
         })
         .finally(function() {
           vm.isLoading = false;

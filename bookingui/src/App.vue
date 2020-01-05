@@ -12,7 +12,7 @@
         />
 
         <v-btn
-          href="/"
+          @click="$router.push('/').catch(err => {})"
           text
           contain
           min-width="100"
