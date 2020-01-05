@@ -42,14 +42,10 @@ public class OrderingController {
     private JwtToken jwtToken;
 
     public Boolean CheckLegalDateRegion (Date StartDate,Date EndDate) {
-        Date now = new Date();
         if (StartDate.compareTo(EndDate) >= 0) {
             System.out.println("Illegal time region");
             return false;
-        } else if (StartDate.compareTo(now) < 0) {
-            System.out.println(StartDate + " have passed");
-            return false;
-        } else {
+        }  else {
             return true;
         }
     }
@@ -326,7 +322,7 @@ public class OrderingController {
     }
 
     @PostMapping("/updateByBooking/{id}")
-    Ordering updateOrderByBooking(@RequestBody Map<String, String> orderingObj,@PathVariable int id) {
+    Ordering updateOrderByBooking(@PathVariable int id) {
         Date now = new Date();
 
         Optional<Ordering> findOrder = orderingRepository.findById(id);
@@ -346,7 +342,7 @@ public class OrderingController {
 
         Date startDate = originalOrdering.getStartDate();
         if (CheckLegalDateRegion(now,startDate) == false) {
-            throw new ValidationException("Can't modified this Order");
+            throw new ValidationException("Can't modified this Order due to deadline");
         }
 
         Date endDate = originalOrdering.getEndDate();
@@ -357,9 +353,7 @@ public class OrderingController {
 
         Integer Total = 0;
         for (Booking Book: BookingList) {
-            if (Book.getIsDisabled() == true) {
-                BookingList.remove(Book);
-            }  else {
+            if (Book.getIsDisabled() == false) {
                 HotelRoom newHotelRoom = hotelRoomRepository.findById(Book.getHotelRoomId()).get();
                 Total = Total + newHotelRoom.getPrice();
             }
@@ -371,8 +365,8 @@ public class OrderingController {
 
         Total = Total * Days;
         originalOrdering.setTotal(Total);
-        orderingRepository.save(originalOrdering);
-        return originalOrdering;
+
+        return orderingRepository.save(originalOrdering);
     }
 
     @PutMapping("/payOrder/{id}")

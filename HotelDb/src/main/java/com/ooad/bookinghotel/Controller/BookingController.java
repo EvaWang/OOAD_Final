@@ -25,6 +25,9 @@ public class BookingController {
     @Autowired
     private BookingRepository bookingRepository;
 
+    @Autowired
+    private OrderingRepository orderingRepository;
+
 
 //    debug use
 //    @GetMapping("/all")
@@ -60,16 +63,31 @@ public class BookingController {
                 .orElseThrow(() -> new NotFoundException(id));
     }
 
-    /*@PutMapping("/updateOne/{id}")
-    Booking updateBooking(@RequestBody Booking newBooking, @PathVariable int id) {
+    @PutMapping("/updateOne/{id}")
+    Booking updateBooking(@RequestBody Map<String, String> bookingObj, @PathVariable int id) {
+        Optional<Booking> findBooking = bookingRepository.findById(id);
+        if (findBooking.isPresent() == false) {
+            throw new NotFoundException(id);
+        }
+        Booking Book = findBooking.get();
 
-        return bookingRepository.findById(id)
-                .map(updateBooking -> {
-                    updateBooking.setStartDate(newBooking.getStartDate());
-                    updateBooking.setEndDate(newBooking.getEndDate());
-                    return bookingRepository.save(updateBooking);
-                }).orElseThrow(() -> new NotFoundException(id));
+        if (Book.getIsDisabled()) {
+            throw new RuleException(id,"This booking has been disabled");
+        }
 
-    }*/
+        Integer orderId = Book.getOrderId();
+
+        Ordering ordering = orderingRepository.findById(orderId).get();
+
+        if (ordering.getIsDisabled() || ordering.getIsPaid()) {
+            throw new RuleException(id,"Can't modify this booking");
+        }
+
+        Boolean Disabled = Boolean.parseBoolean(bookingObj.get("isDisabled"));
+
+        Book.setIsDisabled(Disabled);
+
+        return bookingRepository.save(Book);
+    }
 
 }
