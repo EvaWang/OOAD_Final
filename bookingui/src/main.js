@@ -26,7 +26,7 @@ Vue.use(require('vue-moment'));
 Vue.config.productionTip = false
 
 router.beforeEach((to, from, next) => {
-  const publicPages = ['/', '/hotel', '/checkout/1', '/login'];
+  const publicPages = ['/', '/hotel', '/checkout/1', '/login', '/newUser'];
   const authRequired = !publicPages.includes(to.path);
   const loggedIn = store.getters.getUserInfo.token !== "";
 

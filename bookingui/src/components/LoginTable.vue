@@ -26,7 +26,7 @@
     </v-card-text>
     <v-card-actions>
       <v-spacer />
-      <v-btn color="success" @click="$router.push('/NewUser').catch(err => {})">Create Account</v-btn>
+      <v-btn color="success" @click="createUser">Create Account</v-btn>
       <v-btn color="primary" @click="signIn">Login</v-btn>
     </v-card-actions>
   </v-card>
@@ -42,6 +42,12 @@ export default {
     msg: ""
   }),
   methods: {
+    createUser: function() {
+      var vm = this;
+      vm.$router.push({
+        path: "/newUser"
+      });
+    },
     signIn: function() {
       var vm = this;
       vm.isLoading = true;
@@ -53,8 +59,8 @@ export default {
         .then(response => {
           vm.$store.commit("userInfoChange", response.data);
           vm.$router.push({
-              path: "/order"
-            });
+            path: "/order"
+          });
         })
         .catch(error => {
           vm.ErrorMsg = error.response.data;
