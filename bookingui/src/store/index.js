@@ -13,7 +13,13 @@ export default new Vuex.Store({
   },
   getters: {
     getSearchCondition: state => {
-      if (!state.searchCondition) {
+      // {"locality":null,"stars":[null,null,null,true],"roomType":1,"startDate":"2020-01-09","endDate":"2020-01-15"}
+      if (!state.searchCondition.locality && 
+        !state.searchCondition.stars && 
+        !state.searchCondition.roomType && 
+        !state.searchCondition.endDate && 
+        !state.searchCondition.startDate) {
+          
         var searchCondition = localStorage.getItem('searchCondition') || "{}";
         state.searchCondition = JSON.parse(searchCondition)
       }
@@ -39,7 +45,7 @@ export default new Vuex.Store({
       state.userInfo = user;
       localStorage.setItem('userInfo', JSON.stringify(state.userInfo));
     },
-    removeUserInfo(state){
+    removeUserInfo(state) {
       state.userInfo = { token: "", username: "" };
       localStorage.removeItem('userInfo');
     },

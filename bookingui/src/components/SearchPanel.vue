@@ -27,7 +27,7 @@
       <v-row justify="center">
         <v-col cols="12" md="6">
           <v-menu
-            v-if="picker_start!=''"
+            v-if="picker_start != ''"
             ref="menu_start"
             v-model="menu_start"
             :close-on-content-click="false"
@@ -69,7 +69,7 @@
         <!-- <v-spacer></v-spacer> -->
         <v-col cols="12" md="6">
           <v-menu
-            v-if="picker_end!=''"
+            v-if="picker_end != ''"
             ref="menu_end"
             v-model="menu_end"
             :close-on-content-click="false"
@@ -165,9 +165,10 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
+
 export default {
   name: "search",
-  components: {},
   data: () => ({
     menu_start: false,
     menu_end: false,
@@ -182,7 +183,6 @@ export default {
       { Name: "Quad", Limit: 4 }
     ],
     location: null,
-    locationList: ["台北", "台中", "台南", "高雄", "花蓮", "台東", "宜蘭"],
     rating: []
   }),
   watch: {
@@ -197,13 +197,20 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(["getSearchCondition"]),
     picker_end_min() {
       var vm = this;
-      return vm.$moment(vm.picker_start).add(1, 'day').format("YYYY-MM-DD");
+      return vm
+        .$moment(vm.picker_start)
+        .add(1, "day")
+        .format("YYYY-MM-DD");
     },
     max_date() {
       var vm = this;
-      return vm.$moment(vm.picker_start).add(1, 'month').format("YYYY-MM-DD");
+      return vm
+        .$moment(vm.picker_start)
+        .add(1, "month")
+        .format("YYYY-MM-DD");
     }
   },
   methods: {
@@ -221,11 +228,40 @@ export default {
       };
       vm.$store.commit("searchConditionUpdate", condition);
       vm.$emit("searchClick");
+    },
+    matchRating(target, source) {
+      for (var i = 0; i < 5; i++) {
+        if (source[i]) {
+          target[i] = true;
+        }else{
+          target[i] = false;
+        }
+      }
+      return target;
     }
   },
-  mounted:function(){
-    this.picker_start = this.$moment().add(1, 'day').format("YYYY-MM-DD");
-    this.picker_end = this.picker_end_min;
+  mounted: function() {
+    if (
+      this.getSearchCondition.locality ||
+      this.getSearchCondition.stars ||
+      this.getSearchCondition.roomType ||
+      this.getSearchCondition.endDate ||
+      this.getSearchCondition.startDate
+    ) {
+      this.location = this.getSearchCondition.locality;
+      this.rating = this.matchRating(
+        this.rating,
+        this.getSearchCondition.stars
+      );
+      this.roomType = this.getSearchCondition.roomType;
+      this.picker_start = this.getSearchCondition.startDate;
+      this.picker_end = this.getSearchCondition.endDate;
+    } else {
+      this.picker_start = this.$moment()
+        .add(1, "day")
+        .format("YYYY-MM-DD");
+      this.picker_end = this.picker_end_min;
+    }
   }
 };
 </script>
