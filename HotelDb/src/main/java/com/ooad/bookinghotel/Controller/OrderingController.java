@@ -437,12 +437,13 @@ public class OrderingController {
             Total = Total + roomPrice;
         }
 
-        if(Total>originalOrdering.getTotal()){
+        Integer newTotal = Total*Days;
+        if(newTotal>originalOrdering.getTotal()){
             originalOrdering.setIsPaid(false);
 //            錢不夠要補
         }
 
-        originalOrdering.setTotal(Total*Days);
+        originalOrdering.setTotal(newTotal);
 
         for(String roomType: roomTypeList){
             Booking newBooking = new Booking();
