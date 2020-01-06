@@ -142,7 +142,12 @@ export default {
             starList.push(i + 1);
           }
         }
-        return starList.join(",");
+        var returnlist = starList.join(",");
+        if(returnlist == ''){
+          return null;
+        }else{
+          return returnlist;
+        }
       } else {
         return null;
       }
@@ -169,11 +174,9 @@ export default {
         .then(response => {
           vm.items = response.data.content;
           vm.pageLength = response.data.totalPages;
-          console.log("i success");
         })
         .catch(error => {
-          console.log(error);
-          console.warn("Not good man :(");
+          vm.errorMsg = error;
         })
         .finally(function() {
           vm.isLoading = false;
@@ -369,7 +372,6 @@ export default {
   mounted: function() {
     // this.getHotelList();
     // this.fakeData();
-    console.log("mounted");
   }
 };
 </script>
